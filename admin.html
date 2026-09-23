@@ -23,9 +23,9 @@ input,textarea,button{font:inherit;background:#0b0b0a;color:var(--text);border:1
 
 <section id="login" class="box login">
 <h3 style="margin-top:0">ورود به پنل خصوصی</h3>
-<div class="small">ورود این پنل فقط با رمز انجام می‌شود و دیگر لازم نیست ایمیل وارد کنی یا لینک ورود بگیری.</div>
-<input id="password" type="password" placeholder="رمز عبور پنل" autocomplete="current-password" autofocus>
-<button id="loginBtn">ورود</button><button id="resetBtn" class="secondary">ارسال لینک ریست رمز</button>
+<div class="small">برای ورود، یک لینک امن به ایمیل مدیر ارسال می‌شود. روی لینک بزن تا مستقیم وارد پنل شوی؛ نیازی به رمز نیست.</div>
+<input id="email" type="email" value="mohammadrezadaeiii@gmail.com" readonly autocomplete="email">
+<button id="loginBtn">ارسال لینک ورود</button>
 <div id="loginStatus" class="status"></div>
 </section>
 
@@ -61,9 +61,8 @@ async function load(){const q=await db.from("anonymous_messages").select("id,mes
 async function sendReply(){if(!selected)return;const g=group(all).find(x=>x.id===selected);if(!g)return;const target=[...g.rows].reverse().find(x=>x.wants_reply&&!x.reply)||g.rows.at(-1);const reply=document.getElementById("replyText").value.trim();if(!reply)return;const b=document.getElementById("replyBtn");b.disabled=true;b.textContent="…";const r=await db.functions.invoke("send-reply-push",{body:{message_id:target.id,reply}});b.disabled=false;b.textContent="ارسال";if(r.error){alert("ارسال انجام نشد: "+r.error.message);return}await load();await openPerson(selected);alert(r.data?.push?.sent?"پاسخ ارسال شد و نوتیفیکیشن هم فرستاده شد 🔔":"پاسخ ارسال شد.")}
 document.getElementById("replyBtn").onclick=sendReply;document.getElementById("refresh").onclick=load;document.getElementById("search").oninput=renderPeople;document.getElementById("backPeople").onclick=()=>document.querySelector(".wrap").classList.remove("chatOpen");
 async function logout(){await db.auth.signOut();location.reload()}document.getElementById("logout2").onclick=logout;
-document.getElementById("loginBtn").onclick=async()=>{const password=document.getElementById("password").value,st=document.getElementById("loginStatus");if(!password){st.textContent="رمز عبور را وارد کن.";return}st.textContent="در حال ورود...";const r=await db.auth.signInWithPassword({email:ADMIN_EMAIL,password});st.textContent=r.error?"رمز عبور صحیح نیست.":"";};
-document.getElementById("resetBtn").onclick=async()=>{const st=document.getElementById("loginStatus");st.textContent="در حال ارسال لینک...";const r=await db.auth.resetPasswordForEmail(ADMIN_EMAIL,{redirectTo:location.origin+location.pathname});st.textContent=r.error?r.error.message:"لینک ریست ارسال شد. Gmail را بررسی کن.";};
+document.getElementById("loginBtn").onclick=async()=>{const st=document.getElementById("loginStatus");st.textContent="در حال ارسال لینک ورود...";const r=await db.auth.signInWithOtp({email:ADMIN_EMAIL,options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:false}});st.textContent=r.error?r.error.message:"لینک ورود ارسال شد. Gmail را بررسی کن.";};
 document.getElementById("savePassword").onclick=async()=>{const a=document.getElementById("newPassword").value,b=document.getElementById("newPassword2").value,st=document.getElementById("recoveryStatus");if(a.length<8){st.textContent="رمز باید حداقل ۸ کاراکتر باشد.";return}if(a!==b){st.textContent="دو رمز یکسان نیستند.";return}st.textContent="در حال ذخیره...";const r=await db.auth.updateUser({password:a});if(r.error){st.textContent=r.error.message;return}st.textContent="رمز با موفقیت تغییر کرد. در حال ورود...";setTimeout(()=>{R.classList.add("hide");P.classList.remove("hide");load()},500);};
-document.getElementById("password").onkeydown=e=>{if(e.key==="Enter")document.getElementById("loginBtn").click()};
+
 db.auth.onAuthStateChange((_e,s)=>{if(_e==="PASSWORD_RECOVERY"){L.classList.add("hide");P.classList.add("hide");R.classList.remove("hide");return}if(s){L.classList.add("hide");R.classList.add("hide");P.classList.remove("hide");load()}});db.auth.getSession().then(({data})=>{if(window.location.hash.includes("type=recovery")||window.location.hash.includes("type=password_recovery")){L.classList.add("hide");P.classList.add("hide");R.classList.remove("hide");return}if(data.session){L.classList.add("hide");R.classList.add("hide");P.classList.remove("hide");load()}});
 </script></body></html>
