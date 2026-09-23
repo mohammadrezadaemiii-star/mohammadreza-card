@@ -20,11 +20,10 @@ input,textarea,button{font:inherit;background:#0b0b0a;color:var(--text);border:1
 <header class="top"><div class="brand"><div class="logo">M</div><div><div class="title">پنل خصوصی محمدرضا</div><div class="sub">مدیریت پیام‌ها و پاسخ‌ها</div></div></div><button id="logout" class="secondary hide">خروج</button></header>
 
 <section id="login" class="box login">
-<h3 style="margin-top:0">ورود امن</h3><div class="small">برای ورود روزمره از ایمیل و رمز استفاده کن. لینک ایمیلی فقط برای فعال‌سازی یا بازیابی دسترسی است.</div>
-<input id="email" type="email" value="mohammadrezadaemiii@gmail.com" autocomplete="email">
-<input id="password" type="password" placeholder="رمز عبور" autocomplete="current-password">
-<button id="loginBtn">ورود با رمز</button>
-<button id="send" class="secondary" style="width:100%;margin-top:9px">ارسال لینک ورود ایمیلی</button>
+<h3 style="margin-top:0">ورود به پنل خصوصی</h3>
+<div class="small">ورود این پنل فقط با رمز انجام می‌شود و دیگر لازم نیست ایمیل وارد کنی یا لینک ورود بگیری.</div>
+<input id="password" type="password" placeholder="رمز عبور پنل" autocomplete="current-password" autofocus>
+<button id="loginBtn">ورود</button>
 <div id="loginStatus" class="status"></div>
 </section>
 
@@ -45,7 +44,7 @@ input,textarea,button{font:inherit;background:#0b0b0a;color:var(--text);border:1
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const U="https://jfixjlygjukrlokdznhh.supabase.co",K="sb_publishable_JpVcwEzZzpPcDwj9PhkZHQ_AoKpw9Kt",db=supabase.createClient(U,K);
+const U="https://jfixjlygjukrlokdznhh.supabase.co",K="sb_publishable_JpVcwEzZzpPcDwj9PhkZHQ_AoKpw9Kt",ADMIN_EMAIL="mohammadrezadaemiii@gmail.com",db=supabase.createClient(U,K);
 const L=document.getElementById("login"),P=document.getElementById("panel"),people=document.getElementById("people"),messages=document.getElementById("messages"),bio=document.getElementById("bio"),replyBar=document.getElementById("replyBar");
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 let all=[],selected=null;
@@ -60,7 +59,7 @@ async function load(){const q=await db.from("anonymous_messages").select("id,mes
 async function sendReply(){if(!selected)return;const g=group(all).find(x=>x.id===selected);if(!g)return;const target=[...g.rows].reverse().find(x=>x.wants_reply&&!x.reply)||g.rows.at(-1);const reply=document.getElementById("replyText").value.trim();if(!reply)return;const b=document.getElementById("replyBtn");b.disabled=true;b.textContent="…";const u=await db.from("anonymous_messages").update({reply,replied_at:new Date().toISOString()}).eq("id",target.id);if(u.error){alert(u.error.message);b.disabled=false;b.textContent="ارسال";return}const r=await db.functions.invoke("send-reply-push",{body:{message_id:target.id}});b.disabled=false;b.textContent="ارسال";await load();await openPerson(selected);alert(r.error?"پاسخ ذخیره شد؛ نوتیفیکیشن ارسال نشد.":"پاسخ ارسال شد و نوتیفیکیشن فرستاده شد 🔔")}
 document.getElementById("replyBtn").onclick=sendReply;document.getElementById("refresh").onclick=load;document.getElementById("search").oninput=renderPeople;document.getElementById("backPeople").onclick=()=>document.querySelector(".wrap").classList.remove("chatOpen");
 async function logout(){await db.auth.signOut();location.reload()}document.getElementById("logout2").onclick=logout;
-document.getElementById("loginBtn").onclick=async()=>{const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value,st=document.getElementById("loginStatus");st.textContent="در حال ورود...";const r=await db.auth.signInWithPassword({email,password});if(r.error)st.textContent="ایمیل یا رمز عبور صحیح نیست.";};
-document.getElementById("send").onclick=async()=>{const email=document.getElementById("email").value.trim(),st=document.getElementById("loginStatus");st.textContent="در حال ارسال...";const r=await db.auth.signInWithOtp({email,options:{emailRedirectTo:"https://mohammadrezadaemiii-star.github.io/mohammadreza-card/admin.html"}});st.textContent=r.error?r.error.message:"لینک ورود ارسال شد؛ ایمیلت را باز کن."};
+document.getElementById("loginBtn").onclick=async()=>{const password=document.getElementById("password").value,st=document.getElementById("loginStatus");if(!password){st.textContent="رمز عبور را وارد کن.";return}st.textContent="در حال ورود...";const r=await db.auth.signInWithPassword({email:ADMIN_EMAIL,password});st.textContent=r.error?"رمز عبور صحیح نیست.":"";};
+document.getElementById("password").onkeydown=e=>{if(e.key==="Enter")document.getElementById("loginBtn").click()};
 db.auth.onAuthStateChange((_e,s)=>{if(s){L.classList.add("hide");P.classList.remove("hide");load()}});db.auth.getSession().then(({data})=>{if(data.session){L.classList.add("hide");P.classList.remove("hide");load()}});
 </script></body></html>
