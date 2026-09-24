@@ -24,6 +24,13 @@ body{min-height:100dvh;height:100dvh;overscroll-behavior:none}
 .chatBody,.people{min-height:0;-webkit-overflow-scrolling:touch}
 @supports not (height:100dvh){body,.wrap,#panel{height:100vh!important;min-height:100vh!important}}
 @media (display-mode:standalone){.sideHead{padding-top:max(8px,env(safe-area-inset-top));height:calc(68px + env(safe-area-inset-top))}.chatHead{padding-top:max(8px,env(safe-area-inset-top));height:calc(68px + env(safe-area-inset-top))}.replyBar{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
+</style><style>
+.replyBar{flex:0 0 auto!important;min-height:60px!important;z-index:10!important;position:relative!important;padding:8px 10px calc(8px + env(safe-area-inset-bottom))!important;box-shadow:0 -5px 18px #0005!important}
+.replyBar .replyTool{width:44px!important;height:44px!important;flex:0 0 44px!important;border:1px solid #333d48!important;background:linear-gradient(145deg,#202a33,#151b22)!important;color:#d9bd78!important;font-size:20px!important;display:grid!important;place-items:center!important}
+.replyBar #replyBtn{height:44px!important;min-width:76px!important;border:0!important;background:linear-gradient(145deg,#dfbd6b,#b48a3d)!important;color:#18140d!important;font-weight:800!important}
+.replyBar textarea{min-height:44px!important;height:44px!important;line-height:1.5!important}
+.chatBody{min-height:0!important;padding-bottom:12px!important}
+@media(max-width:700px){.replyBar{min-height:64px!important;padding-left:9px!important;padding-right:9px!important}.replyBar .replyTool{width:42px!important;height:42px!important;flex-basis:42px!important}.replyBar #replyBtn{min-width:58px!important;font-size:11px!important}.replyBar textarea{font-size:12px!important}}
 </style></head>
 <body><div class="wrap">
 <header class="top"><div class="brand"><div class="logo">M</div><div><div class="title">پنل خصوصی محمدرضا</div><div class="sub">مدیریت پیام‌ها و پاسخ‌ها</div></div></div><button id="logout" class="secondary hide">خروج</button></header>
