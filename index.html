@@ -65,7 +65,7 @@ async function loadConversation(force=false){
   const q=await db.from("anonymous_messages").select("id,message,reply,created_at,replied_at,attachments,reply_attachments,admin_read_at,visitor_read_at").eq("visitor_id",visitorId).order("created_at",{ascending:true});
   if(q.error)return;
   const rows=q.data||[];
-  const key=rows.map(r=>r.id+"|"+(r.message||"")+"|"+(r.reply||"")+"|"+(r.replied_at||"")+"|"+JSON.stringify(r.attachments||[])+"|"+JSON.stringify(r.reply_attachments||[])).join("~");
+  const key=rows.map(r=>r.id+"|"+(r.message||"")+"|"+(r.reply||"")+"|"+(r.replied_at||"")+"|"+(r.admin_read_at||"")+"|"+(r.visitor_read_at||"")+"|"+JSON.stringify(r.attachments||[])+"|"+JSON.stringify(r.reply_attachments||[])).join("~");
   if(!force&&key===conversationKey)return;
   const wasNearBottom=body.scrollHeight-body.scrollTop-body.clientHeight<100;
   const oldTop=body.scrollTop;
