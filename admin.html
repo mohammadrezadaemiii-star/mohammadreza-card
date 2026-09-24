@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>پنل خصوصی محمدرضا</title>
+<link rel="manifest" href="./admin-manifest.json"><meta name="theme-color" content="#090909"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 :root{--bg:#090909;--head:#171717;--panel:#111;--bubble:#252525;--mine:#44351f;--line:#2d2923;--gold:#d7b56c;--muted:#969087;--text:#f5f1e8}
 *{box-sizing:border-box}body{margin:0;background:#080808;color:var(--text);font-family:Tahoma,Arial,sans-serif}.wrap{height:100vh;display:block;max-width:1250px;margin:auto;position:relative}.top{display:none}.hide{display:none!important}
@@ -19,13 +20,15 @@ input,textarea,button{font:inherit;background:#0b0b0a;color:var(--text);border:1
 <body><div class="wrap">
 <header class="top"><div class="brand"><div class="logo">M</div><div><div class="title">پنل خصوصی محمدرضا</div><div class="sub">مدیریت پیام‌ها و پاسخ‌ها</div></div></div><button id="logout" class="secondary hide">خروج</button></header>
 
-<section id="recovery" class="box login hide"><h3 style="margin-top:0">تعیین رمز جدید</h3><div class="small">رمز جدیدت را وارد کن تا ورود به پنل فعال شود.</div><input id="newPassword" type="password" placeholder="رمز جدید" autocomplete="new-password"><input id="newPassword2" type="password" placeholder="تکرار رمز جدید" autocomplete="new-password"><button id="savePassword">ذخیره رمز جدید</button><div id="recoveryStatus" class="status"></div></section>
+<section id="recovery" class="box login hide"><h3 style="margin-top:0">تنظیم رمز ورود</h3><div class="small">بار اول از لینک امن ایمیل وارد شو و یک رمز بساز. بعد از آن فقط با همین رمز وارد می‌شوی.</div><input id="newPassword" type="password" placeholder="رمز جدید (حداقل ۸ کاراکتر)" autocomplete="new-password"><input id="newPassword2" type="password" placeholder="تکرار رمز جدید" autocomplete="new-password"><button id="savePassword">ذخیره و ورود به پنل</button><div id="recoveryStatus" class="status"></div></section>
 
 <section id="login" class="box login">
 <h3 style="margin-top:0">ورود به پنل خصوصی</h3>
-<div class="small">برای ورود، یک لینک امن به ایمیل مدیر ارسال می‌شود. روی لینک بزن تا مستقیم وارد پنل شوی؛ نیازی به رمز نیست.</div>
-<input id="email" type="email" value="mohammadrezadaeiii@gmail.com" readonly autocomplete="email">
-<button id="loginBtn">ارسال لینک ورود</button>
+<div class="small">از این به بعد با رمز خودت وارد شو.</div>
+<input id="email" type="email" value="mohammadrezadaemiii@gmail.com" readonly autocomplete="username">
+<input id="password" type="password" placeholder="رمز ورود" autocomplete="current-password">
+<button id="loginBtn">ورود به پنل</button>
+<button id="magicBtn" class="secondary">بار اول / فراموشی رمز — ارسال لینک امن</button>
 <div id="loginStatus" class="status"></div>
 </section>
 
@@ -61,8 +64,8 @@ async function load(){const q=await db.from("anonymous_messages").select("id,mes
 async function sendReply(){if(!selected)return;const g=group(all).find(x=>x.id===selected);if(!g)return;const target=[...g.rows].reverse().find(x=>x.wants_reply&&!x.reply)||g.rows.at(-1);const reply=document.getElementById("replyText").value.trim();if(!reply)return;const b=document.getElementById("replyBtn");b.disabled=true;b.textContent="…";const r=await db.functions.invoke("send-reply-push",{body:{message_id:target.id,reply}});b.disabled=false;b.textContent="ارسال";if(r.error){alert("ارسال انجام نشد: "+r.error.message);return}await load();await openPerson(selected);alert(r.data?.push?.sent?"پاسخ ارسال شد و نوتیفیکیشن هم فرستاده شد 🔔":"پاسخ ارسال شد.")}
 document.getElementById("replyBtn").onclick=sendReply;document.getElementById("refresh").onclick=load;document.getElementById("search").oninput=renderPeople;document.getElementById("backPeople").onclick=()=>document.querySelector(".wrap").classList.remove("chatOpen");
 async function logout(){await db.auth.signOut();location.reload()}document.getElementById("logout2").onclick=logout;
-document.getElementById("loginBtn").onclick=async()=>{const st=document.getElementById("loginStatus");st.textContent="در حال ارسال لینک ورود...";const r=await db.auth.signInWithOtp({email:ADMIN_EMAIL,options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:false}});st.textContent=r.error?r.error.message:"لینک ورود ارسال شد. Gmail را بررسی کن.";};
-document.getElementById("savePassword").onclick=async()=>{const a=document.getElementById("newPassword").value,b=document.getElementById("newPassword2").value,st=document.getElementById("recoveryStatus");if(a.length<8){st.textContent="رمز باید حداقل ۸ کاراکتر باشد.";return}if(a!==b){st.textContent="دو رمز یکسان نیستند.";return}st.textContent="در حال ذخیره...";const r=await db.auth.updateUser({password:a});if(r.error){st.textContent=r.error.message;return}st.textContent="رمز با موفقیت تغییر کرد. در حال ورود...";setTimeout(()=>{R.classList.add("hide");P.classList.remove("hide");load()},500);};
-
+document.getElementById("loginBtn").onclick=async()=>{const st=document.getElementById("loginStatus"),p=document.getElementById("password").value;if(!p){st.textContent="رمز ورود را وارد کن.";return}st.textContent="در حال ورود...";const r=await db.auth.signInWithPassword({email:ADMIN_EMAIL,password:p});if(r.error){st.textContent=r.error.message.includes("Invalid login credentials")?"ایمیل یا رمز ورود اشتباه است.":r.error.message;return}st.textContent="ورود موفق بود.";};
+document.getElementById("magicBtn").onclick=async()=>{const st=document.getElementById("loginStatus");st.textContent="در حال ارسال لینک امن...";const r=await db.auth.signInWithOtp({email:ADMIN_EMAIL,options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:false}});st.textContent=r.error?r.error.message:"لینک امن ارسال شد. ایمیل را باز کن و از آنجا یک‌بار رمزت را تنظیم کن.";};
+document.getElementById("savePassword").onclick=async()=>{const a=document.getElementById("newPassword").value,b=document.getElementById("newPassword2").value,st=document.getElementById("recoveryStatus");if(a.length<8){st.textContent="رمز باید حداقل ۸ کاراکتر باشد.";return}if(a!==b){st.textContent="دو رمز یکسان نیستند.";return}st.textContent="در حال ذخیره...";const r=await db.auth.updateUser({password:a});if(r.error){st.textContent=r.error.message;return}st.textContent="رمز تنظیم شد. در حال ورود...";setTimeout(()=>{R.classList.add("hide");P.classList.remove("hide");load()},400)};
 db.auth.onAuthStateChange((_e,s)=>{if(_e==="PASSWORD_RECOVERY"){L.classList.add("hide");P.classList.add("hide");R.classList.remove("hide");return}if(s){L.classList.add("hide");R.classList.add("hide");P.classList.remove("hide");load()}});db.auth.getSession().then(({data})=>{if(window.location.hash.includes("type=recovery")||window.location.hash.includes("type=password_recovery")){L.classList.add("hide");P.classList.add("hide");R.classList.remove("hide");return}if(data.session){L.classList.add("hide");R.classList.add("hide");P.classList.remove("hide");load()}});
 </script></body></html>
