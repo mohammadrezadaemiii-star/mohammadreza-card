@@ -1,76 +1,2625 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>پنل خصوصی محمدرضا</title>
-<link rel="manifest" href="./admin-manifest.json"><meta name="theme-color" content="#090909"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<link rel="manifest" href="./admin-manifest.json">
+<meta name="theme-color" content="#090909">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
 <style>
-:root{--bg:#090909;--head:#171717;--panel:#111;--bubble:#252525;--mine:#44351f;--line:#2d2923;--gold:#d7b56c;--muted:#969087;--text:#f5f1e8}
-*{box-sizing:border-box}body{margin:0;background:#080808;color:var(--text);font-family:Tahoma,Arial,sans-serif}.wrap{height:100vh;display:block;max-width:1250px;margin:auto;position:relative}.top{display:none}.hide{display:none!important}
-.login{width:min(460px,calc(100% - 32px));margin:auto;background:#121210;border:1px solid #30291d;border-radius:20px;padding:22px;box-shadow:0 20px 60px #000}
-input,textarea,button{font:inherit;background:#0b0b0a;color:var(--text);border:1px solid #403622;border-radius:12px;padding:12px;width:100%;margin-top:9px}button{background:linear-gradient(180deg,#d9b96f,#a98a4d);color:#17130b;font-weight:700;cursor:pointer}.secondary{background:#171716;color:#ddd5c7!important}.status,.small{font-size:11px;color:var(--muted);line-height:1.8;margin-top:8px}
-.sidebar{width:350px;height:100%;background:#101010;border-left:1px solid var(--line);display:flex;flex-direction:column}.sideHead{height:70px;background:var(--head);display:flex;align-items:center;padding:10px 14px;font-weight:700}.sideTitle{font-size:16px}.sideSub{font-size:10px;color:var(--muted);margin-top:3px}.search{padding:9px;background:#101010;border-bottom:1px solid var(--line)}.search input{margin:0;border-radius:18px;padding:10px 14px}
-.people{overflow:auto}.person{display:flex;gap:10px;padding:12px;border-bottom:1px solid #24221e;cursor:pointer;align-items:center}.person:hover,.person.active{background:#1c1b19}.pavatar{width:46px;height:46px;flex:0 0 46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#d7b56c,#725426);color:#17130b;font-weight:800}.pname{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.plast{font-size:11px;color:#aaa298;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:5px}.ptime{font-size:9px;color:#817b71;margin-right:auto;align-self:flex-start}.badge{min-width:19px;height:19px;padding:2px 6px;border-radius:99px;background:#a98a4d;color:#111;font-size:9px;text-align:center;margin-top:auto}
-.chat{flex:1;height:100%;display:flex;flex-direction:column;min-width:0;background:#0b0b0b}.chatHead{height:70px;background:var(--head);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:11px;padding:9px 15px}.chatHead .pavatar{width:43px;height:43px;flex-basis:43px}.chatName{font-weight:700;font-size:15px}.chatSub{font-size:10px;color:var(--muted);margin-top:4px}.chatActions{margin-right:auto;display:flex;gap:6px}.chatActions button{width:auto;margin:0;padding:8px 11px}
-.chatBody{flex:1;overflow:auto;padding:18px 15px;background-image:radial-gradient(circle at 15% 15%,#d7b56c0a,transparent 25%),radial-gradient(circle at 85% 75%,#d7b56c08,transparent 28%)}.day{text-align:center;margin:5px auto 15px;background:#24221e;color:#a59e92;border-radius:99px;padding:5px 12px;width:max-content;font-size:9px}.bubble{max-width:min(72%,520px);padding:10px 12px;border-radius:16px;margin:5px 0;line-height:1.8;font-size:13px;white-space:pre-wrap;word-break:break-word;box-shadow:0 2px 5px #0005}.incoming{margin-right:auto;background:var(--bubble);border-bottom-right-radius:5px}.outgoing{margin-left:auto;background:var(--mine);border-bottom-left-radius:5px}.time{font-size:9px;color:#928b80;text-align:left;direction:ltr;margin-top:3px}.mediaImg{max-width:280px;max-height:300px;border-radius:12px;display:block;margin-top:7px}.audio{width:250px;max-width:100%;margin-top:7px}
-.bio{padding:14px;background:#101010;border-top:1px solid var(--line);border-bottom:1px solid var(--line);max-height:260px;overflow:auto}.bioTitle{font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px}.bioGrid{display:grid;grid-template-columns:100px 1fr;gap:6px 10px;font-size:10px}.bioGrid span:nth-child(odd){color:#858077}.bioGrid span:nth-child(even){direction:ltr;text-align:right;word-break:break-all;color:#d6d0c6}.replyBar{padding:9px;background:#171717;border-top:1px solid var(--line);display:flex;gap:7px;align-items:flex-end}.replyBar textarea{margin:0;min-height:44px;max-height:130px;resize:none;border-radius:18px}.replyBar button{width:auto;flex:0 0 88px;margin:0}.replyTool{width:43px!important;flex:0 0 43px!important;height:43px;margin:0!important;padding:0!important;border-radius:50%!important;background:#20201e!important;color:var(--gold)!important}.replyPreview{display:none;padding:7px 10px;background:#171717;border-top:1px solid var(--line);font-size:10px;color:#bcb4a7;gap:8px;align-items:center}.replyPreview.show{display:flex}.replyPreview img{width:48px;height:48px;object-fit:cover;border-radius:8px}.replyFile{display:none}.emptyChat{margin:auto;text-align:center;color:#777168;font-size:12px;line-height:2}.topMobile{display:none}
-@media(max-width:700px){.sidebar{width:100%;height:100%}.chat{display:none}.wrap.chatOpen .sidebar{display:none}.wrap.chatOpen .chat{display:flex}.topMobile{display:block}.sidebar{border:0}.person{padding:13px}.chatHead{height:64px}.bio{max-height:210px}.bubble{max-width:84%}}
+:root{
+ --bg:#090909;
+ --head:#171717;
+ --panel:#111;
+ --bubble:#252525;
+ --mine:#44351f;
+ --line:#2d2923;
+ --gold:#d7b56c;
+ --muted:#969087;
+ --text:#f5f1e8;
+ --green:#61dcd3;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+ margin:0;
+ width:100%;
+ height:100%;
+ background:var(--bg);
+ color:var(--text);
+ font-family:Tahoma,Arial,sans-serif;
+}
+
+body{overflow:hidden}
+
+button,input,textarea{
+ font:inherit;
+}
+
+button{
+ cursor:pointer;
+}
+
+.hide{
+ display:none!important;
+}
+
+/* LOGIN */
+
+.login{
+ width:min(460px,calc(100% - 32px));
+ margin:10vh auto 0;
+ background:#121210;
+ border:1px solid #30291d;
+ border-radius:20px;
+ padding:22px;
+ box-shadow:0 20px 60px #000;
+}
+
+.login h3{
+ margin-top:0;
+}
+
+.login input{
+ width:100%;
+ background:#0b0b0a;
+ color:var(--text);
+ border:1px solid #403622;
+ border-radius:12px;
+ padding:12px;
+ margin-top:9px;
+}
+
+.login button{
+ width:100%;
+ border:0;
+ border-radius:12px;
+ padding:12px;
+ margin-top:9px;
+ background:linear-gradient(180deg,#d9b96f,#a98a4d);
+ color:#17130b;
+ font-weight:700;
+}
+
+.login .secondary{
+ background:#171716;
+ color:#ddd5c7;
+ border:1px solid #403622;
+}
+
+.small,.status{
+ font-size:11px;
+ color:var(--muted);
+ line-height:1.8;
+ margin-top:8px;
+}
+
+/* PANEL */
+
+#panel{
+ width:100%;
+ height:100vh;
+ display:flex;
+}
+
+.sidebar{
+ width:350px;
+ height:100%;
+ flex:0 0 350px;
+ background:#101010;
+ border-left:1px solid var(--line);
+ display:flex;
+ flex-direction:column;
+}
+
+.sideHead{
+ min-height:70px;
+ background:var(--head);
+ display:flex;
+ align-items:center;
+ padding:10px 14px;
+ gap:10px;
+}
+
+.brandMark{
+ width:42px;
+ height:42px;
+ border-radius:13px;
+ display:grid;
+ place-items:center;
+ border:1px solid #5bcfc6;
+ background:linear-gradient(145deg,#17302e,#33291a);
+ flex:0 0 42px;
+}
+
+.brandMark svg{
+ width:28px;
+ height:28px;
+}
+
+.sideTitle{
+ font-size:16px;
+ font-weight:700;
+}
+
+.sideSub{
+ font-size:10px;
+ color:var(--muted);
+ margin-top:3px;
+}
+
+.search{
+ padding:9px;
+ background:#101010;
+ border-bottom:1px solid var(--line);
+}
+
+.search input{
+ width:100%;
+ margin:0;
+ background:#0b0b0a;
+ color:var(--text);
+ border:1px solid #403622;
+ border-radius:18px;
+ padding:10px 14px;
+ outline:none;
+}
+
+.people{
+ flex:1;
+ overflow:auto;
+}
+
+.person{
+ display:flex;
+ gap:10px;
+ padding:12px;
+ border-bottom:1px solid #24221e;
+ cursor:pointer;
+ align-items:center;
+}
+
+.person:hover,
+.person.active{
+ background:#1c1b19;
+}
+
+.pavatar{
+ width:46px;
+ height:46px;
+ flex:0 0 46px;
+ border-radius:50%;
+ display:grid;
+ place-items:center;
+ background:linear-gradient(145deg,#d7b56c,#725426);
+ color:#17130b;
+ font-weight:800;
+}
+
+.pname{
+ font-size:13px;
+ font-weight:700;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+
+.plast{
+ font-size:11px;
+ color:#aaa298;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ margin-top:5px;
+}
+
+.ptime{
+ font-size:9px;
+ color:#817b71;
+ margin-right:auto;
+ align-self:flex-start;
+ white-space:nowrap;
+}
+
+.badge{
+ min-width:19px;
+ height:19px;
+ padding:2px 6px;
+ border-radius:99px;
+ background:#a98a4d;
+ color:#111;
+ font-size:9px;
+ text-align:center;
+ margin-top:5px;
+}
+
+/* CHAT */
+
+.chat{
+ flex:1;
+ height:100%;
+ min-width:0;
+ display:flex;
+ flex-direction:column;
+ background:#0b0b0b;
+}
+
+.chatHead{
+ min-height:70px;
+ background:var(--head);
+ border-bottom:1px solid var(--line);
+ display:flex;
+ align-items:center;
+ gap:11px;
+ padding:9px 15px;
+}
+
+.chatHead .pavatar{
+ width:43px;
+ height:43px;
+ flex-basis:43px;
+}
+
+.chatName{
+ font-weight:700;
+ font-size:15px;
+}
+
+.chatSub{
+ font-size:10px;
+ color:var(--muted);
+ margin-top:4px;
+}
+
+.chatActions{
+ margin-right:auto;
+ display:flex;
+ gap:6px;
+}
+
+.chatActions button,
+#logout2{
+ width:auto;
+ margin:0;
+ padding:8px 11px;
+ border-radius:10px;
+ border:1px solid #403622;
+ background:#171716;
+ color:#ddd5c7;
+}
+
+.chatBody{
+ flex:1;
+ overflow:auto;
+ padding:18px 15px;
+ background-image:
+ radial-gradient(circle at 15% 15%,#d7b56c0a,transparent 25%),
+ radial-gradient(circle at 85% 75%,#d7b56c08,transparent 28%);
+}
+
+.emptyChat{
+ margin:auto;
+ text-align:center;
+ color:#777168;
+ font-size:12px;
+ line-height:2;
+}
+
+.day{
+ text-align:center;
+ margin:5px auto 15px;
+ background:#24221e;
+ color:#a59e92;
+ border-radius:99px;
+ padding:5px 12px;
+ width:max-content;
+ font-size:9px;
+}
+
+.bubble{
+ max-width:min(72%,520px);
+ padding:10px 12px;
+ border-radius:16px;
+ margin:5px 0;
+ line-height:1.8;
+ font-size:13px;
+ white-space:pre-wrap;
+ word-break:break-word;
+ box-shadow:0 2px 5px #0005;
+}
+
+.incoming{
+ margin-right:auto;
+ background:var(--bubble);
+ border-bottom-right-radius:5px;
+}
+
+.outgoing{
+ margin-left:auto;
+ background:var(--mine);
+ border-bottom-left-radius:5px;
+}
+
+.timeRow{
+ display:flex;
+ align-items:center;
+ gap:6px;
+ justify-content:flex-start;
+ direction:ltr;
+}
+
+.time{
+ font-size:9px;
+ color:#928b80;
+ margin-top:3px;
+}
+
+.ticks{
+ font-size:11px;
+ color:#9a948b;
+ letter-spacing:-3px;
+}
+
+.ticks.read{
+ color:var(--green);
+}
+
+.mediaImg{
+ max-width:280px;
+ max-height:300px;
+ border-radius:12px;
+ display:block;
+ margin-top:7px;
+}
+
+.audio{
+ width:250px;
+ max-width:100%;
+ margin-top:7px;
+}
+
+.fileLink{
+ display:block;
+ margin-top:8px;
+ padding:8px 10px;
+ background:#181816;
+ border-radius:9px;
+ color:#e2c57c;
+ text-decoration:none;
+ font-size:11px;
+}
+
+/* BIO */
+
+.bio{
+ padding:14px;
+ background:#101010;
+ border-top:1px solid var(--line);
+ border-bottom:1px solid var(--line);
+ max-height:260px;
+ overflow:auto;
+}
+
+.bioTitle{
+ font-size:11px;
+ color:var(--gold);
+ font-weight:700;
+ margin-bottom:8px;
+}
+
+.bioGrid{
+ display:grid;
+ grid-template-columns:100px 1fr;
+ gap:6px 10px;
+ font-size:10px;
+}
+
+.bioGrid span:nth-child(odd){
+ color:#858077;
+}
+
+.bioGrid span:nth-child(even){
+ direction:ltr;
+ text-align:right;
+ word-break:break-all;
+ color:#d6d0c6;
+}
+
+/* REPLY */
+
+.replyPreview{
+ display:none;
+ padding:7px 10px;
+ background:#171717;
+ border-top:1px solid var(--line);
+ font-size:10px;
+ color:#bcb4a7;
+ gap:8px;
+ align-items:center;
+}
+
+.replyPreview.show{
+ display:flex;
+}
+
+.replyPreview img{
+ width:48px;
+ height:48px;
+ object-fit:cover;
+ border-radius:8px;
+}
+
+.replyBar{
+ padding:9px;
+ background:#171717;
+ border-top:1px solid var(--line);
+ display:flex;
+ gap:7px;
+ align-items:flex-end;
+}
+
+.replyBar textarea{
+ flex:1;
+ min-width:0;
+ min-height:44px;
+ max-height:130px;
+ resize:none;
+ border-radius:18px;
+ background:#0b0b0a;
+ color:var(--text);
+ border:1px solid #403622;
+ padding:11px 14px;
+ outline:none;
+}
+
+.replyTool{
+ width:43px!important;
+ flex:0 0 43px!important;
+ height:43px;
+ margin:0!important;
+ padding:0!important;
+ border-radius:50%!important;
+ background:#20201e!important;
+ color:var(--gold)!important;
+ border:1px solid #403622!important;
+}
+
+.replySend{
+ width:70px!important;
+ flex:0 0 70px!important;
+ height:43px;
+ margin:0!important;
+ padding:0!important;
+ border:0!important;
+ border-radius:18px!important;
+ background:linear-gradient(180deg,#d9b96f,#a98a4d)!important;
+ color:#17130b!important;
+ font-weight:700;
+}
+
+.replyFile{
+ display:none;
+}
+
+.topMobile{
+ display:none;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+ body{
+  overflow:hidden;
+ }
+
+ #panel{
+  display:block;
+ }
+
+ .sidebar{
+  width:100%;
+  height:100%;
+  border:0;
+ }
+
+ .chat{
+  display:none;
+  width:100%;
+  height:100%;
+ }
+
+ .wrap.chatOpen .sidebar{
+  display:none;
+ }
+
+ .wrap.chatOpen .chat{
+  display:flex;
+ }
+
+ .topMobile{
+  display:block;
+ }
+
+ .chatHead{
+  min-height:64px;
+  height:64px;
+  padding:8px 10px;
+ }
+
+ .bio{
+  max-height:210px;
+ }
+
+ .bubble{
+  max-width:84%;
+ }
+
+ .replyBar{
+  padding:7px;
+  gap:5px;
+ }
+
+ .replySend{
+  width:60px!important;
+  flex-basis:60px!important;
+ }
+}
 </style>
 </head>
-<body><div class="wrap">
-<header class="top"><div class="brand"><div class="logo">M</div><div><div class="title">پنل خصوصی محمدرضا</div><div class="sub">مدیریت پیام‌ها و پاسخ‌ها</div></div></div><button id="logout" class="secondary hide">خروج</button></header>
 
-<section id="recovery" class="box login hide"><h3 style="margin-top:0">تنظیم رمز ورود</h3><div class="small">بار اول از لینک امن ایمیل وارد شو و یک رمز بساز. بعد از آن فقط با همین رمز وارد می‌شوی.</div><input id="newPassword" type="password" placeholder="رمز جدید (حداقل ۸ کاراکتر)" autocomplete="new-password"><input id="newPassword2" type="password" placeholder="تکرار رمز جدید" autocomplete="new-password"><button id="savePassword">ذخیره و ورود به پنل</button><div id="recoveryStatus" class="status"></div></section>
+<body>
 
-<section id="login" class="box login">
-<h3 style="margin-top:0">ورود به پنل خصوصی</h3>
-<div class="small">از این به بعد با رمز خودت وارد شو.</div>
-<input id="email" type="email" value="mohammadrezadaemiii@gmail.com" readonly autocomplete="username">
-<input id="password" type="password" placeholder="رمز ورود" autocomplete="current-password">
-<button id="loginBtn">ورود به پنل</button>
-<button id="magicBtn" class="secondary">بار اول / فراموشی رمز — ارسال لینک امن</button>
-<div id="loginStatus" class="status"></div>
-</section>
+<div id="login" class="login">
+ <h3>ورود به پنل خصوصی</h3>
 
-<section id="panel" class="hide" style="width:100%;height:100vh">
-<div class="sidebar">
-<div class="sideHead"><div><div class="sideTitle">پیام‌ها</div><div class="sideSub">هر نفر = یک گفت‌وگوی خصوصی</div></div><button id="logout2" class="secondary" style="width:auto;margin-right:auto;padding:7px 10px">خروج</button></div>
-<div class="search"><input id="search" placeholder="جستجوی گفتگو..."></div>
-<div id="people" class="people"></div>
+ <div class="small">
+ از این بخش فقط مدیر می‌تواند وارد پنل پیام‌ها شود.
+ </div>
+
+ <input
+  id="email"
+  type="email"
+  value="mohammadrezadaemiii@gmail.com"
+  readonly
+ >
+
+ <input
+  id="password"
+  type="password"
+  placeholder="رمز ورود"
+  autocomplete="current-password"
+ >
+
+ <button id="loginBtn">
+  ورود به پنل
+ </button>
+
+ <button id="magicBtn" class="secondary">
+  بار اول / فراموشی رمز — ارسال لینک امن
+ </button>
+
+ <div id="loginStatus" class="status"></div>
 </div>
-<div class="chat">
-<div class="chatHead"><div class="topMobile"><button id="backPeople" class="secondary" style="width:auto;margin:0;padding:7px 10px">‹</button></div><div id="headAvatar" class="pavatar">M</div><div><div id="headName" class="chatName">گفت‌وگو را انتخاب کن</div><div id="headSub" class="chatSub">اطلاعات و پیام‌های این شخص</div></div><div class="chatActions"><button id="refresh" class="secondary">↻</button></div></div>
-<div id="bio" class="bio hide"></div>
-<div id="messages" class="chatBody"><div class="emptyChat">از سمت راست/لیست گفتگوها یک نفر را انتخاب کن.</div></div>
-<div id="replyPreview" class="replyPreview"></div><div id="replyBar" class="replyBar hide"><button id="replyAttach" class="replyTool secondary" title="عکس یا فایل">＋</button><input id="replyFile" class="replyFile" type="file" accept="image/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.txt"><textarea id="replyText" placeholder="پیام را بنویس..."></textarea><button id="replyMic" class="replyTool secondary" title="ضبط ویس">🎙</button><button id="replyBtn">ارسال</button></div>
+
+
+<div id="recovery" class="login hide">
+
+ <h3>تنظیم رمز ورود</h3>
+
+ <div class="small">
+  یک رمز حداقل ۸ کاراکتری انتخاب کن.
+ </div>
+
+ <input
+  id="newPassword"
+  type="password"
+  placeholder="رمز جدید"
+  autocomplete="new-password"
+ >
+
+ <input
+  id="newPassword2"
+  type="password"
+  placeholder="تکرار رمز جدید"
+  autocomplete="new-password"
+ >
+
+ <button id="savePassword">
+  ذخیره رمز
+ </button>
+
+ <div id="recoveryStatus" class="status"></div>
 </div>
-<div id="passwordSetup" class="hide"></div><div id="status" class="hide"></div>
-</section></div>
+
+
+<div id="panel" class="hide">
+
+ <div class="sidebar">
+
+  <div class="sideHead">
+
+   <div class="brandMark">
+    <svg viewBox="0 0 64 64" fill="none">
+     <path
+      d="M19 14h26l11 18-11 18H19L8 32 19 14Z"
+      stroke="#d7b56c"
+      stroke-width="2"
+     />
+     <path
+      d="M19 43V21l13 12 13-12v22"
+      stroke="#61dcd3"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+     />
+     <circle cx="19" cy="21" r="3" fill="#61dcd3"/>
+     <circle cx="45" cy="21" r="3" fill="#d7b56c"/>
+     <circle cx="32" cy="33" r="3" fill="#61dcd3"/>
+    </svg>
+   </div>
+
+   <div>
+    <div class="sideTitle">
+     گفت‌وگوها
+    </div>
+
+    <div class="sideSub">
+     خصوصی • هوشمند
+    </div>
+   </div>
+
+   <button id="logout2">
+    خروج
+   </button>
+
+  </div>
+
+
+  <div class="search">
+   <input
+    id="search"
+    placeholder="جستجوی گفتگو..."
+   >
+  </div>
+
+
+  <div id="people" class="people"></div>
+
+ </div>
+
+
+ <div class="chat">
+
+  <div class="chatHead">
+
+   <div class="topMobile">
+    <button
+     id="backPeople"
+     class="chatActions"
+    >
+     ‹
+    </button>
+   </div>
+
+   <div id="headAvatar" class="pavatar">
+    M
+   </div>
+
+   <div>
+    <div id="headName" class="chatName">
+     گفت‌وگو را انتخاب کن
+    </div>
+
+    <div id="headSub" class="chatSub">
+     اطلاعات و پیام‌های این شخص
+    </div>
+   </div>
+
+   <div class="chatActions">
+    <button id="refresh">
+     ↻
+    </button>
+   </div>
+
+  </div>
+
+
+  <div id="bio" class="bio hide"></div>
+
+
+  <div id="messages" class="chatBody">
+
+   <div class="emptyChat">
+    یک گفت‌وگو را از لیست انتخاب کن.
+   </div>
+
+  </div>
+
+
+  <div id="replyPreview" class="replyPreview"></div>
+
+
+  <div id="replyBar" class="replyBar hide">
+
+   <button
+    id="replyAttach"
+    class="replyTool"
+    title="عکس یا فایل"
+   >
+    ＋
+   </button>
+
+   <input
+    id="replyFile"
+    class="replyFile"
+    type="file"
+    accept="image/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.txt"
+   >
+
+   <textarea
+    id="replyText"
+    placeholder="پیام را بنویس..."
+   ></textarea>
+
+   <button
+    id="replyMic"
+    class="replyTool"
+    title="ضبط ویس"
+   >
+    🎙
+   </button>
+
+   <button
+    id="replyBtn"
+    class="replySend"
+   >
+    ارسال
+   </button>
+
+  </div>
+
+ </div>
+
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-const U="https://jfixjlygjukrlokdznhh.supabase.co",K="sb_publishable_JpVcwEzZzpPcDwj9PhkZHQ_AoKpw9Kt",ADMIN_EMAIL="mohammadrezadaemiii@gmail.com",ADMIN_REDIRECT_URL="https://mohammadrezadaemiii-star.github.io/mohammadreza-card/admin.html",db=supabase.createClient(U,K);
-const L=document.getElementById("login"),R=document.getElementById("recovery"),P=document.getElementById("panel"),people=document.getElementById("people"),messages=document.getElementById("messages"),bio=document.getElementById("bio"),replyBar=document.getElementById("replyBar");
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-let all=[],selected=null,replyFileSelected=null,replyRecorder=null,replyAudioChunks=[];
-function fmt(d){return new Date(d).toLocaleString("fa-IR",{hour:"2-digit",minute:"2-digit"})}
-function day(d){return new Date(d).toLocaleDateString("fa-IR",{year:"numeric",month:"long",day:"numeric"})}
-function group(rows){const g=new Map();for(const r of rows){const k=r.visitor_id||("legacy-"+r.id);if(!g.has(k))g.set(k,[]);g.get(k).push(r)}return [...g.entries()].map(([id,rows])=>({id,rows:rows.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))})).sort((a,b)=>new Date(b.rows.at(-1).created_at)-new Date(a.rows.at(-1).created_at))}
-function renderPeople(){const gs=group(all),q=(document.getElementById("search").value||"").trim().toLowerCase();people.innerHTML="";for(const g of gs){const last=g.rows.at(-1),ip=last.ip_address||"",txt=(last.message||"")+" "+ip+" "+(last.user_agent||"");if(q&&!txt.toLowerCase().includes(q))continue;const pending=g.rows.filter(x=>x.wants_reply&&!x.reply).length;const el=document.createElement("div");el.className="person "+(selected===g.id?"active":"");el.innerHTML='<div class="pavatar">M</div><div style="min-width:0;flex:1"><div class="pname">'+esc(ip||"مخاطب ناشناس")+'</div><div class="plast">'+esc(last.message||"📎 فایل")+'</div></div><div><div class="ptime">'+fmt(last.created_at)+'</div>'+(pending?'<div class="badge">'+pending+'</div>':"")+'</div>';el.onclick=()=>openPerson(g.id);people.appendChild(el)}}
-async function mediaHtml(rows){let h="";for(const r of rows){for(const a of (r.attachments||[])){const u=await db.storage.from("chat-media").createSignedUrl(a.path,3600);const s=u.data?.signedUrl;if(!s)continue;if(a.type==="image")h+='<img class="mediaImg" src="'+s+'" alt="عکس">';if(a.type==="audio")h+='<audio class="audio" controls src="'+s+'"></audio>'}}return h}
-function renderBio(g){const r=g.rows[0]||{},last=g.rows.at(-1)||r;bio.classList.remove("hide");bio.innerHTML='<div class="bioTitle">اطلاعات این مخاطب</div><div class="bioGrid"><span>شناسه مخاطب</span><span>'+esc(g.id)+'</span><span>IP</span><span>'+esc(last.ip_address||"ثبت نشده")+'</span><span>User-Agent</span><span>'+esc(last.user_agent||"ثبت نشده")+'</span><span>راه ارتباطی</span><span>'+esc(last.contact||"ثبت نشده")+'</span><span>تعداد پیام</span><span>'+g.rows.length+'</span><span>اولین پیام</span><span>'+esc(new Date(r.created_at).toLocaleString("fa-IR"))+'</span><span>آخرین فعالیت</span><span>'+esc(new Date(last.created_at).toLocaleString("fa-IR"))+'</span><span>درخواست پاسخ</span><span>'+((last.wants_reply)?"بله":"خیر")+'</span></div>'}
-async function openPerson(id){selected=id;const g=group(all).find(x=>x.id===id);if(!g)return;document.querySelectorAll(".person").forEach(x=>x.classList.remove("active"));renderPeople();document.querySelector(".chat").style.display="flex";document.querySelector(".sidebar").style.display="";document.getElementById("headName").textContent=g.id.startsWith("legacy-")?"مخاطب قدیمی":"مخاطب ناشناس";document.getElementById("headSub").textContent=g.rows.length+" پیام • خصوصی";renderBio(g);replyBar.classList.remove("hide");messages.innerHTML="";let lastDay="";for(const r of g.rows){const d=day(r.created_at);if(d!==lastDay){messages.innerHTML+='<div class="day">'+d+'</div>';lastDay=d}let h=r.message?'<div>'+esc(r.message)+'</div>':"";h+=await mediaHtml([r]);h+='<div class="time">'+fmt(r.created_at)+'</div>';messages.innerHTML+='<div class="bubble incoming">'+h+'</div>';if(r.reply)messages.innerHTML+='<div class="bubble outgoing">'+esc(r.reply)+'<div class="time">'+fmt(r.replied_at||r.created_at)+'</div></div>'}messages.scrollTop=messages.scrollHeight;document.getElementById("replyText").value=g.rows.at(-1).reply||"";document.querySelector(".wrap").classList.add("chatOpen")}
-async function load(){const q=await db.from("anonymous_messages").select("id,message,contact,created_at,wants_reply,reply,replied_at,attachments,reply_attachments,visitor_id,ip_address,user_agent").order("created_at",{ascending:true});if(q.error){alert(q.error.message);return}all=q.data||[];renderPeople();if(selected)await openPerson(selected)}
-async function uploadReplyMedia(blob,ext,mime){if(!selected)throw new Error("گفتگو انتخاب نشده.");const path=selected+"/reply-"+crypto.randomUUID()+"."+ext;const up=await db.storage.from("chat-media").upload(path,blob,{contentType:mime||blob.type,upsert:false});if(up.error)throw up.error;return {type:(mime||blob.type||"").startsWith("image/")?"image":(mime||blob.type||"").startsWith("audio/")?"audio":"file",path};}
-function setReplyPreview(){const p=document.getElementById("replyPreview");if(!replyFileSelected){p.classList.remove("show");p.innerHTML="";return}p.classList.add("show");if(replyFileSelected.type.startsWith("image/"))p.innerHTML='<img src="'+URL.createObjectURL(replyFileSelected)+'"><span>'+esc(replyFileSelected.name)+'</span>';else p.innerHTML='<span>📎 '+esc(replyFileSelected.name)+'</span>';}
-document.getElementById("replyAttach").onclick=()=>document.getElementById("replyFile").click();
-document.getElementById("replyFile").onchange=()=>{replyFileSelected=document.getElementById("replyFile").files[0]||null;setReplyPreview();};
-document.getElementById("replyMic").onclick=async()=>{if(replyRecorder&&replyRecorder.state==="recording"){replyRecorder.stop();return}if(!navigator.mediaDevices?.getUserMedia){alert("مرورگر امکان ضبط ویس ندارد.");return}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});replyAudioChunks=[];replyRecorder=new MediaRecorder(stream);replyRecorder.ondataavailable=e=>{if(e.data.size)replyAudioChunks.push(e.data)};replyRecorder.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());try{const blob=new Blob(replyAudioChunks,{type:replyRecorder.mimeType||"audio/webm"});if(blob.size>8*1024*1024)throw new Error("حجم ویس بیشتر از ۸ مگابایت است.");const ext=blob.type.includes("mp4")?"m4a":"webm";replyFileSelected=new File([blob],"voice."+ext,{type:blob.type});setReplyPreview();document.getElementById("replyMic").textContent="🎙";}catch(e){alert(e.message||"ضبط ویس ناموفق بود.")}};replyRecorder.start();document.getElementById("replyMic").textContent="⏹";}catch(e){alert("اجازه میکروفون را بده.")}};
-async function sendReply(){if(!selected)return;const g=group(all).find(x=>x.id===selected);if(!g)return;const target=[...g.rows].reverse().find(x=>x.wants_reply&&!x.reply)||g.rows.at(-1);const reply=document.getElementById("replyText").value.trim();if(!reply&&!replyFileSelected)return;const b=document.getElementById("replyBtn");b.disabled=true;b.textContent="…";try{let attachments=[];if(replyFileSelected){if(replyFileSelected.size>8*1024*1024)throw new Error("حجم فایل بیشتر از ۸ مگابایت است.");const ext=(replyFileSelected.name.split(".").pop()||"bin").replace(/[^a-zA-Z0-9]/g,"").slice(0,8)||"bin";attachments=[await uploadReplyMedia(replyFileSelected,ext,replyFileSelected.type)]}const r=await db.functions.invoke("send-reply-push",{body:{message_id:target.id,reply:reply||"📎 فایل",reply_attachments:attachments}});if(r.error)throw new Error(r.error.message);document.getElementById("replyText").value="";replyFileSelected=null;document.getElementById("replyFile").value="";setReplyPreview();await load();await openPerson(selected);alert(r.data?.push?.sent?"ارسال شد و نوتیفیکیشن هم فرستاده شد 🔔":"ارسال شد.");}catch(e){alert("ارسال انجام نشد: "+(e.message||e))}finally{b.disabled=false;b.textContent="ارسال";}}
-document.getElementById("replyBtn").onclick=sendReply;document.getElementById("refresh").onclick=load;document.getElementById("search").oninput=renderPeople;document.getElementById("backPeople").onclick=()=>document.querySelector(".wrap").classList.remove("chatOpen");
-async function logout(){await db.auth.signOut();location.reload()}document.getElementById("logout2").onclick=logout;
-document.getElementById("loginBtn").onclick=async()=>{const st=document.getElementById("loginStatus"),p=document.getElementById("password").value;if(!p){st.textContent="رمز ورود را وارد کن.";return}st.textContent="در حال ورود...";const r=await db.auth.signInWithPassword({email:ADMIN_EMAIL,password:p});if(r.error){st.textContent=r.error.message.includes("Invalid login credentials")?"ایمیل یا رمز ورود اشتباه است.":r.error.message;return}st.textContent="ورود موفق بود.";};
-document.getElementById("magicBtn").onclick=async()=>{const st=document.getElementById("loginStatus");st.textContent="در حال ارسال لینک تنظیم رمز...";const r=await db.auth.resetPasswordForEmail(ADMIN_EMAIL,{redirectTo:ADMIN_REDIRECT_URL});st.textContent=r.error?"ارسال لینک انجام نشد: "+r.error.message:"لینک تنظیم رمز ارسال شد. ایمیل را باز کن؛ لینک مستقیماً به پنل برمی‌گردد.";};
-document.getElementById("savePassword").onclick=async()=>{const a=document.getElementById("newPassword").value,b=document.getElementById("newPassword2").value,st=document.getElementById("recoveryStatus");if(a.length<8){st.textContent="رمز باید حداقل ۸ کاراکتر باشد.";return}if(a!==b){st.textContent="دو رمز یکسان نیستند.";return}st.textContent="در حال ذخیره...";const r=await db.auth.updateUser({password:a});if(r.error){st.textContent=r.error.message;return}st.textContent="رمز تنظیم شد. در حال ورود...";setTimeout(()=>{R.classList.add("hide");P.classList.remove("hide");load()},400)};
-db.auth.onAuthStateChange((_e,s)=>{if(_e==="PASSWORD_RECOVERY"){L.classList.add("hide");P.classList.add("hide");R.classList.remove("hide");return}if(s){L.classList.add("hide");R.classList.add("hide");P.classList.remove("hide");load()}});db.auth.getSession().then(({data})=>{if(window.location.hash.includes("type=recovery")||window.location.hash.includes("type=password_recovery")){L.classList.add("hide");P.classList.add("hide");R.classList.remove("hide");return}if(data.session){L.classList.add("hide");R.classList.add("hide");P.classList.remove("hide");load()}});
-</script></body></html>
+
+const SUPABASE_URL =
+"https://jfixjlygjukrlokdznhh.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_JpVcwEzZzpPcDwj9PhkZHQ_AoKpw9Kt";
+
+const ADMIN_EMAIL =
+"mohammadrezadaemiii@gmail.com";
+
+const ADMIN_REDIRECT_URL =
+"https://mohammadrezaemiii-star.github.io/mohammadreza-card/admin.html";
+
+const db =
+supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+
+const loginBox =
+document.getElementById("login");
+
+const recoveryBox =
+document.getElementById("recovery");
+
+const panel =
+document.getElementById("panel");
+
+const people =
+document.getElementById("people");
+
+const messages =
+document.getElementById("messages");
+
+const bio =
+document.getElementById("bio");
+
+const replyBar =
+document.getElementById("replyBar");
+
+const wrap =
+document.querySelector("body");
+
+
+let all = [];
+let profiles = [];
+let selected = null;
+
+let replyFileSelected = null;
+
+let replyRecorder = null;
+let replyAudioChunks = [];
+
+let loading = false;
+
+
+/* HELPERS */
+
+function esc(value){
+ return String(value ?? "")
+  .replace(/[&<>"']/g,m=>({
+   "&":"&amp;",
+   "<":"&lt;",
+   ">":"&gt;",
+   '"':"&quot;",
+   "'":"&#039;"
+  }[m]));
+}
+
+
+function fmtTime(value){
+ const d = new Date(value);
+
+ return d.toLocaleTimeString(
+  "fa-IR",
+  {
+   hour:"2-digit",
+   minute:"2-digit"
+  }
+ );
+}
+
+
+function fmtDate(value){
+ const d = new Date(value);
+
+ return d.toLocaleDateString(
+  "fa-IR",
+  {
+   year:"numeric",
+   month:"long",
+   day:"numeric"
+  }
+ );
+}
+
+
+function fmtFull(value){
+ const d = new Date(value);
+
+ return d.toLocaleString(
+  "fa-IR",
+  {
+   year:"numeric",
+   month:"2-digit",
+   day:"2-digit",
+   hour:"2-digit",
+   minute:"2-digit"
+  }
+ );
+}
+
+
+function isOnline(lastSeen){
+
+ if(!lastSeen) return false;
+
+ return (
+  Date.now() -
+  new Date(lastSeen).getTime()
+ ) < 45000;
+}
+
+
+function initials(name){
+
+ const value =
+ String(name || "AI")
+  .trim()
+  .split(/\s+/)
+  .filter(Boolean);
+
+ if(value.length >= 2){
+  return (
+   value[0][0] +
+   value[1][0]
+  ).toUpperCase();
+ }
+
+ return (
+  value[0] ||
+  "AI"
+ ).slice(0,2).toUpperCase();
+}
+
+
+function profileFor(id){
+ return profiles.find(
+  p => p.visitor_id === id
+ ) || null;
+}
+
+
+/* GROUP */
+
+function groupMessages(){
+
+ const map = new Map();
+
+ for(const row of all){
+
+  const id =
+   row.visitor_id ||
+   ("legacy-" + row.id);
+
+  if(!map.has(id)){
+   map.set(id,[]);
+  }
+
+  map.get(id).push(row);
+ }
+
+
+ const result =
+ [...map.entries()]
+ .map(([id,rows])=>{
+
+  rows.sort(
+   (a,b)=>
+    new Date(a.created_at) -
+    new Date(b.created_at)
+  );
+
+  return {
+   id,
+   rows
+  };
+ });
+
+
+ result.sort(
+  (a,b)=>
+   latestActivity(b) -
+   latestActivity(a)
+ );
+
+ return result;
+}
+
+
+function latestActivity(g){
+
+ let latest = 0;
+
+ for(const r of g.rows){
+
+  const created =
+   new Date(r.created_at).getTime();
+
+  if(created > latest){
+   latest = created;
+  }
+
+  if(r.replied_at){
+
+   const replied =
+    new Date(r.replied_at).getTime();
+
+   if(replied > latest){
+    latest = replied;
+   }
+  }
+ }
+
+ return latest;
+}
+
+
+/* EVENTS */
+
+function eventList(g){
+
+ const events = [];
+
+ for(const r of g.rows){
+
+  events.push({
+   type:"visitor",
+   time:r.created_at,
+   row:r
+  });
+
+
+  if(
+   r.reply ||
+   (Array.isArray(r.reply_attachments) &&
+    r.reply_attachments.length)
+  ){
+
+   events.push({
+    type:"admin",
+    time:r.replied_at || r.created_at,
+
+    row:{
+     ...r,
+
+     message:r.reply,
+
+     attachments:
+      Array.isArray(r.reply_attachments)
+       ? r.reply_attachments
+       : [],
+
+     created_at:
+      r.replied_at || r.created_at
+    }
+   });
+  }
+ }
+
+
+ events.sort((a,b)=>{
+
+  const diff =
+   new Date(a.time) -
+   new Date(b.time);
+
+  if(diff !== 0){
+   return diff;
+  }
+
+  if(a.type === b.type){
+   return (
+    Number(a.row.id) -
+    Number(b.row.id)
+   );
+  }
+
+  return a.type === "visitor" ? -1 : 1;
+ });
+
+
+ return events;
+}
+
+
+/* MEDIA */
+
+async function mediaHtml(attachments){
+
+ if(!Array.isArray(attachments)){
+  return "";
+ }
+
+ let html = "";
+
+ for(const a of attachments){
+
+  if(!a || !a.path){
+   continue;
+  }
+
+  const result =
+   await db.storage
+    .from("chat-media")
+    .createSignedUrl(
+     a.path,
+     3600
+    );
+
+  const url =
+   result.data?.signedUrl;
+
+  if(!url){
+   continue;
+  }
+
+
+  if(a.type === "image"){
+
+   html +=
+    '<img class="mediaImg" ' +
+    'src="' + esc(url) + '" ' +
+    'alt="عکس">';
+
+  }
+
+  else if(a.type === "audio"){
+
+   html +=
+    '<audio class="audio" controls ' +
+    'src="' + esc(url) + '">' +
+    '</audio>';
+
+  }
+
+  else{
+
+   html +=
+    '<a class="fileLink" ' +
+    'href="' + esc(url) + '" ' +
+    'target="_blank" ' +
+    'rel="noopener">' +
+    '📎 ' +
+    esc(a.name || "فایل") +
+    '</a>';
+  }
+ }
+
+ return html;
+}
+
+
+/* SIDEBAR */
+
+function latestPreview(g){
+
+ const events =
+  eventList(g);
+
+ if(!events.length){
+  return "پیام";
+ }
+
+ const last =
+  events[events.length - 1];
+
+ if(last.type === "admin"){
+  return (
+   "شما: " +
+   (
+    last.row.message ||
+    (
+     last.row.attachments?.length
+      ? "📎 فایل"
+      : "پیام"
+    )
+   )
+  );
+ }
+
+ return (
+  last.row.message ||
+  (
+   last.row.attachments?.length
+    ? "📎 فایل"
+    : "پیام"
+  )
+ );
+}
+
+
+function renderPeople(){
+
+ const groups =
+  groupMessages();
+
+ const q =
+  (
+   document.getElementById("search").value ||
+   ""
+  )
+  .trim()
+  .toLowerCase();
+
+
+ people.innerHTML = "";
+
+
+ for(const g of groups){
+
+  const p =
+   profileFor(g.id);
+
+  const name =
+   p?.name ||
+   (
+    g.id.startsWith("legacy-")
+     ? "مخاطب قدیمی"
+     : "مخاطب ناشناس"
+   );
+
+
+  const searchText =
+   (
+    name +
+    " " +
+    (p?.phone || "") +
+    " " +
+    g.rows
+     .map(x=>x.message || "")
+     .join(" ")
+   )
+   .toLowerCase();
+
+
+  if(
+   q &&
+   !searchText.includes(q)
+  ){
+   continue;
+  }
+
+
+  const pending =
+   g.rows.filter(
+    x =>
+     x.wants_reply &&
+     !x.reply &&
+     !x.reply_attachments?.length
+   ).length;
+
+
+  const online =
+   isOnline(p?.last_seen_at);
+
+
+  const el =
+   document.createElement("div");
+
+
+  el.className =
+   "person " +
+   (
+    selected === g.id
+     ? "active"
+     : ""
+   );
+
+
+  el.innerHTML =
+
+   '<div class="pavatar">' +
+   esc(initials(name)) +
+   '</div>' +
+
+   '<div style="min-width:0;flex:1">' +
+
+    '<div class="pname">' +
+
+     (
+      online
+       ? '<span style="' +
+         'width:7px;height:7px;' +
+         'border-radius:50%;' +
+         'background:#65d7cd;' +
+         'display:inline-block;' +
+         'margin-left:4px"></span>'
+       : ""
+     ) +
+
+     esc(name) +
+
+    '</div>' +
+
+    '<div class="plast">' +
+     esc(latestPreview(g)) +
+    '</div>' +
+
+   '</div>' +
+
+   '<div>' +
+
+    '<div class="ptime">' +
+     fmtTime(latestActivity(g)) +
+    '</div>' +
+
+    (
+     pending
+      ? '<div class="badge">' +
+        pending +
+        '</div>'
+      : ""
+    ) +
+
+   '</div>';
+
+
+  el.onclick =
+   ()=>openPerson(g.id);
+
+
+  people.appendChild(el);
+ }
+}
+
+
+/* BIO */
+
+function renderBio(g){
+
+ const p =
+  profileFor(g.id);
+
+ const first =
+  g.rows[0];
+
+ const last =
+  g.rows[g.rows.length - 1];
+
+
+ bio.classList.remove("hide");
+
+
+ bio.innerHTML =
+
+ '<div class="bioTitle">' +
+ 'اطلاعات مخاطب' +
+ '</div>' +
+
+ '<div class="bioGrid">' +
+
+ '<span>نام</span>' +
+ '<span>' +
+ esc(p?.name || "ثبت نشده") +
+ '</span>' +
+
+ '<span>شماره</span>' +
+ '<span>' +
+ esc(p?.phone || "اختیاری / ثبت نشده") +
+ '</span>' +
+
+ '<span>وضعیت</span>' +
+ '<span>' +
+ (
+  isOnline(p?.last_seen_at)
+   ? "آنلاین"
+   : (
+     p?.last_seen_at
+      ? "آخرین بازدید " +
+        fmtFull(p.last_seen_at)
+      : "ثبت نشده"
+    )
+ ) +
+ '</span>' +
+
+ '<span>شناسه</span>' +
+ '<span>' +
+ esc(g.id) +
+ '</span>' +
+
+ '<span>IP</span>' +
+ '<span>' +
+ esc(last?.ip_address || "ثبت نشده") +
+ '</span>' +
+
+ '<span>تعداد پیام</span>' +
+ '<span>' +
+ g.rows.length +
+ '</span>' +
+
+ '<span>اولین پیام</span>' +
+ '<span>' +
+ (
+  first
+   ? fmtFull(first.created_at)
+   : "-"
+ ) +
+ '</span>' +
+
+ '<span>آخرین فعالیت</span>' +
+ '<span>' +
+ fmtFull(latestActivity(g)) +
+ '</span>' +
+
+ '</div>';
+}
+
+
+/* READ */
+
+async function markAdminRead(g){
+
+ const ids =
+  g.rows
+   .filter(r=>!r.admin_read_at)
+   .map(r=>r.id);
+
+
+ if(!ids.length){
+  return;
+ }
+
+
+ const timestamp =
+  new Date().toISOString();
+
+
+ const result =
+  await db
+   .from("anonymous_messages")
+   .update({
+    admin_read_at:timestamp
+   })
+   .in("id",ids);
+
+
+ if(result.error){
+  console.warn(
+   "markAdminRead:",
+   result.error.message
+  );
+ }
+
+
+ /* update local data immediately */
+
+ for(const row of all){
+
+  if(ids.includes(row.id)){
+   row.admin_read_at =
+    timestamp;
+  }
+ }
+}
+
+
+/* OPEN CHAT */
+
+async function openPerson(id){
+
+ const g =
+  groupMessages()
+   .find(x=>x.id === id);
+
+
+ if(!g){
+  return;
+ }
+
+
+ selected = id;
+
+
+ const p =
+  profileFor(id);
+
+
+ const name =
+  p?.name ||
+  (
+   id.startsWith("legacy-")
+    ? "مخاطب قدیمی"
+    : "مخاطب ناشناس"
+  );
+
+
+ document.getElementById(
+  "headAvatar"
+ ).textContent =
+  initials(name);
+
+
+ document.getElementById(
+  "headName"
+ ).textContent =
+  name;
+
+
+ document.getElementById(
+  "headSub"
+ ).textContent =
+  isOnline(p?.last_seen_at)
+   ? "آنلاین"
+   : (
+    p?.last_seen_at
+     ? "آخرین بازدید: " +
+       fmtFull(p.last_seen_at)
+     : "آخرین بازدید ثبت نشده"
+   );
+
+
+ renderBio(g);
+
+
+ replyBar.classList.remove(
+  "hide"
+ );
+
+
+ await markAdminRead(g);
+
+
+ renderPeople();
+
+
+ messages.innerHTML = "";
+
+
+ const events =
+  eventList(g);
+
+
+ if(!events.length){
+
+  messages.innerHTML =
+   '<div class="emptyChat">' +
+   'هنوز پیامی وجود ندارد.' +
+   '</div>';
+
+ }else{
+
+  let lastDay = "";
+
+
+  for(const e of events){
+
+   const currentDay =
+    fmtDate(e.time);
+
+
+   if(currentDay !== lastDay){
+
+    messages.innerHTML +=
+     '<div class="day">' +
+     esc(currentDay) +
+     '</div>';
+
+    lastDay =
+     currentDay;
+   }
+
+
+   let content = "";
+
+
+   if(e.row.message){
+
+    content +=
+     '<div>' +
+     esc(e.row.message) +
+     '</div>';
+   }
+
+
+   content +=
+    await mediaHtml(
+     e.row.attachments
+    );
+
+
+   if(!content){
+
+    content =
+     '<div>📎 فایل</div>';
+   }
+
+
+   let ticks = "";
+
+
+   if(e.type === "admin"){
+
+    const read =
+     !!e.row.visitor_read_at;
+
+
+    ticks =
+     '<span class="ticks ' +
+     (read ? "read" : "") +
+     '">' +
+     (read ? "✓✓" : "✓") +
+     '</span>';
+   }
+
+
+   content +=
+
+    '<div class="timeRow">' +
+
+     '<span class="time">' +
+      fmtTime(e.time) +
+     '</span>' +
+
+     ticks +
+
+    '</div>';
+
+
+   messages.innerHTML +=
+
+    '<div class="bubble ' +
+     (
+      e.type === "admin"
+       ? "outgoing"
+       : "incoming"
+     ) +
+    '">' +
+
+     content +
+
+    '</div>';
+  }
+ }
+
+
+ messages.scrollTop =
+  messages.scrollHeight;
+
+
+ document.getElementById(
+  "replyText"
+ ).value = "";
+
+
+ document.querySelector(
+  ".replyPreview"
+ ).classList.remove("show");
+
+
+ document.querySelector(
+  ".wrap"
+ )?.classList.add("chatOpen");
+}
+
+
+/* LOAD */
+
+async function load(){
+
+ if(loading){
+  return;
+ }
+
+ loading = true;
+
+
+ try{
+
+  const [
+   messagesQuery,
+   profilesQuery
+  ] =
+   await Promise.all([
+
+    db
+     .from("anonymous_messages")
+     .select(
+      "id," +
+      "message," +
+      "contact," +
+      "created_at," +
+      "wants_reply," +
+      "reply," +
+      "replied_at," +
+      "attachments," +
+      "reply_attachments," +
+      "visitor_id," +
+      "ip_address," +
+      "user_agent," +
+      "admin_read_at," +
+      "visitor_read_at"
+     )
+     .order(
+      "created_at",
+      {
+       ascending:true
+      }
+     ),
+
+    db
+     .from("anonymous_visitors")
+     .select(
+      "visitor_id," +
+      "name," +
+      "phone," +
+      "created_at," +
+      "last_seen_at," +
+      "last_read_at"
+     )
+  ]);
+
+
+  if(messagesQuery.error){
+
+   console.error(
+    messagesQuery.error
+   );
+
+   return;
+  }
+
+
+  all =
+   messagesQuery.data || [];
+
+
+  profiles =
+   profilesQuery.error
+    ? []
+    : (
+      profilesQuery.data || []
+    );
+
+
+  renderPeople();
+
+
+  if(selected){
+
+   const exists =
+    groupMessages()
+     .some(g=>g.id===selected);
+
+
+   if(exists){
+
+    await openPerson(
+     selected
+    );
+
+   }else{
+
+    selected = null;
+
+    messages.innerHTML =
+     '<div class="emptyChat">' +
+     'گفت‌وگو را انتخاب کن.' +
+     '</div>';
+   }
+  }
+
+ }finally{
+
+  loading = false;
+ }
+}
+
+
+/* FILE UPLOAD */
+
+async function uploadReplyMedia(
+ blob,
+ ext,
+ mime,
+ originalName
+){
+
+ if(!selected){
+
+  throw new Error(
+   "گفت‌وگو انتخاب نشده."
+  );
+ }
+
+
+ const path =
+  selected +
+  "/reply-" +
+  crypto.randomUUID() +
+  "." +
+  ext;
+
+
+ const result =
+  await db.storage
+   .from("chat-media")
+   .upload(
+    path,
+    blob,
+    {
+     contentType:
+      mime ||
+      blob.type ||
+      "application/octet-stream",
+
+     upsert:false
+    }
+   );
+
+
+ if(result.error){
+  throw result.error;
+ }
+
+
+ const type =
+  (
+   mime ||
+   blob.type ||
+   ""
+  );
+
+
+ return {
+
+  type:
+   type.startsWith("image/")
+    ? "image"
+    : type.startsWith("audio/")
+     ? "audio"
+     : "file",
+
+  path,
+
+  name:
+   originalName ||
+   ("فایل." + ext)
+ };
+}
+
+
+/* FILE PREVIEW */
+
+function setReplyPreview(){
+
+ const preview =
+  document.getElementById(
+   "replyPreview"
+  );
+
+
+ if(!replyFileSelected){
+
+  preview.classList.remove(
+   "show"
+  );
+
+  preview.innerHTML = "";
+
+  return;
+ }
+
+
+ preview.classList.add(
+  "show"
+ );
+
+
+ if(
+  replyFileSelected.type
+   .startsWith("image/")
+ ){
+
+  const url =
+   URL.createObjectURL(
+    replyFileSelected
+   );
+
+
+  preview.innerHTML =
+   '<img src="' +
+   url +
+   '" alt="پیش‌نمایش">' +
+
+   '<span>' +
+   esc(
+    replyFileSelected.name
+   ) +
+   '</span>';
+
+ }else{
+
+  preview.innerHTML =
+   '<span>📎 ' +
+   esc(
+    replyFileSelected.name
+   ) +
+   '</span>';
+ }
+}
+
+
+/* ATTACH */
+
+document.getElementById(
+ "replyAttach"
+).onclick = ()=>{
+
+ document.getElementById(
+  "replyFile"
+ ).click();
+
+};
+
+
+document.getElementById(
+ "replyFile"
+).onchange = ()=>{
+
+ replyFileSelected =
+  document.getElementById(
+   "replyFile"
+  ).files[0] || null;
+
+
+ setReplyPreview();
+};
+
+
+/* VOICE */
+
+document.getElementById(
+ "replyMic"
+).onclick =
+async ()=>{
+
+ const button =
+  document.getElementById(
+   "replyMic"
+  );
+
+
+ if(
+  replyRecorder &&
+  replyRecorder.state === "recording"
+ ){
+
+  replyRecorder.stop();
+
+  return;
+ }
+
+
+ if(
+  !navigator.mediaDevices ||
+  !navigator.mediaDevices.getUserMedia
+ ){
+
+  alert(
+   "مرورگر امکان ضبط ویس ندارد."
+  );
+
+  return;
+ }
+
+
+ try{
+
+  const stream =
+   await navigator.mediaDevices
+    .getUserMedia({
+     audio:true
+    });
+
+
+  replyAudioChunks = [];
+
+
+  replyRecorder =
+   new MediaRecorder(
+    stream
+   );
+
+
+  replyRecorder.ondataavailable =
+   event=>{
+
+    if(event.data.size){
+
+     replyAudioChunks.push(
+      event.data
+     );
+    }
+   };
+
+
+  replyRecorder.onstop =
+   ()=>{
+
+    stream
+     .getTracks()
+     .forEach(
+      track=>track.stop()
+     );
+
+
+    try{
+
+     const blob =
+      new Blob(
+       replyAudioChunks,
+       {
+        type:
+         replyRecorder.mimeType ||
+         "audio/webm"
+       }
+      );
+
+
+     if(
+      blob.size >
+      8 * 1024 * 1024
+     ){
+
+      throw new Error(
+       "حجم ویس بیشتر از ۸ مگابایت است."
+      );
+     }
+
+
+     const ext =
+      blob.type.includes("mp4")
+       ? "m4a"
+       : "webm";
+
+
+     replyFileSelected =
+      new File(
+       [blob],
+       "voice." + ext,
+       {
+        type:blob.type
+       }
+      );
+
+
+     setReplyPreview();
+
+
+    }catch(error){
+
+     alert(
+      error.message ||
+      "ضبط ویس ناموفق بود."
+     );
+    }
+
+
+    button.textContent =
+     "🎙";
+   };
+
+
+  replyRecorder.start();
+
+
+  button.textContent =
+   "⏹";
+
+
+ }catch(error){
+
+  alert(
+   "اجازه دسترسی به میکروفون را بده."
+  );
+ }
+};
+
+
+/* SEND */
+
+async function sendReply(){
+
+ if(!selected){
+  return;
+ }
+
+
+ const groups =
+  groupMessages();
+
+
+ const g =
+  groups.find(
+   x=>x.id === selected
+  );
+
+
+ if(!g){
+  return;
+ }
+
+
+ const reply =
+  document.getElementById(
+   "replyText"
+  ).value.trim();
+
+
+ if(
+  !reply &&
+  !replyFileSelected
+ ){
+  return;
+ }
+
+
+ /*
+  فقط آخرین پیام بدون پاسخ را
+  انتخاب می‌کنیم.
+ */
+ const target =
+  [...g.rows]
+   .reverse()
+   .find(
+    x =>
+     x.wants_reply &&
+     !x.reply &&
+     !(x.reply_attachments?.length)
+   ) ||
+  g.rows[g.rows.length - 1];
+
+
+ if(!target){
+  return;
+ }
+
+
+ const sendButton =
+  document.getElementById(
+   "replyBtn"
+  );
+
+
+ sendButton.disabled = true;
+ sendButton.textContent = "…";
+
+
+ try{
+
+  let attachments = [];
+
+
+  if(replyFileSelected){
+
+   if(
+    replyFileSelected.size >
+    8 * 1024 * 1024
+   ){
+
+    throw new Error(
+     "حجم فایل بیشتر از ۸ مگابایت است."
+    );
+   }
+
+
+   const ext =
+    (
+     replyFileSelected.name
+      .split(".")
+      .pop() ||
+     "bin"
+    )
+    .replace(
+     /[^a-zA-Z0-9]/g,
+     ""
+    )
+    .slice(0,8) ||
+    "bin";
+
+
+   attachments.push(
+    await uploadReplyMedia(
+     replyFileSelected,
+     ext,
+     replyFileSelected.type,
+     replyFileSelected.name
+    )
+   );
+  }
+
+
+  const result =
+   await db.functions.invoke(
+    "send-reply-push",
+    {
+     body:{
+      message_id:
+       target.id,
+
+      reply:
+       reply ||
+       "📎 فایل",
+
+      reply_attachments:
+       attachments
+     }
+    }
+   );
+
+
+  if(result.error){
+
+   throw new Error(
+    result.error.message
+   );
+  }
+
+
+  document.getElementById(
+   "replyText"
+  ).value = "";
+
+
+  replyFileSelected = null;
+
+
+  document.getElementById(
+   "replyFile"
+  ).value = "";
+
+
+  setReplyPreview();
+
+
+  await load();
+
+
+  /*
+   بعد از ارسال، همان چت باز می‌ماند.
+  */
+  if(selected){
+
+   await openPerson(
+    selected
+   );
+  }
+
+
+ }catch(error){
+
+  alert(
+   "ارسال انجام نشد: " +
+   (
+    error.message ||
+    error
+   )
+  );
+
+ }finally{
+
+  sendButton.disabled = false;
+  sendButton.textContent = "ارسال";
+ }
+}
+
+
+/* BUTTONS */
+
+document.getElementById(
+ "replyBtn"
+).onclick =
+ sendReply;
+
+
+document.getElementById(
+ "refresh"
+).onclick =
+ load;
+
+
+document.getElementById(
+ "search"
+).oninput =
+ renderPeople;
+
+
+document.getElementById(
+ "backPeople"
+).onclick =
+ ()=>{
+
+  document
+   .querySelector(".wrap")
+   ?.classList
+   .remove("chatOpen");
+
+ };
+
+
+/* LOGOUT */
+
+async function logout(){
+
+ await db.auth.signOut();
+
+ location.reload();
+}
+
+
+document.getElementById(
+ "logout2"
+).onclick =
+ logout;
+
+
+/* LOGIN */
+
+document.getElementById(
+ "loginBtn"
+).onclick =
+async ()=>{
+
+ const status =
+  document.getElementById(
+   "loginStatus"
+  );
+
+
+ const password =
+  document.getElementById(
+   "password"
+  ).value;
+
+
+ if(!password){
+
+  status.textContent =
+   "رمز ورود را وارد کن.";
+
+  return;
+ }
+
+
+ status.textContent =
+  "در حال ورود...";
+
+
+ const result =
+  await db.auth
+   .signInWithPassword({
+    email:ADMIN_EMAIL,
+    password
+   });
+
+
+ if(result.error){
+
+  status.textContent =
+   result.error.message.includes(
+    "Invalid login credentials"
+   )
+    ? "ایمیل یا رمز ورود اشتباه است."
+    : result.error.message;
+
+  return;
+ }
+
+
+ status.textContent =
+  "ورود موفق بود.";
+};
+
+
+/* PASSWORD RESET */
+
+document.getElementById(
+ "magicBtn"
+).onclick =
+async ()=>{
+
+ const status =
+  document.getElementById(
+   "loginStatus"
+  );
+
+
+ status.textContent =
+  "در حال ارسال لینک امن...";
+
+
+ const result =
+  await db.auth
+   .resetPasswordForEmail(
+    ADMIN_EMAIL,
+    {
+     redirectTo:
+      ADMIN_REDIRECT_URL
+    }
+   );
+
+
+ if(result.error){
+
+  status.textContent =
+   "ارسال لینک انجام نشد: " +
+   result.error.message;
+
+ }else{
+
+  status.textContent =
+   "لینک تنظیم رمز ارسال شد. ایمیل را باز کن.";
+ }
+};
+
+
+/* SAVE PASSWORD */
+
+document.getElementById(
+ "savePassword"
+).onclick =
+async ()=>{
+
+ const password =
+  document.getElementById(
+   "newPassword"
+  ).value;
+
+
+ const password2 =
+  document.getElementById(
+   "newPassword2"
+  ).value;
+
+
+ const status =
+  document.getElementById(
+   "recoveryStatus"
+  );
+
+
+ if(password.length < 8){
+
+  status.textContent =
+   "رمز باید حداقل ۸ کاراکتر باشد.";
+
+  return;
+ }
+
+
+ if(password !== password2){
+
+  status.textContent =
+   "دو رمز یکسان نیستند.";
+
+  return;
+ }
+
+
+ status.textContent =
+  "در حال ذخیره...";
+
+
+ const result =
+  await db.auth.updateUser({
+   password
+  });
+
+
+ if(result.error){
+
+  status.textContent =
+   result.error.message;
+
+  return;
+ }
+
+
+ status.textContent =
+  "رمز تنظیم شد.";
+
+
+ setTimeout(
+  ()=>{
+   recoveryBox.classList.add(
+    "hide"
+   );
+
+   panel.classList.remove(
+    "hide"
+   );
+
+   load();
+  },
+  500
+ );
+};
+
+
+/* AUTH */
+
+db.auth.onAuthStateChange(
+ (_event,session)=>{
+
+  if(
+   _event ===
+   "PASSWORD_RECOVERY"
+  ){
+
+   loginBox.classList.add(
+    "hide"
+   );
+
+   panel.classList.add(
+    "hide"
+   );
+
+   recoveryBox.classList.remove(
+    "hide"
+   );
+
+   return;
+  }
+
+
+  if(session){
+
+   loginBox.classList.add(
+    "hide"
+   );
+
+   recoveryBox.classList.add(
+    "hide"
+   );
+
+   panel.classList.remove(
+    "hide"
+   );
+
+   load();
+  }
+ });
+
+
+db.auth.getSession()
+.then(
+ ({data})=>{
+
+  if(
+   window.location.hash.includes(
+    "type=recovery"
+   ) ||
+   window.location.hash.includes(
+    "type=password_recovery"
+   )
+  ){
+
+   loginBox.classList.add(
+    "hide"
+   );
+
+   panel.classList.add(
+    "hide"
+   );
+
+   recoveryBox.classList.remove(
+    "hide"
+   );
+
+   return;
+  }
+
+
+  if(data.session){
+
+   loginBox.classList.add(
+    "hide"
+   );
+
+   recoveryBox.classList.add(
+    "hide"
+   );
+
+   panel.classList.remove(
+    "hide"
+   );
+
+   load();
+  }
+ });
+
+
+/*
+ بروزرسانی خودکار:
+ هر ۵ ثانیه پیام‌های جدید،
+ وضعیت آنلاین و ✓✓ را بررسی می‌کند.
+*/
+
+setInterval(
+ ()=>{
+
+  if(
+   !panel.classList.contains(
+    "hide"
+   )
+  ){
+
+   load();
+  }
+
+ },
+ 5000
+);
+
+</script>
+
+</body>
+  </html>
