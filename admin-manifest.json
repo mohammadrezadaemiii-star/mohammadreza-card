@@ -1,0 +1,11 @@
+{
+  "name": "پنل مدیریت محمدرضا",
+  "short_name": "پنل مدیریت",
+  "start_url": "./admin.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090909",
+  "theme_color": "#090909",
+  "lang": "fa",
+  "dir": "rtl"
+}
