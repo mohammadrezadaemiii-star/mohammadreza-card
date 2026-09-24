@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>پنل خصوصی محمدرضا</title>
 <link rel="manifest" href="./admin-manifest.json"><meta name="theme-color" content="#090909"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
@@ -15,7 +15,16 @@
 .profileShade{position:absolute;inset:0;background:#0008;z-index:20;display:none}.profileShade.show{display:block}.profileDrawer{position:absolute;top:0;right:0;width:min(380px,92%);height:100%;background:#11171e;border-left:1px solid #303944;box-shadow:-18px 0 55px #0009;z-index:21;transform:translateX(105%);transition:transform .22s ease;overflow:auto}.profileShade.show .profileDrawer{transform:translateX(0)}.profileTop{padding:22px 18px 18px;background:linear-gradient(145deg,#192129,#11171d);border-bottom:1px solid #293039;position:relative}.profileClose{position:absolute;left:12px;top:12px;width:36px!important;height:36px;padding:0!important;margin:0!important;border-radius:50%!important;background:#20272e!important;color:#fff!important}.profileAvatar{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#e2bd6b,#8b672a);color:#17130b;font-size:24px;font-weight:900;margin-bottom:12px}.profileName{font-size:19px;font-weight:800}.profileStatus{font-size:10px;color:var(--muted);margin-top:5px}.profileOnline{color:var(--green)}.profileSection{padding:14px 15px;border-bottom:1px solid #252c34}.profileSection h4{font-size:10px;color:var(--gold);margin:0 0 9px}.infoCard{display:grid;grid-template-columns:88px 1fr;gap:8px;padding:11px;border:1px solid #29323c;border-radius:12px;background:#151c23;font-size:10px}.infoCard .label{color:#7f8995}.infoCard .value{color:#e0e5e9;word-break:break-word}.profileActions{display:flex;gap:7px}.profileActions a,.profileActions button{flex:1;text-align:center;text-decoration:none;margin:0!important;padding:9px!important;font-size:10px}
 @media(max-width:700px){#panel{display:block!important}.sidebar{width:100%;height:100%;border:0}.chat{display:none}.wrap.chatOpen .sidebar{display:none}.wrap.chatOpen .chat{display:flex}.topMobile{display:block}.chatHead{height:62px}.chatActions .profileBtn{display:none}.profileDrawer{width:100%;border:0}.person{min-height:72px;padding:9px 12px}.pavatar{width:50px;height:50px;flex-basis:50px}.bubble{max-width:84%}.filterbar{padding:5px 9px}.filterbar button{height:30px;padding:6px 10px!important}}
 </style>
-</head>
+<style>
+html,body{width:100%;height:100%;min-height:100%;margin:0;padding:0}
+body{min-height:100dvh;height:100dvh;overscroll-behavior:none}
+.wrap{width:100%;height:100dvh;min-height:100dvh;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+#panel{height:100dvh!important;min-height:100dvh!important}
+.sidebar,.chat{height:100%;min-height:0}
+.chatBody,.people{min-height:0;-webkit-overflow-scrolling:touch}
+@supports not (height:100dvh){body,.wrap,#panel{height:100vh!important;min-height:100vh!important}}
+@media (display-mode:standalone){.sideHead{padding-top:max(8px,env(safe-area-inset-top));height:calc(68px + env(safe-area-inset-top))}.chatHead{padding-top:max(8px,env(safe-area-inset-top));height:calc(68px + env(safe-area-inset-top))}.replyBar{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
+</style></head>
 <body><div class="wrap">
 <header class="top"><div class="brand"><div class="logo">M</div><div><div class="title">پنل خصوصی محمدرضا</div><div class="sub">مدیریت پیام‌ها و پاسخ‌ها</div></div></div><button id="logout" class="secondary hide">خروج</button></header>
 
