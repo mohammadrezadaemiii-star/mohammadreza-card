@@ -195,9 +195,16 @@ async function importDrivers(inp){
       .filter(x=>x.name&&x.national)
       .reduce((a,x)=>(a.some(y=>y.national===x.national)||a.push(x),a),[]);
     if(!rows2.length){toast('ردیف معتبر در Excel پیدا نشد');return}
-    const r=await sb.from('waybill_drivers').upsert(rows2,{onConflict:'national'});
-    if(r.error){toast('ورود Excel انجام نشد: '+r.error.message);return}
-    await loadCloud();renderDrivers();toast(rows2.length.toLocaleString('fa-IR')+' راننده در بانک مرکزی ثبت/به‌روزرسانی شد');
+    // Import directly through the authenticated browser session. This avoids relying on the server-side Supabase management connection.
+    const chunkSize=250;
+    let done=0;
+    for(let start=0;start<rows2.length;start+=chunkSize){
+      const chunk=rows2.slice(start,start+chunkSize);
+      const r=await sb.from('waybill_drivers').upsert(chunk,{onConflict:'national'});
+      if(r.error){toast('ورود Excel متوقف شد: '+r.error.message+' | تا اینجا '+done.toLocaleString('fa-IR')+' راننده ثبت شد');return}
+      done+=chunk.length;
+    }
+    await loadCloud();renderDrivers();toast(done.toLocaleString('fa-IR')+' راننده در بانک مرکزی ثبت/به‌روزرسانی شد');
   }catch(e){toast('فایل Excel قابل خواندن نیست')}
   inp.value='';
 }
