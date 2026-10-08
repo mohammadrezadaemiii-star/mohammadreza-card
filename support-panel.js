@@ -38,13 +38,21 @@ async function loadDrivers(){
  const {data,error}=await sb.from("waybill_drivers").select("national,name,license,mobile,plate,vehicle").order("name").limit(10000);
  if(!error)drivers=data||[];
 }
+function syncPlate(){
+ const a=digits($("plateLeft").value).slice(0,2), b=digits($("plateThree").value).slice(0,3), l=$("plateLetter").value, c=digits($("plateRight").value).slice(0,2);
+ $("plate").value=(a||b||l||c)?[a,b,l,c].filter(Boolean).join(" "):"";
+}
+function setPlate(value){
+ const raw=String(value||""); const ds=digits(raw); const letter=(raw.match(/[آ-ی]/)||[])[0]||"";
+ $("plateLeft").value=ds.slice(0,2); $("plateThree").value=ds.slice(2,5); $("plateLetter").value=letter; $("plateRight").value=ds.slice(5,7); syncPlate();
+}
 function fillDriver(d){
  if(!d)return;
  $("national").value=d.national||$("national").value;
  $("driverName").value=d.name||"";
  $("license").value=d.license||"";
  $("mobile").value=d.mobile||"";
- $("plate").value=d.plate||"";
+ $("plate").value=d.plate||"";setPlate(d.plate||"");
  $("vehicle").value=d.vehicle||"";
  say("اطلاعات راننده از بانک اطلاعاتی پیدا شد.");
 }
@@ -56,13 +64,13 @@ function lookup(){
  say("راننده با این کد ملی پیدا نشد؛ اطلاعات را دستی وارد کنید.",true);
 }
 function lookupPlate(){
- const p=digits($("plate").value);
+ syncPlate(); const p=digits($("plate").value);
  if(!p)return say("شماره پلاک را وارد کنید.",true);
  const d=drivers.find(x=>digits(x.plate)===p);
  if(d)return fillDriver(d);
  say("پلاکی با این مشخصات پیدا نشد؛ اطلاعات را دستی وارد کنید.",true);
 }
-function formData(){return {
+function formData(){syncPlate();return {
  submitted_by:session.user.id,staff_name:profile.staff_name,
  issue_date:$("issueDate").value||new Date().toISOString().slice(0,10),
  national:$("national").value.trim(),name:$("driverName").value.trim(),
@@ -102,6 +110,8 @@ window.addEventListener("DOMContentLoaded",()=>{
  $("sendBtn").addEventListener("click",submitRequest);$("refreshBtn").addEventListener("click",loadMine);
  $("filter").addEventListener("input",loadMine);$("statusFilter").addEventListener("change",loadMine);
  $("exportBtn").addEventListener("click",exportCsv);$("clearBtn").addEventListener("click",resetForm);
+ ["plateLeft","plateThree","plateRight"].forEach(id=>$(id).addEventListener("input",()=>{const max=id==="plateThree"?3:2;$(id).value=digits($(id).value).slice(0,max);syncPlate();}));
+ $("plateLetter").addEventListener("change",syncPlate);
  $("plate").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();lookupPlate();}});
  $("national").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();lookup();}});
  $("issueDate").value=new Date().toISOString().slice(0,10);init();
