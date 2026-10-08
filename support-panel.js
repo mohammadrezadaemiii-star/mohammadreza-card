@@ -39,12 +39,14 @@ async function loadDrivers(){
  if(!error)drivers=data||[];
 }
 function syncPlate(){
- const a=digits($("plateLeft").value).slice(0,2), b=digits($("plateThree").value).slice(0,3), l=$("plateLetter").value, c=digits($("plateRight").value).slice(0,2);
- $("plate").value=(a||b||l||c)?[a,b,l,c].filter(Boolean).join(" "):"";
+ const a=digits($("plateLeft").value).slice(0,3), b=digits($("plateRight").value).slice(0,2);
+ $("plate").value=(a||b)?[a,"ع",b].filter(Boolean).join(" "):"";
 }
 function setPlate(value){
- const raw=String(value||""); const ds=digits(raw); const letter=(raw.match(/[آ-ی]/)||[])[0]||"";
- $("plateLeft").value=ds.slice(0,2); $("plateThree").value=ds.slice(2,5); $("plateLetter").value=letter; $("plateRight").value=ds.slice(5,7); syncPlate();
+ const ds=digits(String(value||""));
+ // The fixed plate layout uses three digits, immutable letter «ع», two digits, and immutable Iran code 22.
+ const core=ds.length>=7?ds.slice(0,5):ds;
+ $("plateLeft").value=core.slice(0,3); $("plateRight").value=core.slice(3,5); syncPlate();
 }
 function fillDriver(d){
  if(!d)return;
@@ -110,8 +112,7 @@ window.addEventListener("DOMContentLoaded",()=>{
  $("sendBtn").addEventListener("click",submitRequest);$("refreshBtn").addEventListener("click",loadMine);
  $("filter").addEventListener("input",loadMine);$("statusFilter").addEventListener("change",loadMine);
  $("exportBtn").addEventListener("click",exportCsv);$("clearBtn").addEventListener("click",resetForm);
- ["plateLeft","plateThree","plateRight"].forEach(id=>$(id).addEventListener("input",()=>{const max=id==="plateThree"?3:2;$(id).value=digits($(id).value).slice(0,max);syncPlate();}));
- $("plateLetter").addEventListener("change",syncPlate);
+ ["plateLeft","plateRight"].forEach(id=>$(id).addEventListener("input",()=>{const max=id==="plateLeft"?3:2;$(id).value=digits($(id).value).slice(0,max);syncPlate();}));
  $("plate").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();lookupPlate();}});
  $("national").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();lookup();}});
  $("issueDate").value=new Date().toISOString().slice(0,10);init();
