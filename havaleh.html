@@ -137,7 +137,7 @@ async function lookup(){
   if(!d){['name','license','plate','mobile'].forEach(id=>document.getElementById(id).value='');if(n.length>=8)toast('راننده با این کد ملی پیدا نشد');return}
   document.getElementById('name').value=d.name;document.getElementById('license').value=d.license;document.getElementById('plate').value=fmtPlate(d.plate);document.getElementById('mobile').value=d.mobile;
 }
-async async function saveDriver(){
+async function saveDriver(){
   const d={name:document.getElementById('dn').value.trim(),national:document.getElementById('dc').value.replace(/\D/g,''),license:document.getElementById('dl').value.trim(),mobile:document.getElementById('dm').value.trim(),card:document.getElementById('dcard').value.trim(),plate:plateFromForm().trim(),vehicle:document.getElementById('dv').value.trim()};
   if(!d.name||!d.national){toast('نام و کد ملی الزامی است');return}
   const r=await sb.from('waybill_drivers').upsert(d,{onConflict:'national'}).select().single();
