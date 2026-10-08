@@ -189,7 +189,7 @@ async function importDrivers(inp){
   const f=inp.files[0];if(!f)return;
   try{
     const wb=XLSX.read(await f.arrayBuffer(),{type:'array'}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
-    const rows2=rows.map(x=>({name:String(x['نام و نام خانوادگی']||x['نام']||'').trim(),national:String(x['کد ملی']||'').replace(/\D/g,''),license:String(x['شماره گواهینامه']||x['گواهینامه']||''),mobile:String(x['شماره موبایل']||x['موبایل']||''),card:String(x['شماره کارت']||x['کارت']||''),plate:String(x['شماره پلاک']||x['پلاک']||''),vehicle:String(x['نوع خودرو/تانکر']||x['نوع خودرو']||'')}).filter(x=>x.name&&x.national);
+    const rows2=rows.map(x=>({name:String(x['نام و نام خانوادگی']||x['نام']||'').trim(),national:String(x['کد ملی']||'').replace(/\D/g,''),license:String(x['شماره گواهینامه']||x['گواهینامه']||''),mobile:String(x['شماره موبایل']||x['موبایل']||''),card:String(x['شماره کارت']||x['کارت']||''),plate:String(x['شماره پلاک']||x['پلاک']||''),vehicle:String(x['نوع خودرو/تانکر']||x['نوع خودرو']||'')})).filter(x=>x.name&&x.national);
     if(!rows2.length){toast('ردیف معتبر در Excel پیدا نشد');return}
     const r=await sb.from('waybill_drivers').upsert(rows2,{onConflict:'national'});
     if(r.error){toast('ورود Excel انجام نشد: '+r.error.message);return}
