@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>حواله | عدل ترابران توس</title>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--b:#0755b7;--b2:#063b82;--bg:#f4f7fb;--card:#fff;--line:#dce4ee;--txt:#17212b;--muted:#6d7783;--ok:#149447;--danger:#c83b3b}
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--txt)}
@@ -64,7 +64,7 @@ button,input,select{font:inherit}button{cursor:pointer}.app{height:100vh;display
 <div class="field"><label>شماره کارت (فقط داخلی)</label><input id="dcard"></div>
 <div class="field"><label>شماره پلاک</label><input id="dp"></div>
 <div class="field"><label>نوع خودرو / تانکر</label><input id="dv"></div>
-</div><div class="actions"><button class="btn success" onclick="saveDriver()">ذخیره راننده</button><button class="btn ghost" onclick="clearDriver()">پاک کردن</button><button class="btn primary" onclick="exportDrivers()">دانلود Excel رانندگان</button><label class="btn ghost"><input id="driverFile" type="file" accept=".xlsx,.xls,.csv" hidden onchange="importDrivers(this)">ورود Excel</label></div></div>
+</div><div class="actions"><button class="btn success" onclick="saveDriver()">ذخیره راننده</button><button class="btn ghost" onclick="clearDriver()">پاک کردن</button><button class="btn primary" onclick="exportMother()">📊 Excel مادر</button><button class="btn ghost" onclick="exportDrivers()">دانلود Excel رانندگان</button><label class="btn ghost"><input id="driverFile" type="file" accept=".xlsx,.xls,.csv" hidden onchange="importDrivers(this)">ورود Excel</label></div></div>
 <div class="card"><h3>فهرست رانندگان</h3><input id="dq" style="width:100%;height:40px;border:1px solid #cbd6e2;border-radius:8px;padding:0 10px" placeholder="جستجو با کد ملی، پلاک یا نام" oninput="renderDrivers()"><div class="tablebox" style="margin-top:12px"><table class="tbl"><thead><tr><th>کد ملی</th><th>نام</th><th>گواهینامه</th><th>موبایل</th><th>کارت</th><th>پلاک</th><th>خودرو</th><th>عملیات</th></tr></thead><tbody id="dbody"></tbody></table></div></div>
 </section>
 
@@ -73,7 +73,7 @@ button,input,select{font:inherit}button{cursor:pointer}.app{height:100vh;display
 </section>
 
 <section id="settings" class="page hide">
-<div class="card"><h3>Excel و پشتیبان</h3><div class="notice">داده‌ها در خود مرورگر ذخیره می‌شوند. دکمه Excel فایل واقعی رانندگان.xlsx می‌سازد و می‌توانی آن را نگه داری و هر زمان خواستی دوباره وارد کنی. این روش به محدودیت امنیتی مرورگر احترام می‌گذارد و بدون نصب برنامه جانبی کار می‌کند.</div><div class="actions"><button class="btn primary" onclick="exportDrivers()">رانندگان.xlsx</button><button class="btn primary" onclick="exportWaybills()">سوابق حواله‌ها.xlsx</button><button class="btn ghost" onclick="backup()">پشتیبان JSON</button><label class="btn ghost"><input type="file" accept=".json" hidden onchange="restore(this)">بازیابی JSON</label></div></div>
+<div class="card"><h3>Excel و پشتیبان</h3><div class="notice"><b>اتصال مرکزی فعال است.</b><br>اطلاعات رانندگان و حواله‌ها در بانک مرکزی سایت ذخیره می‌شود؛ بنابراین با هر گوشی، کامپیوتر یا مرورگری که با حساب مجاز وارد شوی، همان اطلاعات را می‌بینی. Excel مادر از کل اطلاعات مرکزی ساخته می‌شود.</div><div class="actions"><button class="btn success" onclick="exportMother()">📊 Excel مادر کامل</button><button class="btn primary" onclick="exportDrivers()">رانندگان.xlsx</button><button class="btn primary" onclick="exportWaybills()">سوابق حواله‌ها.xlsx</button><button class="btn ghost" onclick="backup()">پشتیبان JSON</button><label class="btn ghost"><input type="file" accept=".json" hidden onchange="restore(this)">بازیابی JSON</label></div></div>
 <div class="card"><h3>مهر و امضا</h3><div class="notice">برای اینکه چاپ دقیقاً به فایل‌های PNG شما وابسته نباشد، مهر و امضا داخل مرورگر ذخیره می‌شوند. مهر را یک بار انتخاب کن و امضا را هم یک بار انتخاب کن؛ هر دو در حواله چاپ می‌شوند.</div><div class="actions"><label class="btn primary"><input id="stampFile" type="file" accept="image/*" hidden onchange="saveImage('stamp',this)">انتخاب PNG مهر</label><label class="btn primary"><input id="sigFile" type="file" accept="image/*" hidden onchange="saveImage('signature',this)">انتخاب PNG امضا</label><button class="btn danger" onclick="removeImages()">حذف مهر و امضا</button></div><div style="display:flex;gap:20px;margin-top:12px;align-items:center"><img id="stampPrev" style="max-width:150px;max-height:80px"><img id="sigPrev" style="max-width:150px;max-height:60px"></div></div>
 </section>
 </main></div>
@@ -82,41 +82,125 @@ button,input,select{font:inherit}button{cursor:pointer}.app{height:100vh;display
 <div id="toast" class="toast"></div>
 
 <script>
-const KEY='adl-waybill-web-v4';
-let db=JSON.parse(localStorage.getItem(KEY)||'{"drivers":[],"waybills":[],"nextNo":550,"stamp":"","signature":""}');
-function persist(){localStorage.setItem(KEY,JSON.stringify(db));stats()}
-function toast(s){const x=document.getElementById('toast');x.textContent=s;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2200)}
+const SB_URL="https://jfixjlygjukrlokdznhh.supabase.co";
+const SB_KEY="sb_publishable_JpVcwEzZzpPcDwj9PhkZHQ_AoKpw9Kt";
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const STAMP_KEY="adl-waybill-stamp-v1", SIG_KEY="adl-waybill-signature-v1";
+let db={drivers:[],waybills:[],nextNo:550,stamp:localStorage.getItem(STAMP_KEY)||"",signature:localStorage.getItem(SIG_KEY)||""};
+let session=null;
+
+function toast(s){const x=document.getElementById('toast');x.textContent=s;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2600)}
 function faDate(d){return new Intl.DateTimeFormat('fa-IR-u-ca-persian',{year:'numeric',month:'2-digit',day:'2-digit'}).format(d)}
 function today(){return new Date().toISOString().slice(0,10)}
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function fmtDate(v){if(!v)return '';const d=new Date(String(v).length===10?v+'T12:00:00':v);return isNaN(d)?v:faDate(d)}
 function stats(){document.getElementById('stD').textContent=db.drivers.length.toLocaleString('fa-IR');document.getElementById('stW').textContent=db.waybills.length.toLocaleString('fa-IR');document.getElementById('stN').textContent=(db.nextNo-1).toLocaleString('fa-IR')}
 function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.add('hide'));document.getElementById(p).classList.remove('hide');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===p));document.getElementById('title').textContent={home:'داشبورد',new:'صدور حواله',drivers:'مدیریت رانندگان',history:'سوابق حواله‌ها',settings:'تنظیمات و Excel'}[p];if(p==='new')initNew();if(p==='drivers')renderDrivers();if(p==='history')renderHistory()}
 document.querySelectorAll('.nav button').forEach(x=>x.onclick=()=>go(x.dataset.page));
+
+async function requireAuth(){
+  const r=await sb.auth.getSession();
+  session=r.data?.session||null;
+  if(!session){
+    document.body.innerHTML='<div style="font-family:Tahoma,Arial;direction:rtl;min-height:100vh;display:grid;place-items:center;background:#f4f7fb;padding:20px"><div style="background:#fff;border:1px solid #dce4ee;border-radius:16px;padding:28px;max-width:460px;text-align:center;box-shadow:0 15px 50px #0001"><h2 style="margin-top:0">ورود به سامانه حواله</h2><p style="line-height:2;color:#56616e">برای دسترسی به اطلاعات مرکزی رانندگان و حواله‌ها، ابتدا از پنل خصوصی وارد حساب مجاز شو.</p><a href="./admin.html" style="display:inline-block;background:#0755b7;color:#fff;text-decoration:none;padding:11px 18px;border-radius:9px;font-weight:700">ورود از پنل</a></div></div>';
+    return false;
+  }
+  sb.auth.onAuthStateChange((_event,s)=>{session=s;if(!s)location.href='./admin.html'});
+  return true;
+}
+
+async function loadCloud(){
+  const [dr,wb]=await Promise.all([
+    sb.from('waybill_drivers').select('*').order('name',{ascending:true}),
+    sb.from('waybills').select('*').order('no',{ascending:true})
+  ]);
+  if(dr.error)throw dr.error;
+  if(wb.error)throw wb.error;
+  db.drivers=(dr.data||[]).map(x=>({id:x.id,name:x.name,national:String(x.national||''),license:x.license||'',mobile:x.mobile||'',card:x.card||'',plate:x.plate||'',vehicle:x.vehicle||''}));
+  db.waybills=(wb.data||[]).map(x=>({id:x.id,no:Number(x.no),date:x.issue_date,national:String(x.national||''),name:x.name||'',license:x.license||'',mobile:x.mobile||'',plate:x.plate||'',vehicle:x.vehicle||'',cargo:x.cargo||'',origin:x.origin||'تهران',dest:x.dest||'',destPhone:x.dest_phone||'',created_at:x.created_at}));
+  db.nextNo=Math.max(550,...db.waybills.map(x=>x.no+1));
+  stats();
+}
+
 function initNew(){document.getElementById('no').value=db.nextNo;document.getElementById('date').value=today();['national','name','license','plate','mobile','destPhone'].forEach(id=>document.getElementById(id).value='');document.getElementById('cargo').value='';document.getElementById('dest').value=''}
 function resetNew(){initNew()}
-function lookup(){const n=document.getElementById('national').value.replace(/\D/g,'');const d=db.drivers.find(x=>x.national===n);if(!d){['name','license','plate','mobile'].forEach(id=>document.getElementById(id).value='');if(n.length>=8)toast('راننده با این کد ملی پیدا نشد');return}document.getElementById('name').value=d.name;document.getElementById('license').value=d.license;document.getElementById('plate').value=d.plate;document.getElementById('mobile').value=d.mobile}
-function saveDriver(){const d={name:document.getElementById('dn').value.trim(),national:document.getElementById('dc').value.trim(),license:document.getElementById('dl').value.trim(),mobile:document.getElementById('dm').value.trim(),card:document.getElementById('dcard').value.trim(),plate:document.getElementById('dp').value.trim(),vehicle:document.getElementById('dv').value.trim()};if(!d.name||!d.national){toast('نام و کد ملی الزامی است');return}const i=db.drivers.findIndex(x=>x.national===d.national);if(i>=0)db.drivers[i]=d;else db.drivers.push(d);persist();clearDriver();renderDrivers();toast(i>=0?'اطلاعات راننده ویرایش شد':'راننده ثبت شد')}
+async function lookup(){
+  const n=document.getElementById('national').value.replace(/\D/g,'');
+  const d=db.drivers.find(x=>x.national===n);
+  if(!d){['name','license','plate','mobile'].forEach(id=>document.getElementById(id).value='');if(n.length>=8)toast('راننده با این کد ملی پیدا نشد');return}
+  document.getElementById('name').value=d.name;document.getElementById('license').value=d.license;document.getElementById('plate').value=d.plate;document.getElementById('mobile').value=d.mobile;
+}
+async function saveDriver(){
+  const d={name:document.getElementById('dn').value.trim(),national:document.getElementById('dc').value.replace(/\D/g,''),license:document.getElementById('dl').value.trim(),mobile:document.getElementById('dm').value.trim(),card:document.getElementById('dcard').value.trim(),plate:document.getElementById('dp').value.trim(),vehicle:document.getElementById('dv').value.trim()};
+  if(!d.name||!d.national){toast('نام و کد ملی الزامی است');return}
+  const r=await sb.from('waybill_drivers').upsert(d,{onConflict:'national'}).select().single();
+  if(r.error){toast('ذخیره راننده انجام نشد: '+r.error.message);return}
+  await loadCloud();clearDriver();renderDrivers();toast('راننده در بانک مرکزی ذخیره شد');
+}
 function clearDriver(){['dn','dc','dl','dm','dcard','dp','dv'].forEach(id=>document.getElementById(id).value='')}
 function editDriver(n){const d=db.drivers.find(x=>x.national===n);if(!d)return;document.getElementById('dn').value=d.name;document.getElementById('dc').value=d.national;document.getElementById('dl').value=d.license;document.getElementById('dm').value=d.mobile;document.getElementById('dcard').value=d.card;document.getElementById('dp').value=d.plate;document.getElementById('dv').value=d.vehicle;window.scrollTo(0,0)}
-function delDriver(n){if(!confirm('این راننده حذف شود؟'))return;db.drivers=db.drivers.filter(x=>x.national!==n);persist();renderDrivers()}
-function renderDrivers(){const q=(document.getElementById('dq').value||'').trim().toLowerCase();const a=db.drivers.filter(d=>(d.name+d.national+d.plate).toLowerCase().includes(q));document.getElementById('dbody').innerHTML=a.length?a.map(d=>'<tr><td>'+esc(d.national)+'</td><td>'+esc(d.name)+'</td><td>'+esc(d.license)+'</td><td>'+esc(d.mobile)+'</td><td>'+esc(d.card)+'</td><td>'+esc(d.plate)+'</td><td>'+esc(d.vehicle)+'</td><td><button class="btn ghost" onclick="editDriver('+JSON.stringify(d.national)+')">ویرایش</button> <button class="btn danger" onclick="delDriver('+JSON.stringify(d.national)+')">حذف</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">راننده‌ای ثبت نشده است.</td></tr>'}
-function collect(){return{no:Number(document.getElementById('no').value),date:document.getElementById('date').value,national:document.getElementById('national').value.trim(),name:document.getElementById('name').value,license:document.getElementById('license').value,plate:document.getElementById('plate').value,mobile:document.getElementById('mobile').value,cargo:document.getElementById('cargo').value,origin:'تهران',dest:document.getElementById('dest').value,destPhone:document.getElementById('destPhone').value.trim()}}
-function validate(w){if(!db.drivers.some(x=>x.national===w.national))return'راننده ثبت نشده است';if(!w.cargo)return'نوع بار را انتخاب کنید';if(!w.dest)return'مقصد را انتخاب کنید';return''}
-function saveWaybill(){const w=collect(),e=validate(w);if(e){toast(e);return}if(db.waybills.some(x=>x.no===w.no)){toast('این شماره حواله قبلاً ثبت شده است');return}db.waybills.push(w);db.nextNo=w.no+1;persist();renderPaper(w);document.getElementById('modal').classList.add('show');toast('حواله ثبت شد')}
+async function delDriver(n){if(!confirm('این راننده حذف شود؟'))return;const r=await sb.from('waybill_drivers').delete().eq('national',n);if(r.error){toast('حذف انجام نشد: '+r.error.message);return}await loadCloud();renderDrivers();toast('راننده حذف شد')}
+function renderDrivers(){const q=(document.getElementById('dq').value||'').trim().toLowerCase();const a=db.drivers.filter(d=>(d.name+d.national+d.plate+d.mobile).toLowerCase().includes(q));document.getElementById('dbody').innerHTML=a.length?a.map(d=>'<tr><td>'+esc(d.national)+'</td><td>'+esc(d.name)+'</td><td>'+esc(d.license)+'</td><td>'+esc(d.mobile)+'</td><td>'+esc(d.card)+'</td><td>'+esc(d.plate)+'</td><td>'+esc(d.vehicle)+'</td><td><button class="btn ghost" onclick="editDriver('+JSON.stringify(d.national)+')">ویرایش</button> <button class="btn danger" onclick="delDriver('+JSON.stringify(d.national)+')">حذف</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">راننده‌ای ثبت نشده است.</td></tr>'}
+
+function collect(){return{no:Number(document.getElementById('no').value),date:document.getElementById('date').value,national:document.getElementById('national').value.replace(/\D/g,''),name:document.getElementById('name').value,license:document.getElementById('license').value,plate:document.getElementById('plate').value,mobile:document.getElementById('mobile').value,cargo:document.getElementById('cargo').value,origin:'تهران',dest:document.getElementById('dest').value,destPhone:document.getElementById('destPhone').value.trim()}}
+function validate(w){if(!db.drivers.some(x=>x.national===w.national))return'راننده ثبت نشده است؛ ابتدا راننده را ثبت کن';if(!w.cargo)return'نوع بار را انتخاب کنید';if(!w.dest)return'مقصد را انتخاب کنید';return''}
+async function saveWaybill(){
+  const w=collect(),e=validate(w);if(e){toast(e);return}
+  if(db.waybills.some(x=>x.no===w.no)){await loadCloud();w.no=db.nextNo;document.getElementById('no').value=w.no}
+  const payload={no:w.no,issue_date:w.date||today(),national:w.national,name:w.name,license:w.license,mobile:w.mobile,plate:w.plate,vehicle:(db.drivers.find(x=>x.national===w.national)||{}).vehicle||'',cargo:w.cargo,origin:'تهران',dest:w.dest,dest_phone:w.destPhone||w.mobile,created_by:session?.user?.id||null};
+  const r=await sb.from('waybills').insert(payload).select().single();
+  if(r.error){
+    if(r.code==='23505'){await loadCloud();payload.no=db.nextNo;document.getElementById('no').value=payload.no;const retry=await sb.from('waybills').insert(payload).select().single();if(retry.error){toast('ثبت حواله انجام نشد: '+retry.error.message);return}}
+    else {toast('ثبت حواله انجام نشد: '+r.error.message);return}
+  }
+  await loadCloud();const saved=db.waybills.find(x=>x.no===payload.no)||{...w,no:payload.no};renderPaper(saved);document.getElementById('modal').classList.add('show');toast('حواله در بانک مرکزی ثبت شد');
+}
 function previewCurrent(){const w=collect(),e=validate(w);if(e){toast(e);return}renderPaper(w);document.getElementById('modal').classList.add('show')}
-function renderPaper(w){const stamp=db.stamp?'<img class="stamp" src="'+db.stamp+'">':'<div style="color:#777;font-size:7pt;margin-top:10mm">مهر شرکت</div>';const sig=db.signature?'<img class="sig" src="'+db.signature+'">':'';document.getElementById('paper').innerHTML='<div class="phead"><div class="plogo">عدل ترابران توس<br>حمل و نقل بزرگ مقیاس هوشمند</div><div class="ptitle">شرکت حمل و نقل بزرگ مقیاس هوشمند<br>عدل ترابران توس (عدالتبان)</div><div class="pmeta"><div>تاریخ<br><b>'+esc(w.date)+'</b></div><div>ش. حواله<br><b>'+w.no+'</b></div><div>نوع محصول<br><b>'+esc(w.cargo)+'</b></div></div></div><div class="intro">باسلام احترام : بدینوسیله تانکر با مشخصات ذیل جهت بارگیری به حضور تانکر معرفی میگردد.</div><table><tr><th colspan="3" class="section">مشخصات تانکر</th></tr><tr><td>ایران</td><td>شماره پلاک: '+esc(w.plate)+'</td><td>شرکت حمل و نقل<br>عدل ترابران توس</td></tr><tr><th colspan="3" class="section">مشخصات راننده</th></tr><tr><td>کد ملی: '+esc(w.national)+'</td><td>شماره گواهینامه: '+esc(w.license)+'</td><td>نام راننده: '+esc(w.name)+'</td></tr></table><table class="route"><tr><th colspan="3" class="section">مسیر تردد</th></tr><tr><td>مقصد</td><td>تلفن</td><td>مبدأ</td></tr><tr><td>'+esc(w.dest)+'</td><td>'+esc(w.destPhone||w.mobile)+'</td><td>تهران</td></tr></table><div class="terms"><b>تعهدات</b><br>۱- مجوز جهت بارگیری فقط به مدت سه روز اعتبار دارد.<br>۲- در صورت هرگونه خط خوردگی این حواله فاقد اعتبار میباشد.<br>۳- با توجه به اینکه مالک پرداخت کرایه حمل را ارائه اصل بارنامه رسید شده مینماید، راننده و مالک تعهد مینمایند ظرف مدت ۵ روز اصل بارنامه را به نماینده شرکت تحویل نمایند.<br>۴- مسئولیت هرگونه کسری، آلودگی و سرقت محموله و خسارت آن بر عهده راننده و مالک میباشد و حق هرگونه اعتراض را از خود سلب و ساقط مینمایند.</div><div class="bottom"><div>امضاء راننده</div><div class="rep">مهر و امضاء نماینده'+sig+stamp+'</div></div>'}
+
+function renderPaper(w){
+  const stamp=db.stamp?'<img class="stamp" src="'+db.stamp+'">':'<div style="color:#777;font-size:7pt;margin-top:10mm">مهر شرکت</div>';
+  const sig=db.signature?'<img class="sig" src="'+db.signature+'">':'';
+  document.getElementById('paper').innerHTML='<div class="phead"><div class="plogo">عدل ترابران توس<br>حمل و نقل بزرگ مقیاس هوشمند</div><div class="ptitle">شرکت حمل و نقل بزرگ مقیاس هوشمند<br>عدل ترابران توس (عدالتبان)</div><div class="pmeta"><div>تاریخ<br><b>'+esc(fmtDate(w.date))+'</b></div><div>ش. حواله<br><b>'+String(w.no).toLocaleString("fa-IR")+'</b></div><div>نوع محصول<br><b>'+esc(w.cargo)+'</b></div></div></div><div class="intro">باسلام احترام : بدینوسیله تانکر با مشخصات ذیل جهت بارگیری به حضور تانکر معرفی میگردد.</div><table><tr><th colspan="3" class="section">مشخصات تانکر</th></tr><tr><td>ایران</td><td>شماره پلاک: '+esc(w.plate)+'</td><td>نوع خودرو/تانکر: '+esc(w.vehicle||'')+'</td></tr><tr><th colspan="3" class="section">مشخصات راننده</th></tr><tr><td>کد ملی: '+esc(w.national)+'</td><td>شماره گواهینامه: '+esc(w.license)+'</td><td>نام راننده: '+esc(w.name)+'</td></tr></table><table class="route"><tr><th colspan="3" class="section">مسیر تردد</th></tr><tr><td>مقصد</td><td>تلفن</td><td>مبدأ</td></tr><tr><td>'+esc(w.dest)+'</td><td>'+esc(w.destPhone||w.mobile)+'</td><td>تهران</td></tr></table><div class="terms"><b>تعهدات</b><br>۱- مجوز جهت بارگیری فقط به مدت سه روز اعتبار دارد.<br>۲- در صورت هرگونه خط خوردگی این حواله فاقد اعتبار میباشد.<br>۳- با توجه به اینکه مالک پرداخت کرایه حمل را ارائه اصل بارنامه رسید شده مینماید، راننده و مالک تعهد مینمایند ظرف مدت ۵ روز اصل بارنامه را به نماینده شرکت تحویل نمایند.<br>۴- مسئولیت هرگونه کسری، آلودگی و سرقت محموله و خسارت آن بر عهده راننده و مالک میباشد و حق هرگونه اعتراض را از خود سلب و ساقط مینمایند.</div><div class="bottom"><div>امضاء راننده</div><div class="rep">مهر و امضاء نماینده'+sig+stamp+'</div></div>';
+}
 function closePreview(){document.getElementById('modal').classList.remove('show')}
-function renderHistory(){const q=[hqNo,hqNational,hqPlate,hqName].map(x=>(document.getElementById(x).value||'').trim().toLowerCase());const a=db.waybills.filter(w=>(!q[0]||String(w.no).includes(q[0]))&&(!q[1]||w.national.toLowerCase().includes(q[1]))&&(!q[2]||w.plate.toLowerCase().includes(q[2]))&&(!q[3]||w.name.toLowerCase().includes(q[3]))).slice().reverse();document.getElementById('hbody').innerHTML=a.length?a.map(w=>'<tr><td>'+w.no+'</td><td>'+esc(w.date)+'</td><td>'+esc(w.name)+'</td><td>'+esc(w.national)+'</td><td>'+esc(w.plate)+'</td><td>'+esc(w.cargo)+'</td><td>'+esc(w.dest)+'</td><td><button class="btn primary" onclick="showSaved('+w.no+')">مشاهده / چاپ</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">موردی پیدا نشد.</td></tr>'}
+function renderHistory(){const q=[hqNo,hqNational,hqPlate,hqName].map(x=>(document.getElementById(x).value||'').trim().toLowerCase());const a=db.waybills.filter(w=>(!q[0]||String(w.no).includes(q[0]))&&(!q[1]||w.national.toLowerCase().includes(q[1]))&&(!q[2]||w.plate.toLowerCase().includes(q[2]))&&(!q[3]||w.name.toLowerCase().includes(q[3]))).slice().reverse();document.getElementById('hbody').innerHTML=a.length?a.map(w=>'<tr><td>'+String(w.no).toLocaleString('fa-IR')+'</td><td>'+esc(fmtDate(w.date))+'</td><td>'+esc(w.name)+'</td><td>'+esc(w.national)+'</td><td>'+esc(w.plate)+'</td><td>'+esc(w.cargo)+'</td><td>'+esc(w.dest)+'</td><td><button class="btn primary" onclick="showSaved('+w.no+')">مشاهده / چاپ</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">موردی پیدا نشد.</td></tr>'}
 function showSaved(n){const w=db.waybills.find(x=>x.no===n);if(w){renderPaper(w);document.getElementById('modal').classList.add('show')}}
 function clearHistory(){['hqNo','hqNational','hqPlate','hqName'].forEach(x=>document.getElementById(x).value='');renderHistory()}
-function exportDrivers(){if(!window.XLSX){toast('کتابخانه Excel بارگذاری نشده است');return}const rows=db.drivers.map(d=>({'نام و نام خانوادگی':d.name,'کد ملی':d.national,'شماره گواهینامه':d.license,'شماره موبایل':d.mobile,'شماره کارت':d.card,'شماره پلاک':d.plate,'نوع خودرو/تانکر':d.vehicle}));const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'رانندگان');XLSX.writeFile(wb,'رانندگان.xlsx');toast('رانندگان.xlsx ساخته شد')}
-function exportWaybills(){if(!window.XLSX){toast('کتابخانه Excel بارگذاری نشده است');return}const rows=db.waybills.map(w=>({'شماره حواله':w.no,'تاریخ':w.date,'نام راننده':w.name,'کد ملی':w.national,'شماره گواهینامه':w.license,'موبایل':w.mobile,'پلاک':w.plate,'نوع بار':w.cargo,'مبدأ':w.origin,'مقصد':w.dest,'تلفن مقصد':w.destPhone}));const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'سوابق حواله');XLSX.writeFile(wb,'سوابق حواله ها.xlsx');toast('سوابق حواله‌ها.xlsx ساخته شد')}
-function importDrivers(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'array'}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});rows.forEach(x=>{const d={name:String(x['نام و نام خانوادگی']||x['نام']||''),national:String(x['کد ملی']||'').replace(/\s/g,''),license:String(x['شماره گواهینامه']||x['گواهینامه']||''),mobile:String(x['شماره موبایل']||x['موبایل']||''),card:String(x['شماره کارت']||x['کارت']||''),plate:String(x['شماره پلاک']||x['پلاک']||''),vehicle:String(x['نوع خودرو/تانکر']||x['نوع خودرو']||'')};if(!d.national)return;const i=db.drivers.findIndex(y=>y.national===d.national);if(i>=0)db.drivers[i]=d;else db.drivers.push(d)});persist();renderDrivers();toast('اطلاعات Excel وارد شد')}catch(_){toast('فایل Excel قابل خواندن نیست')}};r.readAsArrayBuffer(f)}
-function saveImage(kind,inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{db[kind]=e.target.result;persist();showImages();toast(kind==='stamp'?'مهر ذخیره شد':'امضا ذخیره شد')};r.readAsDataURL(f)}
+
+function makeMotherWorkbook(){
+  const drivers=db.drivers.map(d=>({'کد ملی':d.national,'نام و نام خانوادگی':d.name,'شماره گواهینامه':d.license,'شماره موبایل':d.mobile,'شماره کارت':d.card,'شماره پلاک':d.plate,'نوع خودرو/تانکر':d.vehicle}));
+  const waybills=db.waybills.map(w=>({'شماره حواله':w.no,'تاریخ':fmtDate(w.date),'کد ملی':w.national,'نام راننده':w.name,'شماره گواهینامه':w.license,'شماره موبایل':w.mobile,'شماره پلاک':w.plate,'نوع خودرو/تانکر':w.vehicle,'نوع بار':w.cargo,'مبدأ':w.origin,'مقصد':w.dest,'تلفن مقصد':w.destPhone,'ثبت در سیستم':w.created_at?new Date(w.created_at).toLocaleString('fa-IR'):''}));
+  const summary=[{'شاخص':'تعداد رانندگان','مقدار':db.drivers.length},{'شاخص':'تعداد حواله‌ها','مقدار':db.waybills.length},{'شاخص':'شماره حواله بعدی','مقدار':db.nextNo},{'شاخص':'حواله اکستراکت','مقدار':db.waybills.filter(x=>x.cargo==='اکستراکت').length},{'شاخص':'حواله روغن پایه','مقدار':db.waybills.filter(x=>x.cargo==='روغن پایه').length},{'شاخص':'مقصد بندر امام','مقدار':db.waybills.filter(x=>x.dest==='بندر امام').length},{'شاخص':'مقصد آبادان','مقدار':db.waybills.filter(x=>x.dest==='آبادان').length}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(drivers),'رانندگان');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(waybills),'همه حواله‌ها');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(summary),'خلاصه گزارش');return wb;
+}
+function downloadWorkbook(wb,name){XLSX.writeFile(wb,name)}
+function exportMother(){if(!window.XLSX){toast('کتابخانه Excel بارگذاری نشده است');return}downloadWorkbook(makeMotherWorkbook(),'Excel-مادر-عدل-ترابران.xlsx');toast('Excel مادر با کل اطلاعات مرکزی ساخته شد')}
+function exportDrivers(){if(!window.XLSX)return toast('کتابخانه Excel بارگذاری نشده است');const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(db.drivers.map(d=>({'کد ملی':d.national,'نام و نام خانوادگی':d.name,'شماره گواهینامه':d.license,'شماره موبایل':d.mobile,'شماره کارت':d.card,'شماره پلاک':d.plate,'نوع خودرو/تانکر':d.vehicle}))),'رانندگان');downloadWorkbook(wb,'رانندگان.xlsx');toast('Excel رانندگان دانلود شد')}
+function exportWaybills(){if(!window.XLSX)return toast('کتابخانه Excel بارگذاری نشده است');const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(db.waybills.map(w=>({'شماره حواله':w.no,'تاریخ':fmtDate(w.date),'نام راننده':w.name,'کد ملی':w.national,'شماره گواهینامه':w.license,'موبایل':w.mobile,'پلاک':w.plate,'نوع خودرو/تانکر':w.vehicle,'نوع بار':w.cargo,'مبدأ':w.origin,'مقصد':w.dest,'تلفن مقصد':w.destPhone}))),'سوابق حواله');downloadWorkbook(wb,'سوابق-حواله‌ها.xlsx');toast('Excel سوابق دانلود شد')}
+
+async function importDrivers(inp){
+  const f=inp.files[0];if(!f)return;
+  try{
+    const wb=XLSX.read(await f.arrayBuffer(),{type:'array'}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+    const rows2=rows.map(x=>({name:String(x['نام و نام خانوادگی']||x['نام']||'').trim(),national:String(x['کد ملی']||'').replace(/\D/g,''),license:String(x['شماره گواهینامه']||x['گواهینامه']||''),mobile:String(x['شماره موبایل']||x['موبایل']||''),card:String(x['شماره کارت']||x['کارت']||''),plate:String(x['شماره پلاک']||x['پلاک']||''),vehicle:String(x['نوع خودرو/تانکر']||x['نوع خودرو']||'')}).filter(x=>x.name&&x.national);
+    if(!rows2.length){toast('ردیف معتبر در Excel پیدا نشد');return}
+    const r=await sb.from('waybill_drivers').upsert(rows2,{onConflict:'national'});
+    if(r.error){toast('ورود Excel انجام نشد: '+r.error.message);return}
+    await loadCloud();renderDrivers();toast(rows2.length.toLocaleString('fa-IR')+' راننده در بانک مرکزی ثبت/به‌روزرسانی شد');
+  }catch(e){toast('فایل Excel قابل خواندن نیست')}
+  inp.value='';
+}
+
+function saveImage(kind,inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{db[kind]=e.target.result;localStorage.setItem(kind==='stamp'?STAMP_KEY:SIG_KEY,e.target.result);showImages();toast(kind==='stamp'?'مهر ذخیره شد':'امضا ذخیره شد')};r.readAsDataURL(f)}
 function showImages(){document.getElementById('stampPrev').src=db.stamp||'';document.getElementById('sigPrev').src=db.signature||''}
-function removeImages(){db.stamp='';db.signature='';persist();showImages();toast('مهر و امضا حذف شد')}
-function backup(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));a.download='پشتیبان-حواله.json';a.click()}
-function restore(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const x=JSON.parse(e.target.result);if(!x.drivers||!x.waybills)throw 0;db=x;persist();location.reload()}catch(_){toast('پشتیبان نامعتبر است')}};r.readAsText(f)}
-document.getElementById('today').textContent=faDate(new Date());stats();initNew();renderDrivers();renderHistory();showImages();
+function removeImages(){db.stamp='';db.signature='';localStorage.removeItem(STAMP_KEY);localStorage.removeItem(SIG_KEY);showImages();toast('مهر و امضا حذف شد')}
+function backup(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({drivers:db.drivers,waybills:db.waybills},null,2)],{type:'application/json'}));a.download='پشتیبان-حواله.json';a.click()}
+function restore(){toast('در نسخه مرکزی، بازیابی اطلاعات از Excel انجام می‌شود تا داده‌های دستگاه‌های مختلف با هم قاطی نشوند')}
+
+(async function(){
+  const ok=await requireAuth();if(!ok)return;
+  try{await loadCloud();document.getElementById('today').textContent=faDate(new Date());initNew();renderDrivers();renderHistory();showImages();}
+  catch(e){console.error(e);toast('اتصال به بانک مرکزی برقرار نشد: '+(e.message||'خطای ناشناخته'))}
+})();
 </script>
 </body></html>
