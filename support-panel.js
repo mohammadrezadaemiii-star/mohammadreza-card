@@ -6,7 +6,7 @@ const cfg=window.SUPPORT_STAFF;
 const $=id=>document.getElementById(id);
 let session=null, profile=null, drivers=[];
 const digits=s=>(s||"").toString().replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[^0-9]/g,"");
-const say=(s,bad=false)=>{ $("msg").textContent=s; $("msg").className=bad?"msg bad":"msg"; };
+const say=(s,bad=false)=>{ const id=$("appView").hidden?"loginMsg":"appMsg"; $(id).textContent=s; $(id).className=bad?"msg bad":"msg"; };
 function authEmail(u){return u+"@staff.adl.local";}
 function statusLabel(s){return s==="issued"?"صادر شده":s==="cancelled"?"لغو شده":"در انتظار بررسی";}
 async function init(){
