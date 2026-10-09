@@ -100,6 +100,16 @@ async function loadMine(){
  const rows=(data||[]).filter(x=>(!state||x.status===state)&&(!term||[x.name,x.national,x.plate,x.cargo,x.dest].some(v=>(v||"").toLowerCase().includes(term))));
  $("rows").innerHTML=rows.length?rows.map(x=>'<tr><td>'+esc(x.submitted_at?new Date(x.submitted_at).toLocaleString("fa-IR"):"")+'</td><td>'+esc(x.name)+'</td><td>'+esc(x.national)+'</td><td>'+esc(x.plate||"—")+'</td><td>'+esc(x.cargo)+'</td><td>'+esc(x.dest)+'</td><td>'+esc(statusLabel(x.status))+'</td><td>'+esc(x.notes||"—")+'</td></tr>').join(""):'<tr><td colspan="8" class="empty">موردی ثبت نشده است.</td></tr>';
 }
+function syncOriginOptions(){
+ const tabriz=$("origin").value==="پالایشگاه نفت تبریز";
+ const cargo=$("cargo"),dest=$("dest"),oldCargo=cargo.value,oldDest=dest.value;
+ const cargoItems=tabriz?[["","انتخاب کنید"],["لوبکات سبک","لوبکات سبک"],["لوبکات سنگین","لوبکات سنگین"],["آیزو فید","آیزو فید"]]:[["","انتخاب کنید"],["اکستراکت","اکستراکت"],["روغن پایه","روغن پایه"],["سایر","سایر"]];
+ const destItems=tabriz?[["","انتخاب کنید"],["پالایشگاه نفت پارس تهران","پالایشگاه نفت پارس تهران"],["پالایشگاه نفت بهران تهران","پالایشگاه نفت بهران تهران"],["پالایشگاه نفت ایرانول تهران","پالایشگاه نفت ایرانول تهران"],["پالایشگاه نفت آفتاب","پالایشگاه نفت آفتاب"]]:[["","انتخاب کنید"],["بندر امام","بندر امام"],["آبادان","آبادان"],["سایر","سایر"]];
+ cargo.innerHTML=cargoItems.map(([v,l])=>'<option value="'+v+'">'+l+'</option>').join("");
+ dest.innerHTML=destItems.map(([v,l])=>'<option value="'+v+'">'+l+'</option>').join("");
+ if(cargoItems.some(([v])=>v===oldCargo))cargo.value=oldCargo;
+ if(destItems.some(([v])=>v===oldDest))dest.value=oldDest;
+}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function exportCsv(){
  const table=$("rows");const rows=[...table.querySelectorAll("tr")].map(tr=>[...tr.querySelectorAll("th,td")].map(td=>td.innerText));
@@ -107,11 +117,11 @@ function exportCsv(){
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));a.download=cfg.username+"-requests.csv";a.click();URL.revokeObjectURL(a.href);
 }
 async function logout(){await sb.auth.signOut();showLogin();}
-function resetForm(){$("requestForm").reset();$("issueDate").value=new Date().toISOString().slice(0,10);say("");}
+function resetForm(){$("requestForm").reset();$("issueDate").value=new Date().toISOString().slice(0,10);syncOriginOptions();say("");}
 window.addEventListener("DOMContentLoaded",()=>{
  $("loginBtn").addEventListener("click",login);$("logoutBtn").addEventListener("click",logout);
  $("lookupBtn").addEventListener("click",lookup);$("plateBtn").addEventListener("click",lookupPlate);
- $("sendBtn").addEventListener("click",submitRequest);$("refreshBtn").addEventListener("click",loadMine);
+ $("sendBtn").addEventListener("click",submitRequest);$("origin").addEventListener("change",syncOriginOptions);syncOriginOptions();$("refreshBtn").addEventListener("click",loadMine);
  $("filter").addEventListener("input",loadMine);$("statusFilter").addEventListener("change",loadMine);
  $("exportBtn").addEventListener("click",exportCsv);$("clearBtn").addEventListener("click",resetForm);
  ["plateLeft","plateRight"].forEach(id=>$(id).addEventListener("input",()=>{const max=id==="plateLeft"?3:2;$(id).value=digits($(id).value).slice(0,max);syncPlate();}));
