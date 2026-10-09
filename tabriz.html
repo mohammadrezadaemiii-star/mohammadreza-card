@@ -104,7 +104,7 @@ function makeEmbeddedTemplateWorkbook(){
   cell.style={border:JSON.parse(JSON.stringify(border)),font:{name:"Franklin Gothic Book",size:10,color:{argb:"FF000000"}},alignment:{vertical:"middle",horizontal:"center",wrapText:true}};
  }
  const vals={
-  "B1":"         شرکت حمل و نقل بزرگ مقیاس هوشمند                عدل ترابران توس ( عدالتیان )",
+  "B1":"شرکت حمل و نقل بزرگ مقیاس هوشمند\nعدل ترابران توس ( عدالتیان )",
   "D1":"شماره :     ","E1":"06/0483","D2":"تاریخ :   ","E2":"1405/07/16",
   "A4":" پالایشگاه / پتروشیمی محترم :","B4":"پالایش نفت تبریز",
   "A5":" /احتراما نفتکش بامشخصات ذیل جهت حمل لوبکات سنگین به مقصد --------- می باشد/",
@@ -123,7 +123,7 @@ function makeEmbeddedTemplateWorkbook(){
  style("D1",{name:"B Titr",size:18,bold:true},{horizontal:"left",vertical:"middle",wrapText:true});
  style("D2",{name:"B Titr",size:18,bold:true},{horizontal:"left",vertical:"middle",wrapText:true});
  style("E1",{name:"Franklin Gothic Book",size:18,bold:true},{horizontal:"center",vertical:"middle"},"FFFFFF00");
- style("E2",{name:"B Titr",size:18,bold:true},{horizontal:"center",vertical:"middle"},"FFF2F2F2");
+ style("E2",{name:"B Titr",size:18,bold:true},{horizontal:"center",vertical:"middle"},"FFFFFFFF");
  style("A4",{name:"Franklin Gothic Book",size:12,bold:true},{horizontal:"right",vertical:"middle"});
  style("B4",{name:"B Titr",size:18,bold:true},{horizontal:"right",vertical:"middle"});
  style("A5",{name:"Franklin Gothic Book",size:15,bold:true},{horizontal:"center",vertical:"middle",wrapText:true});
