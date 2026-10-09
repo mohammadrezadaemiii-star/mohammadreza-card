@@ -4,6 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>پنل کریر هوشمند تبریز | عدل ترابران توس</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <style>
 :root{--blue:#174f88;--navy:#12365b;--bg:#f3f6fa;--line:#d8e0e8;--text:#17212b;--muted:#64748b;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:8px;padding:10px 14px}.primary{background:var(--blue);color:#fff}.secondary{background:#e6edf5;color:#1d3550}.danger{background:#fff0ef;color:var(--red)}.wrap{max-width:1200px;margin:auto;padding:20px}.head{background:linear-gradient(120deg,var(--navy),var(--blue));color:white;padding:22px;border-radius:14px;margin-bottom:18px}.head h1{font-size:22px;margin:0 0 8px}.head p{margin:0;color:#e1edf9;font-size:13px}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 3px 14px #193b5b0a}.login{max-width:430px;margin:9vh auto}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:7px}.field label{font-size:13px;color:#475569}.field input,.field select{border:1px solid #cbd5e1;border-radius:8px;padding:11px;background:#fff;min-width:0}.field input[readonly]{background:#f5f7fa}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.muted{color:var(--muted);font-size:12px}.error{color:var(--red);font-size:13px;white-space:pre-wrap}.hide{display:none!important}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:right;white-space:nowrap}th{background:#f4f7fa}.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e8f1fa;color:#194d7d;font-size:12px}.print-paper{display:none}
@@ -35,6 +36,12 @@
       <div class="row" style="justify-content:space-between"><div><b>صدور حواله تبریز</b> <span class="badge">قالب اختصاصی تبریز</span></div><button id="logoutBtn" class="secondary">خروج از حساب</button></div>
       <p class="muted">فقط اطلاعات حواله تبریز در این پنل ثبت می‌شود. شماره حواله به‌صورت مستقل و با الگوی 06/0483 تولید می‌شود.</p>
     </div>
+    <section class="card noprint" id="templateCard">
+      <h3 style="margin-top:0">قالب اصلی اکسل حواله</h3>
+      <p class="muted">فایل اصلی حواله تبریز را یک‌بار انتخاب کنید. قالب در همین مرورگر ذخیره می‌شود و هنگام صدور، یک فایل اکسل با اطلاعات حواله ساخته می‌شود تا در Excel باز و چاپ کنید.</p>
+      <div class="row"><input id="templateFile" type="file" accept=".xlsx" /><span id="templateStatus" class="muted">قالب هنوز انتخاب نشده است.</span></div>
+      <p id="templateError" class="error"></p>
+    </section>
     <form id="waybillForm" class="card noprint">
       <h3 style="margin-top:0">مشخصات حواله</h3>
       <div class="grid">
@@ -68,7 +75,7 @@
 const SB_URL="https://jfixjlygjukrlokdznhh.supabase.co";
 const SB_KEY="sb_publishable_JpVcwEzZzpPcDwj9PhkZHQ_AoKpw9Kt";
 const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:"tabriz-waybill-auth-v1",persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-let session=null,drivers=[],waybills=[],printItem=null,currentSubmissionId=null,supportRequests=[];
+let session=null,drivers=[],waybills=[],printItem=null,currentSubmissionId=null,supportRequests=[],templateBytes=null;
 const $=id=>document.getElementById(id);
 function digits(v){return String(v||"").replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d))}
 function faDigits(v){return String(v).replace(/\d/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d])}
@@ -84,25 +91,43 @@ function renderSupportRequests(){const body=$("supportBody");body.innerHTML=supp
 function useSupportRequest(id){const x=supportRequests.find(r=>r.id===id);if(!x||x.status!=="pending")return;currentSubmissionId=x.id;$("issueDate").value=fromGregorian(x.issue_date);$("national").value=faDigits(norm(x.national));$("driverName").value=x.name||"";$("plate").value=x.plate||"";$("license").value=x.license||"";$("mobile").value=x.mobile||"";if(["لوبکات سبک","لوبکات سنگین","آیزو فید"].includes(x.cargo))$("cargo").value=x.cargo;if(["پالایشگاه نفت پارس تهران","پالایشگاه نفت بهران تهران","پالایشگاه نفت ایرانول تهران","پالایشگاه نفت آفتاب"].includes(x.dest))$("destination").value=x.dest;$("formError").textContent="درخواست پشتیبان منتقل شد. پس از بررسی، حواله را ثبت و چاپ کنید.";$("waybillForm").scrollIntoView({behavior:"smooth",block:"start"})}
 function renderHistory(){const body=$("historyBody");body.innerHTML=waybills.map(w=>'<tr><td>'+escapeHtml("06/"+String(w.waybill_no).padStart(4,"0"))+'</td><td>'+escapeHtml(fromGregorian(w.issue_date))+'</td><td>'+escapeHtml(w.driver_name)+'</td><td>'+escapeHtml(w.plate)+'</td><td>'+escapeHtml(w.cargo)+'</td><td>'+escapeHtml(w.destination)+'</td><td><button class="secondary" data-print="'+escapeHtml(w.id)+'">چاپ</button></td></tr>').join("")||'<tr><td colspan="7">هنوز حواله‌ای ثبت نشده است.</td></tr>';body.querySelectorAll("[data-print]").forEach(b=>b.onclick=()=>{const w=waybills.find(x=>x.id===b.dataset.print);if(w){printItem=w;printWaybill(w)}})}
 async function lookupDriver(){const n=norm($("national").value);if(!n){$("formError").textContent="کد ملی راننده را وارد کنید.";return}const arabic=n.replace(/\d/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);const variants=[n,faDigits(n),arabic];let d=null;try{const q=await sb.from("waybill_drivers").select("id,name,national,license,mobile,plate,vehicle").in("national",variants).limit(1);if(q.error)throw q.error;d=(q.data||[])[0]||null}catch(e){console.warn("Driver lookup query failed",e)}if(!d)d=drivers.find(x=>x.national===n)||null;if(!d){$("formError").textContent="راننده با این کد ملی در بانک رانندگان پیدا نشد. کد ملی را بررسی کنید؛ در صورت نیاز مشخصات را دستی وارد کنید.";return}$("formError").textContent="";$("national").value=faDigits(n);$("driverName").value=d.name||"";$("license").value=d.license||"";$("mobile").value=d.mobile||"";setPlateFields(d.plate||"")} $("national").addEventListener("change",lookupDriver);$("national").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();lookupDriver()}})
-$("waybillForm").addEventListener("submit",async e=>{e.preventDefault();$("formError").textContent="";const gd=toGregorian($("issueDate").value);if(!gd){$("formError").textContent="تاریخ شمسی را به شکل ۱۴۰۵/۰۷/۱۶ وارد کنید.";return}if(!norm($("national").value)){ $("formError").textContent="کد ملی راننده را وارد کنید.";return}try{const nr=await sb.rpc("next_tabriz_waybill_no");if(nr.error)throw nr.error;const payload={waybill_no:nr.data,issue_date:gd,driver_name:$("driverName").value.trim(),plate:$("plate").value.trim(),license:$("license").value.trim(),national:norm($("national").value),mobile:$("mobile").value.trim(),cargo:$("cargo").value,destination:$("destination").value,created_by:session.user.id};const ins=await sb.from("tabriz_waybills").insert(payload).select().single();if(ins.error)throw ins.error;let routeWarning="";if(currentSubmissionId){const routed=await sb.rpc("mark_tabriz_submission_issued",{p_submission_id:currentSubmissionId,p_tabriz_waybill_id:ins.data.id});if(routed.error){routeWarning="حواله ثبت شد، اما وضعیت درخواست پشتیبان خودکار به‌روزرسانی نشد: "+routed.error.message}else currentSubmissionId=null;await loadSupportRequests()}printItem=ins.data;waybills.unshift(ins.data);renderHistory();printWaybill(ins.data);e.target.reset();setToday();if(routeWarning)$("formError").textContent=routeWarning}catch(err){$("formError").textContent="ثبت حواله انجام نشد: "+(err.message||String(err))}})
-function printWaybill(w){
- const no="06/"+String(w.waybill_no).padStart(4,"0"),date=fromGregorian(w.issue_date);
- const esc=v=>escapeHtml(v==null?"":String(v));
- const cell=(v,cl="",attrs="")=>'<div class="excel-cell '+cl+'" '+attrs+'>'+esc(v)+'</div>';
- const row=(a,cl="")=>'<div class="excel-row '+cl+'">'+a.join("")+'</div>';
- const legal=(v,cl="")=>cell(v,"excel-legal "+cl);
- const title=cell("شرکت حمل و نقل بزرگ مقیاس هوشمند\nعدل ترابران توس ( عدالتیان )","excel-title");
- const r1='<div class="excel-row excel-top">'+cell("","excel-blank")+title+cell("شماره :","excel-label")+cell(no,"excel-meta")+'</div>';
- const r2='<div class="excel-row excel-top">'+cell("","excel-blank")+cell("","excel-title-cont")+cell("تاریخ :","excel-label")+cell(date,"excel-meta")+'</div>';
- const r3='<div class="excel-row">'+cell("پالایشگاه / پتروشیمی محترم :","excel-label")+cell("پالایش نفت تبریز","excel-half")+'</div>';
- const r4=row([cell("احتراما نفتکش با مشخصات ذیل جهت حمل "+w.cargo+" به مقصد "+w.destination+" می باشد","excel-full")]);
- const r5='<table class="ptable"><thead><tr><th>نام و نام خانوادگی</th><th>شماره نفتکش</th><th>گواهینامه</th><th>شماره ملی</th><th>شماره همراه</th></tr></thead><tbody><tr><td>'+esc(w.driver_name)+'</td><td>'+esc(w.plate)+'</td><td>'+esc(w.license||"")+'</td><td>'+esc(faDigits(w.national||""))+'</td><td>'+esc(w.mobile||"")+'</td></tr></tbody></table>';
- const r6=row([cell("لذا خواهشمند است نسبت به بارگیری نفتکش فوق اقدامات لازم را مبذول فرمایید","excel-full")]);
- const r7='<div class="excel-row">'+legal("مجوز بارگیری دارای سه3 روز اعتبار می باشد.","excel-terms-short")+legal("با توجه به اینکه ملاک پرداخت کرایه حمل ارائه اصل بارنامه رسید شده میباشد /راننده و مالک متعهد میباشند حداکثر ظرف مدت 5 روز اصل بارنامه رسید شده را به نماینده شرکت تحویل دهند","excel-terms-long")+'</div>';
- const r8='<div class="excel-row">'+legal("در صورت هرگونه خط خوردگی این حواله فاقد اعتبار می باشد","excel-terms-short")+legal("مسئولیت هرگونه کسری /آلودگی/سرقت محموله/خیانت در امانت /ته کشی غیر مجاز و ارتکاب هر جرم دیگر و یا دخالت هر شخص ثالث دیگر به عهده مالک و راننده میباشدو حق هرگونه اعتراض را از خود سلب و ساقط میکند","excel-terms-long")+'</div>';
- const r9='<div class="excel-row">'+legal("اخذ مجوز یا بارگیری محموله دلیل بر مطالعه و قبول شرایط فوق بوده و امضا یا عدم امضاء مجوز بارگیری تاثیری در مسئولیت راننده و مالک ندارد","excel-terms-long")+cell("مهر و امضاء شرکت حمل","excel-sign excel-sign-short")+cell("امضاء و اثر انگشت راننده","excel-sign excel-sign-short")+'</div>';
- $("printRoot").innerHTML='<article class="print-paper">'+r1+r2+r3+r4+r5+r6+r7+r8+r9+'</article>';
- window.print()
+$("waybillForm").addEventListener("submit",async e=>{e.preventDefault();$("formError").textContent="";const gd=toGregorian($("issueDate").value);if(!gd){$("formError").textContent="تاریخ شمسی را به شکل ۱۴۰۵/۰۷/۱۶ وارد کنید.";return}if(!norm($("national").value)){ $("formError").textContent="کد ملی راننده را وارد کنید.";return}try{const nr=await sb.rpc("next_tabriz_waybill_no");if(nr.error)throw nr.error;const payload={waybill_no:nr.data,issue_date:gd,driver_name:$("driverName").value.trim(),plate:$("plate").value.trim(),license:$("license").value.trim(),national:norm($("national").value),mobile:$("mobile").value.trim(),cargo:$("cargo").value,destination:$("destination").value,created_by:session.user.id};const ins=await sb.from("tabriz_waybills").insert(payload).select().single();if(ins.error)throw ins.error;let routeWarning="";if(currentSubmissionId){const routed=await sb.rpc("mark_tabriz_submission_issued",{p_submission_id:currentSubmissionId,p_tabriz_waybill_id:ins.data.id});if(routed.error){routeWarning="حواله ثبت شد، اما وضعیت درخواست پشتیبان خودکار به‌روزرسانی نشد: "+routed.error.message}else currentSubmissionId=null;await loadSupportRequests()}printItem=ins.data;waybills.unshift(ins.data);renderHistory();await printWaybill(ins.data);e.target.reset();setToday();if(routeWarning)$("formError").textContent=routeWarning}catch(err){$("formError").textContent="ثبت حواله انجام نشد: "+(err.message||String(err))}})
+const TEMPLATE_DB="tabriz-waybill-template-v1";
+function openTemplateDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(TEMPLATE_DB,1);req.onupgradeneeded=()=>req.result.createObjectStore("files");req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+async function storeTemplate(bytes){const db=await openTemplateDB();return new Promise((resolve,reject)=>{const tx=db.transaction("files","readwrite");tx.objectStore("files").put(bytes,"original");tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>{db.close();reject(tx.error)}})}
+async function readTemplate(){const db=await openTemplateDB();return new Promise((resolve,reject)=>{const tx=db.transaction("files","readonly"),req=tx.objectStore("files").get("original");req.onsuccess=()=>{db.close();resolve(req.result||null)};req.onerror=()=>{db.close();reject(req.error)}})}
+async function initTemplate(){try{templateBytes=await readTemplate();$("templateStatus").textContent=templateBytes?"قالب اصلی در این مرورگر ذخیره شده است.":"قالب اصلی را انتخاب کنید."; }catch(e){$("templateStatus").textContent="ذخیره‌سازی قالب در این مرورگر در دسترس نیست."}}
+$("templateFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;$("templateError").textContent="";try{if(!/\.xlsx$/i.test(file.name))throw new Error("لطفاً فایل اصلی با پسوند xlsx را انتخاب کنید.");const bytes=await file.arrayBuffer();const test=new ExcelJS.Workbook();await test.xlsx.load(bytes);const sheet=test.getWorksheet("حواله تبریز")||test.worksheets[0];if(!sheet)throw new Error("هیچ شیتی در فایل پیدا نشد.");await storeTemplate(bytes);templateBytes=bytes;$("templateStatus").textContent="قالب ذخیره شد: "+file.name;}catch(err){$("templateError").textContent="قالب ذخیره نشد: "+(err.message||String(err));}});
+async function printWaybill(w){
+ if(!templateBytes){$("templateError").textContent="ابتدا فایل اصلی اکسل حواله تبریز را در بخش «قالب اصلی اکسل حواله» انتخاب کنید."; $("templateCard").scrollIntoView({behavior:"smooth",block:"center"});return}
+ try{
+  $("templateError").textContent="";
+  const wb=new ExcelJS.Workbook();await wb.xlsx.load(templateBytes);
+  const ws=wb.getWorksheet("حواله تبریز")||wb.worksheets[0];
+  const no="06/"+String(w.waybill_no).padStart(4,"0");
+  const date=fromGregorian(w.issue_date);
+  ws.getCell("D1").value="شماره :";
+  ws.getCell("E1").value=no;
+  ws.getCell("D2").value="تاریخ :";
+  ws.getCell("E2").value=date;
+  ws.getCell("B4").value="پالایش نفت تبریز";
+  ws.getCell("A5").value=" /احتراما نفتکش با مشخصات ذیل جهت حمل "+(w.cargo||"")+" به مقصد "+(w.destination||"")+" می باشد/ ";
+  ws.getCell("A7").value=w.driver_name||"";
+  ws.getCell("B7").value=w.plate||"";
+  ws.getCell("C7").value=w.license||"";
+  ws.getCell("D7").value=faDigits(w.national||"");
+  ws.getCell("E7").value=w.mobile||"";
+  ws.pageSetup.orientation="landscape";
+  ws.pageSetup.paperSize=9;
+  ws.pageSetup.fitToPage=true;ws.pageSetup.fitToWidth=1;ws.pageSetup.fitToHeight=1;
+  ws.pageSetup.printArea="A1:E14";
+  const buffer=await wb.xlsx.writeBuffer();
+  const blob=new Blob([buffer],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="حواله_تبریز_"+no.replace("/","-")+".xlsx";
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+  $("templateStatus").textContent="فایل اکسل حواله "+no+" ساخته شد؛ آن را در Excel باز و چاپ کنید.";
+ }catch(err){$("templateError").textContent="ساخت فایل اکسل انجام نشد: "+(err.message||String(err));}
 }
 function composePlate(){const iran=norm($("plateIran").value).slice(0,2),three=norm($("plateThree").value).slice(0,3),letter=$("plateLetter").value.trim(),two=norm($("plateTwo").value).slice(0,2);$("plate").value=[iran,three,letter,two].filter(Boolean).join(" ");return $("plate").value}
 function setPlateFields(value){const v=String(value||"").trim();$("plate").value=v;const parts=v.split(/[\s-]+/).filter(Boolean);if(parts.length>=4){$("plateIran").value=parts[0];$("plateThree").value=parts[1];$("plateLetter").value=parts[2];$("plateTwo").value=parts[3]}else if(v){$("plateIran").value="";$("plateThree").value="";$("plateLetter").value="";$("plateTwo").value=""}else{$("plateIran").value="";$("plateThree").value="";$("plateLetter").value="";$("plateTwo").value=""}}
@@ -112,6 +137,7 @@ $("loginBtn").onclick=async()=>{const email=$("email").value.trim(),password=$("
 $("logoutBtn").onclick=async()=>{await sb.auth.signOut();session=null;$("appView").classList.add("hide");$("loginView").classList.remove("hide")}
 $("refreshBtn").onclick=async()=>{try{await loadData()}catch(e){alert("خطا در به‌روزرسانی: "+e.message)}};$("refreshRequestsBtn").onclick=loadSupportRequests
 $("resetBtn").onclick=()=>{$("waybillForm").reset();$("formError").textContent="";setToday()}
+initTemplate();
 sb.auth.getSession().then(async r=>{session=r.data.session;if(session&&await requireTabrizAccess()){try{await loadData();await loadSupportRequests();$("loginView").classList.add("hide");$("appView").classList.remove("hide")}catch(e){$("loginError").textContent=e.message}}else setToday()});
 window.addEventListener("afterprint",()=>{$("printRoot").innerHTML=""});
 </script>
