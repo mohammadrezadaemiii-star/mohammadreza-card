@@ -14,7 +14,7 @@
 @media print{
  body{background:#fff!important;margin:0!important}.wrap,.head,.noprint,#loginView,#appView{display:none!important}
  #printRoot{display:block!important;width:210mm;height:148mm;margin:0!important;padding:0!important}
- .print-paper{display:block!important;box-sizing:border-box;width:210mm;height:148mm;padding:4mm 5mm 3mm;margin:0;background:#fff;color:#000;font-family:Tahoma,Arial,sans-serif;font-size:8pt;position:relative;overflow:hidden;direction:rtl;border:0}
+ .print-paper{display:block!important;box-sizing:border-box;width:210mm;height:148mm;padding:0;margin:0;background:#fff;color:#000;font-family:Tahoma,Arial,sans-serif;position:relative;overflow:hidden;direction:rtl;border:0}.sheet-grid{position:relative;width:100%;height:100%;border-collapse:collapse;table-layout:fixed;direction:rtl}.sheet-grid td{padding:1mm .7mm;box-sizing:border-box;overflow:hidden;line-height:1.12}.sheet-image{position:absolute;object-fit:contain;pointer-events:none}
  .excel-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:100%}.excel-cell{box-sizing:border-box;border:1px solid #222;padding:1mm .8mm;min-height:6mm;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;line-height:1.2;white-space:pre-line}.excel-top{grid-template-columns:1fr 2fr 1fr 1fr;min-height:6mm}.excel-blank{grid-row:span 2}.excel-title{grid-column:span 1;grid-row:span 2;font-weight:bold;font-size:8.5pt;white-space:pre-line}.excel-title-cont{display:none}.excel-label{font-size:7pt;justify-content:flex-start;text-align:right}.excel-meta{font-size:7.5pt;font-weight:bold}.excel-full{grid-column:1/-1;justify-content:flex-start;text-align:right}.excel-half{grid-column:span 4;justify-content:flex-start;text-align:right}.excel-legal{font-size:6pt;line-height:1.15;justify-content:flex-start;text-align:right;align-items:flex-start}.excel-terms-short{grid-column:span 2}.excel-terms-long{grid-column:span 3}.excel-sign{min-height:12mm;font-weight:bold}.excel-sign-short{grid-column:span 1}
  .ptable{margin-top:0;width:100%;border-collapse:collapse;table-layout:fixed;font-size:7.5pt}.ptable th,.ptable td{border:1px solid #222;text-align:center;padding:1mm;white-space:normal;height:7mm}
 }
@@ -98,14 +98,64 @@ async function storeTemplate(bytes){const db=await openTemplateDB();return new P
 async function readTemplate(){const db=await openTemplateDB();return new Promise((resolve,reject)=>{const tx=db.transaction("files","readonly"),req=tx.objectStore("files").get("original");req.onsuccess=()=>{db.close();resolve(req.result||null)};req.onerror=()=>{db.close();reject(req.error)}})}
 async function initTemplate(){try{templateBytes=await readTemplate();$("templateStatus").textContent=templateBytes?"قالب اصلی در این مرورگر ذخیره شده است.":"قالب اصلی را انتخاب کنید."; }catch(e){$("templateStatus").textContent="ذخیره‌سازی قالب در این مرورگر در دسترس نیست."}}
 $("templateFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;$("templateError").textContent="";try{if(!/\.xlsx$/i.test(file.name))throw new Error("لطفاً فایل اصلی با پسوند xlsx را انتخاب کنید.");const bytes=await file.arrayBuffer();const test=new ExcelJS.Workbook();await test.xlsx.load(bytes);const sheet=test.getWorksheet("حواله تبریز")||test.worksheets[0];if(!sheet)throw new Error("هیچ شیتی در فایل پیدا نشد.");await storeTemplate(bytes);templateBytes=bytes;$("templateStatus").textContent="قالب ذخیره شد: "+file.name;}catch(err){$("templateError").textContent="قالب ذخیره نشد: "+(err.message||String(err));}});
+function xlColor(color){if(!color)return "";if(color.argb)return "#"+String(color.argb).slice(-6);if(color.rgb)return "#"+String(color.rgb).slice(-6);return ""}
+function cellText(cell){const v=cell.value;if(v==null)return "";if(typeof v==="object"){if(Array.isArray(v.richText))return v.richText.map(x=>x.text||"").join("");if("text" in v && v.text!=null)return String(v.text);if("result" in v && v.result!=null)return String(v.result);if("formula" in v)return "";if(v instanceof Date)return v.toLocaleDateString("fa-IR");return ""}return String(v)}
+function sideCss(side){if(!side||!side.style)return "";const map={thin:"0.5pt",hair:"0.35pt",dotted:"0.5pt dotted",dashed:"0.7pt dashed",medium:"1pt",thick:"1.5pt",double:"2pt double",mediumDashed:"1pt dashed",dashDot:"1pt dashed",mediumDashDot:"1pt dashed",dashDotDot:"1pt dotted",mediumDashDotDot:"1pt dotted",slantDashDot:"1pt dashed"};const raw=map[side.style]||"0.5pt solid";const bits=raw.split(" ");const width=bits[0],style=bits.length>1?bits[1]:"solid";return width+" "+style+" "+(xlColor(side.color)||"#222")}
+function cellCss(cell){
+ const s=cell.style||{},f=s.font||{},a=s.alignment||{},fill=s.fill||{},b=s.border||{},css=[];
+ const color=xlColor(f.color);if(color)css.push("color:"+color);
+ if(f.name)css.push("font-family:"+JSON.stringify(f.name)+",Tahoma,Arial,sans-serif");
+ if(f.size)css.push("font-size:"+Math.max(5,Math.min(18,f.size))+"pt");
+ if(f.bold)css.push("font-weight:bold");if(f.italic)css.push("font-style:italic");
+ if(f.underline)css.push("text-decoration:underline");
+ if(a.horizontal)css.push("text-align:"+({"center":"center","right":"right","left":"left","justify":"justify","distributed":"justify"}[a.horizontal]||"right"));
+ css.push("vertical-align:"+({"top":"top","middle":"middle","bottom":"bottom"}[a.verticalAlignment||a.vertical]||"middle"));
+ if(a.wrapText)css.push("white-space:pre-wrap;overflow-wrap:anywhere");else css.push("white-space:pre-wrap");
+ if(a.indent)css.push("padding-right:"+Math.min(12,a.indent*3)+"px");
+ if(fill.type==="pattern"&&fill.pattern!=="none"){const fc=xlColor(fill.fgColor);if(fc)css.push("background:"+fc)}
+ for(const k of ["top","right","bottom","left"]){const v=sideCss(b[k]);if(v)css.push("border-"+k+":"+v)}
+ if(s.numFmt&&s.numFmt.includes("%"))css.push("text-align:center");
+ return css.join(";");
+}
+function mergedRanges(ws){return (ws.model.merges||[]).map(ref=>{const p=String(ref).split(":");const parse=x=>{const m=x.match(/^([A-Z]+)(\d+)$/i);let col=0;for(const ch of m[1].toUpperCase())col=col*26+ch.charCodeAt(0)-64;return {row:+m[2],col}};return {ref,s:parse(p[0]),e:parse(p[1])}})}
+function renderWorksheet(ws,wb){
+ const maxR=14,maxC=5,merges=mergedRanges(ws),starts=new Map(),covered=new Set();
+ for(const m of merges){starts.set(m.s.row+":"+m.s.col,m);for(let rr=m.s.row;rr<=m.e.row;rr++)for(let cc=m.s.col;cc<=m.e.col;cc++)if(rr!==m.s.row||cc!==m.s.col)covered.add(rr+":"+cc)}
+ const widths=Array.from({length:maxC},(_,i)=>Math.max(2,ws.getColumn(i+1).width||12)),wSum=widths.reduce((a,b)=>a+b,0);
+ const heights=Array.from({length:maxR},(_,i)=>Math.max(5,ws.getRow(i+1).height||15)),hSum=heights.reduce((a,b)=>a+b,0);
+ let html='<article class="print-paper sheet-paper"><table class="sheet-grid" dir="rtl"><colgroup>'+widths.map(w=>'<col style="width:'+(w/wSum*100).toFixed(4)+'%">').join("")+'</colgroup><tbody>';
+ for(let rr=1;rr<=maxR;rr++){
+  html+='<tr style="height:'+(heights[rr-1]/hSum*100).toFixed(4)+'%">';
+  for(let cc=1;cc<=maxC;cc++){
+   if(covered.has(rr+":"+cc))continue;
+   const cell=ws.getCell(rr,cc),m=starts.get(rr+":"+cc),rs=m?m.e.row-m.s.row+1:1,cs=m?m.e.col-m.s.col+1:1;
+   let value=cellText(cell);
+   if(value==="")value="&#160;";
+   html+='<td'+(rs>1?' rowspan="'+rs+'"':"")+(cs>1?' colspan="'+cs+'"':"")+' style="'+cellCss(cell)+'">'+(value==="&#160;"?value:escapeHtml(value))+'</td>';
+  }
+  html+='</tr>';
+ }
+ html+='</tbody></table>';
+ // Render any pictures embedded in the source worksheet when ExcelJS exposes them.
+ try{
+  const imgs=ws.getImages?ws.getImages():[];
+  const colX=n=>widths.slice(0,Math.max(0,Math.floor(n))).reduce((a,b)=>a+b,0)+(Math.max(0,n-Math.floor(n))*(widths[Math.min(widths.length-1,Math.floor(n))]||0));
+  const rowY=n=>heights.slice(0,Math.max(0,Math.floor(n))).reduce((a,b)=>a+b,0)+(Math.max(0,n-Math.floor(n))*(heights[Math.min(heights.length-1,Math.floor(n))]||0));
+  for(const img of imgs){const pic=wb.getImage(img.imageId);if(!pic)continue;let base=pic.base64;
+   if(!base&&pic.buffer){const bytes=pic.buffer instanceof ArrayBuffer?new Uint8Array(pic.buffer):new Uint8Array(pic.buffer.buffer||pic.buffer,pic.buffer.byteOffset||0,pic.buffer.byteLength||pic.buffer.length);let bin="";for(let i=0;i<bytes.length;i+=0x8000)bin+=String.fromCharCode(...bytes.subarray(i,i+0x8000));base=btoa(bin)}
+   if(base&&!base.startsWith("data:"))base="data:image/"+(pic.extension||"png")+";base64,"+base;
+   if(base&&img.range&&img.range.tl&&img.range.br){const tl=img.range.tl,br=img.range.br;const l=colX(tl.col||0)/wSum*100,t=rowY(tl.row||0)/hSum*100,ww=(colX(br.col||0)-colX(tl.col||0))/wSum*100,hh=(rowY(br.row||0)-rowY(tl.row||0))/hSum*100;html+='<img alt="" class="sheet-image" style="left:'+l+'%;top:'+t+'%;width:'+ww+'%;height:'+hh+'%" src="'+base+'">'}
+  }
+ }catch(err){console.warn("Could not render source worksheet images",err)}
+ return html+'</article>';
+}
 async function printWaybill(w){
  if(!templateBytes){$("templateError").textContent="ابتدا فایل اصلی اکسل حواله تبریز را در بخش «قالب اصلی اکسل حواله» انتخاب کنید."; $("templateCard").scrollIntoView({behavior:"smooth",block:"center"});return}
  try{
   $("templateError").textContent="";
   const wb=new ExcelJS.Workbook();await wb.xlsx.load(templateBytes);
   const ws=wb.getWorksheet("حواله تبریز")||wb.worksheets[0];
-  const no="06/"+String(w.waybill_no).padStart(4,"0");
-  const date=fromGregorian(w.issue_date);
+  const no="06/"+String(w.waybill_no).padStart(4,"0"),date=fromGregorian(w.issue_date);
   ws.getCell("D1").value="شماره :";
   ws.getCell("E1").value=no;
   ws.getCell("D2").value="تاریخ :";
@@ -117,17 +167,12 @@ async function printWaybill(w){
   ws.getCell("C7").value=w.license||"";
   ws.getCell("D7").value=faDigits(w.national||"");
   ws.getCell("E7").value=w.mobile||"";
-  ws.pageSetup.orientation="landscape";
-  ws.pageSetup.paperSize=9;
-  ws.pageSetup.fitToPage=true;ws.pageSetup.fitToWidth=1;ws.pageSetup.fitToHeight=1;
-  ws.pageSetup.printArea="A1:E14";
-  const buffer=await wb.xlsx.writeBuffer();
-  const blob=new Blob([buffer],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-  const url=URL.createObjectURL(blob),a=document.createElement("a");
-  a.href=url;a.download="حواله_تبریز_"+no.replace("/","-")+".xlsx";
-  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
-  $("templateStatus").textContent="فایل اکسل حواله "+no+" ساخته شد؛ آن را در Excel باز و چاپ کنید.";
- }catch(err){$("templateError").textContent="ساخت فایل اکسل انجام نشد: "+(err.message||String(err));}
+  $("printRoot").innerHTML=renderWorksheet(ws,wb);
+  // wait for the browser to lay out the generated sheet and any embedded pictures
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  window.print();
+  $("templateStatus").textContent="پنجره چاپ حواله "+no+" باز شد؛ کاغذ A5 افقی را انتخاب کنید.";
+ }catch(err){$("templateError").textContent="آماده‌سازی چاپ مستقیم انجام نشد: "+(err.message||String(err));}
 }
 function composePlate(){const iran=norm($("plateIran").value).slice(0,2),three=norm($("plateThree").value).slice(0,3),letter=$("plateLetter").value.trim(),two=norm($("plateTwo").value).slice(0,2);$("plate").value=[iran,three,letter,two].filter(Boolean).join(" ");return $("plate").value}
 function setPlateFields(value){const v=String(value||"").trim();$("plate").value=v;const parts=v.split(/[\s-]+/).filter(Boolean);if(parts.length>=4){$("plateIran").value=parts[0];$("plateThree").value=parts[1];$("plateLetter").value=parts[2];$("plateTwo").value=parts[3]}else if(v){$("plateIran").value="";$("plateThree").value="";$("plateLetter").value="";$("plateTwo").value=""}else{$("plateIran").value="";$("plateThree").value="";$("plateLetter").value="";$("plateTwo").value=""}}
