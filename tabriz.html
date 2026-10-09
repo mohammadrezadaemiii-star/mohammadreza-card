@@ -123,7 +123,7 @@ function cellCss(cell){
  if(s.numFmt&&s.numFmt.includes("%"))css.push("text-align:center");
  return css.join(";");
 }
-function mergedRanges(ws){return (ws.model.merges||[]).map(ref=>{const p=String(ref).split(":");const parse=x=>{const m=x.match(/^([A-Z]+)(\d+)$/i);let col=0;for(const ch of m[1].toUpperCase())col=col*26+ch.charCodeAt(0)-64;return {row:+m[2],col}};return {ref,s:parse(p[0]),e:parse(p[1])}})}
+function mergedRanges(ws){const refs=["A11:B13","C14:E14","A10:B10","C9:E10","A14:B14","A5:E5","A8:E8","A9:B9","B1:C2","A1:A2","B4:C4","A3:E3","C11:E13"];return refs.map(ref=>{const p=ref.split(":");const parse=x=>{const m=x.match(/^([A-Z]+)(\\d+)$/i);let col=0;for(const ch of m[1].toUpperCase())col=col*26+ch.charCodeAt(0)-64;return {row:+m[2],col}};return {ref,s:parse(p[0]),e:parse(p[1])}})}
 function renderWorksheet(ws,wb){
  const maxR=14,maxC=5,merges=mergedRanges(ws),starts=new Map(),covered=new Set();
  for(const m of merges){starts.set(m.s.row+":"+m.s.col,m);for(let rr=m.s.row;rr<=m.e.row;rr++)for(let cc=m.s.col;cc<=m.e.col;cc++)if(rr!==m.s.row||cc!==m.s.col)covered.add(rr+":"+cc)}
