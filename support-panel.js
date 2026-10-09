@@ -58,9 +58,11 @@ function fillDriver(d){
  $("vehicle").value=d.vehicle||"";
  say("اطلاعات راننده از بانک اطلاعاتی پیدا شد.");
 }
-function lookup(){
+async function lookup(){
  const n=digits($("national").value);
  if(!n)return say("کد ملی را وارد کنید.",true);
+ const fa=n.replace(/\\d/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d]),ar=n.replace(/\\d/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);
+ try{const r=await sb.from("waybill_drivers").select("national,name,license,mobile,plate,vehicle").in("national",[n,fa,ar]).limit(1);if(r.error)throw r.error;if(r.data&&r.data[0])return fillDriver(r.data[0]);}catch(e){console.warn("Lookup query failed",e)}
  const d=drivers.find(x=>digits(x.national)===n);
  if(d)return fillDriver(d);
  say("راننده با این کد ملی پیدا نشد؛ اطلاعات را دستی وارد کنید.",true);
