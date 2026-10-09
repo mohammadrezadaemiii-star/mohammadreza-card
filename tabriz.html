@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>پنل کریر هوشمند تبریز | عدل ترابران توس</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--blue:#174f88;--navy:#12365b;--bg:#f3f6fa;--line:#d8e0e8;--text:#17212b;--muted:#64748b;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:8px;padding:10px 14px}.primary{background:var(--blue);color:#fff}.secondary{background:#e6edf5;color:#1d3550}.danger{background:#fff0ef;color:var(--red)}.wrap{max-width:1200px;margin:auto;padding:20px}.head{background:linear-gradient(120deg,var(--navy),var(--blue));color:white;padding:22px;border-radius:14px;margin-bottom:18px}.head h1{font-size:22px;margin:0 0 8px}.head p{margin:0;color:#e1edf9;font-size:13px}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 3px 14px #193b5b0a}.login{max-width:430px;margin:9vh auto}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:7px}.field label{font-size:13px;color:#475569}.field input,.field select{border:1px solid #cbd5e1;border-radius:8px;padding:11px;background:#fff;min-width:0}.field input[readonly]{background:#f5f7fa}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.muted{color:var(--muted);font-size:12px}.error{color:var(--red);font-size:13px;white-space:pre-wrap}.hide{display:none!important}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:right;white-space:nowrap}th{background:#f4f7fa}.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e8f1fa;color:#194d7d;font-size:12px}.print-paper{display:none}
+@media(max-width:750px){.wrap{padding:10px}.grid{grid-template-columns:1fr 1fr}.head h1{font-size:18px}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
+@page{size:A4 portrait;margin:0}
+@media print{
+ body{background:#fff!important}.wrap,.head,.noprint,#loginView,#appView{display:none!important}
+ #printRoot{display:block!important}
+ .print-paper{display:block!important;width:210mm;height:297mm;padding:12mm 13mm 10mm;margin:0 auto;background:#fff;color:#000;font-family:Tahoma,Arial,sans-serif;font-size:11pt;position:relative;overflow:hidden}
+ .ptop{display:grid;grid-template-columns:1fr 27mm;align-items:start;min-height:17mm;border-bottom:1px solid #222;padding-bottom:3mm}
+ .pcompany{font-size:11pt;font-weight:bold;text-align:center;line-height:1.9;padding-top:1mm}
+ .plogo{height:14mm;border:1px solid #aaa;display:flex;align-items:center;justify-content:center;font-size:8pt;color:#555}
+ .pmeta{display:flex;justify-content:flex-end;gap:18mm;margin-top:4mm;font-size:10.5pt}.pmeta div{min-width:34mm}
+ .porg{margin-top:11mm;font-weight:bold}.ptext{margin-top:5mm;line-height:2.1;text-align:justify}.ptable{margin-top:7mm;width:100%;border-collapse:collapse;table-layout:fixed;font-size:9.5pt}
+ .ptable th,.ptable td{border:1px solid #222;text-align:center;padding:3mm 1mm;white-space:normal;height:12mm}
+ .pclosing{margin-top:6mm;line-height:2;text-align:justify}
+ .plegal{margin-top:4mm;font-size:8.3pt;line-height:1.9;text-align:justify}.plegal p{margin:1mm 0}
+ .psign{position:absolute;bottom:12mm;left:13mm;right:13mm;display:grid;grid-template-columns:1fr 1fr;gap:15mm;text-align:center;font-weight:bold}
+ .psign div{border-top:1px solid #555;padding-top:3mm;min-height:18mm}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head"><h1>پنل صدور حواله — کریر هوشمند تبریز</h1><p>شرکت حمل و نقل بزرگ‌مقیاس هوشمند عدل ترابران توس (عدالتیان) | مبدأ ثابت: پالایشگاه نفت تبریز</p></header>
+  <section id="loginView" class="card login">
+    <h2 style="margin-top:0">ورود نماینده تبریز</h2>
+    <p class="muted">با حساب اختصاصی نماینده وارد شوید. این پنل از حساب مدیریتی جداست.</p>
+    <div class="field"><label for="email">ایمیل حساب</label><input id="email" type="email" autocomplete="username" placeholder="ایمیل نماینده"></div>
+    <div class="field" style="margin-top:12px"><label for="password">رمز عبور</label><input id="password" type="password" autocomplete="current-password" placeholder="رمز عبور"></div>
+    <div class="row" style="margin-top:16px"><button id="loginBtn" class="primary">ورود به پنل</button></div>
+    <p id="loginError" class="error"></p>
+  </section>
+  <section id="appView" class="hide">
+    <div class="card noprint">
+      <div class="row" style="justify-content:space-between"><div><b>صدور حواله تبریز</b> <span class="badge">قالب اختصاصی تبریز</span></div><button id="logoutBtn" class="secondary">خروج از حساب</button></div>
+      <p class="muted">فقط اطلاعات حواله تبریز در این پنل ثبت می‌شود. شماره حواله به‌صورت مستقل و با الگوی 06/0483 تولید می‌شود.</p>
+    </div>
+    <form id="waybillForm" class="card noprint">
+      <h3 style="margin-top:0">مشخصات حواله</h3>
+      <div class="grid">
+        <div class="field"><label for="issueDate">تاریخ حواله (شمسی)</label><input id="issueDate" required placeholder="۱۴۰۵/۰۷/۱۶"></div>
+        <div class="field"><label for="national">جستجوی راننده با کد ملی</label><input id="national" inputmode="numeric" required placeholder="کد ملی راننده"></div>
+        <div class="field"><label for="driverName">نام و نام خانوادگی</label><input id="driverName" required></div>
+        <div class="field"><label for="plate">شماره نفتکش / پلاک</label><input id="plate" required></div>
+        <div class="field"><label for="license">شماره گواهینامه</label><input id="license"></div>
+        <div class="field"><label for="mobile">شماره همراه</label><input id="mobile" inputmode="tel"></div>
+        <div class="field"><label for="cargo">نوع ماده</label><select id="cargo" required><option value="لوبکات سبک">لوبکات سبک</option><option value="لوبکات سنگین">لوبکات سنگین</option><option value="آیزو فید">آیزو فید</option></select></div>
+        <div class="field"><label for="destination">مقصد</label><select id="destination" required><option value="پالایشگاه نفت پارس تهران">پالایشگاه نفت پارس تهران</option><option value="پالایشگاه نفت بهران تهران">پالایشگاه نفت بهران تهران</option><option value="پالایشگاه نفت ایرانول تهران">پالایشگاه نفت ایرانول تهران</option></select></div>
+        <div class="field"><label>مبدأ</label><input value="پالایشگاه نفت تبریز" readonly></div>
+      </div>
+      <p id="formError" class="error"></p>
+      <div class="row" style="margin-top:16px"><button class="primary" type="submit">ثبت حواله و آماده‌سازی چاپ</button><button class="secondary" type="button" id="resetBtn">پاک‌کردن فرم</button></div>
+    </form>
+    <section class="card noprint">
+      <div class="row" style="justify-content:space-between"><h3 style="margin:0">سوابق حواله‌های صادرشده</h3><button id="refreshBtn" class="secondary">به‌روزرسانی</button></div>
+      <div class="tablewrap"><table><thead><tr><th>شماره</th><th>تاریخ</th><th>راننده</th><th>نفتکش</th><th>ماده</th><th>مقصد</th><th>چاپ</th></tr></thead><tbody id="historyBody"></tbody></table></div>
+    </section>
+  </section>
+</div>
+<div id="printRoot"></div>
+<script>
+const SB_URL="https://jfixjlygjukrlokdznhh.supabase.co";
+const SB_KEY="sb_publishable_JpVcwEzZzpPcDwj9PhkZHQ_AoKpw9Kt";
+const sb=supabase.createClient(SB_URL,SB_KEY);
+let session=null,drivers=[],waybills=[],printItem=null;
+const $=id=>document.getElementById(id);
+function digits(v){return String(v||"").replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d))}
+function faDigits(v){return String(v).replace(/\d/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d])}
+function norm(v){return digits(v).replace(/\D/g,"")}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function toGregorian(v){const a=String(v||"").trim().replace(/[-.]/g,"/").split("/").map(digits);if(a.length!==3)return null;const y=+a[0],m=+a[1],d=+a[2];if(y<1300||y>1500||m<1||m>12||d<1||d>31)return null;let jy=y-979,days=365*jy+Math.floor(jy/33)*8+Math.floor((jy%33+3)/4)+78+d+(m<7?(m-1)*31:(m-7)*30+186),gy=1600+400*Math.floor(days/146097);days%=146097;if(days>36524){gy+=100*Math.floor((days-1)/36524);days=(days-1)%36524;if(days>=365)days++}gy+=4*Math.floor(days/1461);days%=1461;if(days>365){gy+=Math.floor((days-1)/365);days=(days-1)%365}let gd=days+1,md=[0,31,((gy%4===0&&gy%100!==0)||gy%400===0)?29:28,31,30,31,30,31,31,30,31,30,31],gm=1;while(gm<=12&&gd>md[gm]){gd-=md[gm];gm++}return gy+"-"+String(gm).padStart(2,"0")+"-"+String(gd).padStart(2,"0")}
+function fromGregorian(s){if(!s)return "";const d=new Date(s+"T12:00:00");return new Intl.DateTimeFormat("fa-IR-u-ca-persian",{year:"numeric",month:"2-digit",day:"2-digit"}).format(d).replace(/\u200f/g,"")}
+function setToday(){ $("issueDate").value=fromGregorian(new Date().toISOString().slice(0,10)); }
+async function requireTabrizAccess(){const a=await sb.from("tabriz_access").select("user_id,label").maybeSingle();if(a.error||!a.data){$("appView").classList.add("hide");$("loginView").classList.remove("hide");$("loginError").textContent="این حساب هنوز برای پنل تبریز مجاز نشده است. مدیر باید دسترسی «پشتیبان تبریز» را برای حساب شما فعال کند.";await sb.auth.signOut();return false}return true}
+async function loadData(){const [d,w]=await Promise.all([sb.from("waybill_drivers").select("id,name,national,license,mobile,plate,vehicle").order("name").limit(10000),sb.from("tabriz_waybills").select("*").order("waybill_no",{ascending:false}).limit(500)]);if(d.error)throw d.error;if(w.error)throw w.error;drivers=(d.data||[]).map(x=>({...x,national: norm(x.national)}));waybills=w.data||[];renderHistory()}
+function renderHistory(){const body=$("historyBody");body.innerHTML=waybills.map(w=>'<tr><td>'+escapeHtml("06/"+String(w.waybill_no).padStart(4,"0"))+'</td><td>'+escapeHtml(fromGregorian(w.issue_date))+'</td><td>'+escapeHtml(w.driver_name)+'</td><td>'+escapeHtml(w.plate)+'</td><td>'+escapeHtml(w.cargo)+'</td><td>'+escapeHtml(w.destination)+'</td><td><button class="secondary" data-print="'+escapeHtml(w.id)+'">چاپ</button></td></tr>').join("")||'<tr><td colspan="7">هنوز حواله‌ای ثبت نشده است.</td></tr>';body.querySelectorAll("[data-print]").forEach(b=>b.onclick=()=>{const w=waybills.find(x=>x.id===b.dataset.print);if(w){printItem=w;printWaybill(w)}})}
+$("national").addEventListener("change",()=>{const n=norm($("national").value);const d=drivers.find(x=>x.national===n);if(!d){$("formError").textContent="راننده با این کد ملی پیدا نشد؛ اطلاعات را دستی وارد کنید یا کد ملی را بررسی کنید.";return}$("formError").textContent="";$("national").value=faDigits(n);$("driverName").value=d.name||"";$("license").value=d.license||"";$("mobile").value=d.mobile||"";$("plate").value=d.plate||""})
+$("waybillForm").addEventListener("submit",async e=>{e.preventDefault();$("formError").textContent="";const gd=toGregorian($("issueDate").value);if(!gd){$("formError").textContent="تاریخ شمسی را به شکل ۱۴۰۵/۰۷/۱۶ وارد کنید.";return}if(!norm($("national").value)){ $("formError").textContent="کد ملی راننده را وارد کنید.";return}try{const nr=await sb.rpc("next_tabriz_waybill_no");if(nr.error)throw nr.error;const payload={waybill_no:nr.data,issue_date:gd,driver_name:$("driverName").value.trim(),plate:$("plate").value.trim(),license:$("license").value.trim(),national:norm($("national").value),mobile:$("mobile").value.trim(),cargo:$("cargo").value,destination:$("destination").value,created_by:session.user.id};const ins=await sb.from("tabriz_waybills").insert(payload).select().single();if(ins.error)throw ins.error;printItem=ins.data;waybills.unshift(ins.data);renderHistory();printWaybill(ins.data);e.target.reset();setToday()}catch(err){$("formError").textContent="ثبت حواله انجام نشد: "+(err.message||String(err))}})
+function printWaybill(w){const no="06/"+String(w.waybill_no).padStart(4,"0"),date=fromGregorian(w.issue_date);$("printRoot").innerHTML='<article class="print-paper"><div class="ptop"><div class="pcompany">شرکت حمل و نقل بزرگ مقیاس هوشمند<br>عدل ترابران توس (عدالتیان)</div><div class="plogo">محل مهر / نشان</div></div><div class="pmeta"><div>شماره : <b>'+escapeHtml(no)+'</b></div><div>تاریخ : <b>'+escapeHtml(date)+'</b></div></div><div class="porg">پالایشگاه / پتروشیمی محترم : &nbsp; پالایش نفت تبریز</div><div class="ptext">احتراماً نفتکش با مشخصات ذیل جهت حمل <b>'+escapeHtml(w.cargo)+'</b> به مقصد <b>'+escapeHtml(w.destination)+'</b> می‌باشد.</div><table class="ptable"><thead><tr><th>نام و نام خانوادگی</th><th>شماره نفتکش</th><th>گواهینامه</th><th>شماره ملی</th><th>شماره همراه</th></tr></thead><tbody><tr><td>'+escapeHtml(w.driver_name)+'</td><td>'+escapeHtml(w.plate)+'</td><td>'+escapeHtml(w.license||"")+'</td><td>'+escapeHtml(faDigits(w.national||""))+'</td><td>'+escapeHtml(w.mobile||"")+'</td></tr></tbody></table><div class="pclosing">لذا خواهشمند است نسبت به بارگیری نفتکش فوق اقدامات لازم را مبذول فرمایید.</div><div class="plegal"><p>مجوز بارگیری دارای سه (۳) روز اعتبار می‌باشد.</p><p>در صورت هرگونه خط‌خوردگی، این حواله فاقد اعتبار می‌باشد.</p><p>مسئولیت هرگونه کسری، آلودگی، سرقت محموله، خیانت در امانت، ته‌کشی غیرمجاز و ارتکاب هر جرم دیگر یا دخالت هر شخص ثالث بر عهده مسئول مربوطه است.</p><p>با توجه به اینکه ملاک پرداخت کرایه حمل، ارائه اصل بارنامه رسیدشده می‌باشد، راننده و مالک متعهد به رعایت شرایط مندرج در بارنامه هستند.</p><p>اخذ مجوز یا بارگیری محموله دلیل بر مطالعه و قبول شرایط فوق بوده و امضا یا عدم امضای مجوز بارگیری تأثیری در مسئولیت ندارد.</p></div><div class="psign"><div>مهر و امضاء شرکت حمل</div><div>امضاء و اثر انگشت راننده</div></div></article>';window.print()}
+$("loginBtn").onclick=async()=>{const email=$("email").value.trim(),password=$("password").value;$("loginError").textContent="";const r=await sb.auth.signInWithPassword({email,password});if(r.error){$("loginError").textContent="ورود انجام نشد: "+r.error.message;return}session=r.data.session;if(!await requireTabrizAccess())return;try{await loadData();$("loginView").classList.add("hide");$("appView").classList.remove("hide")}catch(e){$("loginError").textContent="خطا در دریافت اطلاعات: "+e.message;await sb.auth.signOut()}}
+$("logoutBtn").onclick=async()=>{await sb.auth.signOut();session=null;$("appView").classList.add("hide");$("loginView").classList.remove("hide")}
+$("refreshBtn").onclick=async()=>{try{await loadData()}catch(e){alert("خطا در به‌روزرسانی: "+e.message)}}
+$("resetBtn").onclick=()=>{$("waybillForm").reset();$("formError").textContent="";setToday()}
+sb.auth.getSession().then(async r=>{session=r.data.session;if(session&&await requireTabrizAccess()){try{await loadData();$("loginView").classList.add("hide");$("appView").classList.remove("hide")}catch(e){$("loginError").textContent=e.message}}else setToday()});
+window.addEventListener("afterprint",()=>{$("printRoot").innerHTML=""});
+</script>
+</body></html>
