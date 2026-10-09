@@ -13,12 +13,27 @@ button,input,select{font:inherit}button{cursor:pointer}.app{height:100vh;display
 @media(max-width:850px){.side{width:205px}.cards{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.app{display:block}.side{width:100%;height:auto;padding:7px}.brand,.sidefoot{display:none}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap;width:auto}.top{height:56px;padding:0 12px}.page{padding:12px}.grid,.cards,.filters{grid-template-columns:1fr}.paper{transform:scale(.72);transform-origin:top center;margin-bottom:-55mm}}
 @media print{@page{size:A5 landscape;margin:0}html,body{width:210mm!important;height:148mm!important;background:#fff!important;margin:0!important;padding:0!important;overflow:hidden!important}.app,.modal:not(.printmodal){display:none!important}.printmodal{display:block!important;position:static!important;width:210mm!important;height:148mm!important;background:#fff!important;padding:0!important;margin:0!important;overflow:hidden!important}.printmodal .modalbox{width:210mm!important;height:148mm!important;max-height:none!important;overflow:hidden!important;padding:0!important;margin:0!important;border-radius:0!important}.modalhead,.printActions{display:none!important}.paperWrap{width:210mm!important;height:148mm!important;padding:0!important;margin:0!important;background:#fff!important;overflow:hidden!important}.paper{box-shadow:none!important;margin:0!important;width:210mm!important;height:148mm!important;min-height:148mm!important;padding:3mm!important;position:relative!important;left:0!important;top:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;box-sizing:border-box!important}}
 .terms .undertaking{margin-bottom:.5mm}.terms .legal{margin-top:.5mm;padding-top:0;padding-bottom:0;line-height:1.22;font-weight:bold;display:block;clear:both}.terms strong{font-weight:700}@media print{
+ .paper{color:#000!important}
  .paper .intro,
  .paper table td,
  .paper .terms,
  .paper .bottom,
  .paper .footerNote,
- .paper .pmeta{font-weight:700!important;color:#000!important;-webkit-text-stroke:.08px #000}
+ .paper .pmeta,
+ .paper .route,
+ .paper .route td,
+ .paper .brandWords,
+ .paper .brandWords strong,
+ .paper .brandWords small,
+ .paper .ptitle,
+ .paper .ptitle strong,
+ .paper .plogo,
+ .paper .signbox,
+ .paper .rep{font-weight:700!important;color:#000!important;-webkit-text-stroke:.12px #000}
+ .paper .terms *,
+ .paper .pmeta *,
+ .paper .bottom *,
+ .paper .intro *{font-weight:700!important;color:#000!important;-webkit-text-stroke:.12px #000}
  .paper table td{border-color:#222!important}
 }
 </style>
