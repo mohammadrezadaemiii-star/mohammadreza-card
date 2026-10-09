@@ -4,7 +4,6 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>پنل کریر هوشمند تبریز | عدل ترابران توس</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <style>
 :root{--blue:#174f88;--navy:#12365b;--bg:#f3f6fa;--line:#d8e0e8;--text:#17212b;--muted:#64748b;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:8px;padding:10px 14px}.primary{background:var(--blue);color:#fff}.secondary{background:#e6edf5;color:#1d3550}.danger{background:#fff0ef;color:var(--red)}.wrap{max-width:1200px;margin:auto;padding:20px}.head{background:linear-gradient(120deg,var(--navy),var(--blue));color:white;padding:22px;border-radius:14px;margin-bottom:18px}.head h1{font-size:22px;margin:0 0 8px}.head p{margin:0;color:#e1edf9;font-size:13px}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 3px 14px #193b5b0a}.login{max-width:430px;margin:9vh auto}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:7px}.field label{font-size:13px;color:#475569}.field input,.field select{border:1px solid #cbd5e1;border-radius:8px;padding:11px;background:#fff;min-width:0}.field input[readonly]{background:#f5f7fa}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.muted{color:var(--muted);font-size:12px}.error{color:var(--red);font-size:13px;white-space:pre-wrap}.hide{display:none!important}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:right;white-space:nowrap}th{background:#f4f7fa}.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e8f1fa;color:#194d7d;font-size:12px}.print-paper{display:none}
@@ -87,17 +86,28 @@ function renderHistory(){const body=$("historyBody");body.innerHTML=waybills.map
 async function lookupDriver(){const n=norm($("national").value);if(!n){$("formError").textContent="کد ملی راننده را وارد کنید.";return}const arabic=n.replace(/\d/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);const variants=[n,faDigits(n),arabic];let d=null;try{const q=await sb.from("waybill_drivers").select("id,name,national,license,mobile,plate,vehicle").in("national",variants).limit(1);if(q.error)throw q.error;d=(q.data||[])[0]||null}catch(e){console.warn("Driver lookup query failed",e)}if(!d)d=drivers.find(x=>x.national===n)||null;if(!d){$("formError").textContent="راننده با این کد ملی در بانک رانندگان پیدا نشد. کد ملی را بررسی کنید؛ در صورت نیاز مشخصات را دستی وارد کنید.";return}$("formError").textContent="";$("national").value=faDigits(n);$("driverName").value=d.name||"";$("license").value=d.license||"";$("mobile").value=d.mobile||"";setPlateFields(d.plate||"")} $("national").addEventListener("change",lookupDriver);$("national").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();lookupDriver()}})
 $("waybillForm").addEventListener("submit",async e=>{e.preventDefault();$("formError").textContent="";const gd=toGregorian($("issueDate").value);if(!gd){$("formError").textContent="تاریخ شمسی را به شکل ۱۴۰۵/۰۷/۱۶ وارد کنید.";return}if(!norm($("national").value)){ $("formError").textContent="کد ملی راننده را وارد کنید.";return}try{const nr=await sb.rpc("next_tabriz_waybill_no");if(nr.error)throw nr.error;const payload={waybill_no:nr.data,issue_date:gd,driver_name:$("driverName").value.trim(),plate:$("plate").value.trim(),license:$("license").value.trim(),national:norm($("national").value),mobile:$("mobile").value.trim(),cargo:$("cargo").value,destination:$("destination").value,created_by:session.user.id};const ins=await sb.from("tabriz_waybills").insert(payload).select().single();if(ins.error)throw ins.error;let routeWarning="";if(currentSubmissionId){const routed=await sb.rpc("mark_tabriz_submission_issued",{p_submission_id:currentSubmissionId,p_tabriz_waybill_id:ins.data.id});if(routed.error){routeWarning="حواله ثبت شد، اما وضعیت درخواست پشتیبان خودکار به‌روزرسانی نشد: "+routed.error.message}else currentSubmissionId=null;await loadSupportRequests()}printItem=ins.data;waybills.unshift(ins.data);renderHistory();await printWaybill(ins.data);e.target.reset();setToday();if(routeWarning)$("formError").textContent=routeWarning}catch(err){$("formError").textContent="ثبت حواله انجام نشد: "+(err.message||String(err))}})
 function makeEmbeddedTemplateWorkbook(){
- const wb=new ExcelJS.Workbook();
- const ws=wb.addWorksheet("حواله تبریز",{views:[{rightToLeft:true}]});
- ws.columns=[{width:27.332},{width:25.332},{width:23.21875},{width:22.4414},{width:21.8867}];
- [40.5,48,23.25,22.5,31.5,23.25,23.25,34.5,30,26.25,20.25,21.75,20.25,158.25].forEach((h,i)=>ws.getRow(i+1).height=h);
- const merges=["A11:B13","C14:E14","A10:B10","C9:E10","A14:B14","A5:E5","A8:E8","A9:B9","B1:C2","A1:A2","B4:C4","A3:E3","C11:E13"];
- merges.forEach(m=>ws.mergeCells(m));
+ const widths=[27.332,25.332,23.21875,22.4414,21.8867];
+ const heights=[40.5,48,23.25,22.5,31.5,23.25,23.25,34.5,30,26.25,20.25,21.75,20.25,158.25];
+ const cells=new Map();
+ const parseAddr=(addr)=>{if(typeof addr==="number")return {row:addr,col:1};const m=String(addr).match(/^([A-Z]+)(\d+)$/i);if(!m)throw new Error("نشانی سلول نامعتبر است: "+addr);let col=0;for(const ch of m[1].toUpperCase())col=col*26+ch.charCodeAt(0)-64;return {row:+m[2],col}};
+ const address=(row,col)=>{let letters="";while(col>0){const rem=(col-1)%26;letters=String.fromCharCode(65+rem)+letters;col=Math.floor((col-1)/26)}return letters+row};
+ const ws={
+  getCell(a,b){let row,col;if(typeof a==="number"){row=a;col=b}else({row,col}=parseAddr(a));const key=row+":"+col;if(!cells.has(key))cells.set(key,{address:address(row,col),value:null,style:{}});return cells.get(key)},
+  getColumn(n){return {width:widths[n-1]||12}},
+  getRow(n){return {height:heights[n-1]||15}}
+ };
+ const wb={getWorksheet:()=>ws};
+ const med={style:"medium",color:{argb:"FF202020"}};
+ const border={top:{...med},right:{...med},bottom:{...med},left:{...med}};
+ for(let r=1;r<=14;r++)for(let col=1;col<=5;col++){
+  const cell=ws.getCell(r,col);
+  cell.style={border:JSON.parse(JSON.stringify(border)),font:{name:"Franklin Gothic Book",size:10,color:{argb:"FF000000"}},alignment:{vertical:"middle",horizontal:"center",wrapText:true}};
+ }
  const vals={
-  "B1":"شرکت حمل و نقل بزرگ مقیاس هوشمند\nعدل ترابران توس ( عدالتیان )",
+  "B1":"         شرکت حمل و نقل بزرگ مقیاس هوشمند                عدل ترابران توس ( عدالتیان )",
   "D1":"شماره :     ","E1":"06/0483","D2":"تاریخ :   ","E2":"1405/07/16",
   "A4":" پالایشگاه / پتروشیمی محترم :","B4":"پالایش نفت تبریز",
-  "A5":" /احتراما نفتکش با مشخصات ذیل جهت حمل لوبکات سنگین به مقصد --------- می باشد/",
+  "A5":" /احتراما نفتکش بامشخصات ذیل جهت حمل لوبکات سنگین به مقصد --------- می باشد/",
   "A6":"نام و نام خانوادگی","B6":"شماره نفتکش","C6":"گواهینامه","D6":"شماره ملی ","E6":"شماره همراه",
   "A8":"لذا خواهشمند است نسبت به بارگیری نفتکش فوق اقدامات لازم را مبذول فرمایید .",
   "A9":"    مجوز بارگیری دارای سه3   روز اعتبار می باشد.",
@@ -108,16 +118,7 @@ function makeEmbeddedTemplateWorkbook(){
   "A14":"مهر و امضاء شرکت حمل","C14":"امضاء و اثر انگشت راننده"
  };
  for(const [addr,value] of Object.entries(vals))ws.getCell(addr).value=value;
- const med={style:"medium",color:{argb:"FF202020"}};
- const border={top:{...med},right:{...med},bottom:{...med},left:{...med}};
- // The source sheet is made from strongly outlined cells; CSS print rendering collapses adjoining borders.
- for(let r=1;r<=14;r++)for(let col=1;col<=5;col++){
-   const cell=ws.getCell(r,col);
-   cell.border=JSON.parse(JSON.stringify(border));
-   cell.font={name:"Franklin Gothic Book",size:10,color:{argb:"FF000000"}};
-   cell.alignment={vertical:"middle",horizontal:"center",wrapText:true};
- }
- const style=(addr,font,alignment,fill)=>{const cell=ws.getCell(addr);cell.font={name:font.name||"Franklin Gothic Book",size:font.size||11,bold:!!font.bold,italic:!!font.italic,color:{argb:"FF000000"}};cell.alignment=Object.assign({vertical:"middle",wrapText:true},alignment||{});if(fill)cell.fill={type:"pattern",pattern:"solid",fgColor:{argb:fill}}};
+ const style=(addr,font,alignment,fill)=>{const cell=ws.getCell(addr),s=cell.style;cell.style=Object.assign({},s,{font:{name:font.name||"Franklin Gothic Book",size:font.size||11,bold:!!font.bold,italic:!!font.italic,color:{argb:"FF000000"}},alignment:Object.assign({vertical:"middle",wrapText:true},alignment||{}),...(fill?{fill:{type:"pattern",pattern:"solid",fgColor:{argb:fill}}}:{})})};
  style("B1",{name:"B Titr",size:16,bold:true},{horizontal:"center",vertical:"middle",wrapText:true});
  style("D1",{name:"B Titr",size:18,bold:true},{horizontal:"left",vertical:"middle",wrapText:true});
  style("D2",{name:"B Titr",size:18,bold:true},{horizontal:"left",vertical:"middle",wrapText:true});
@@ -136,7 +137,6 @@ function makeEmbeddedTemplateWorkbook(){
  style("C11",{name:"B Nazanin",size:12,bold:true},{horizontal:"right",vertical:"middle",wrapText:true});
  style("A14",{name:"B Nazanin",size:12,bold:true},{horizontal:"center",vertical:"middle",wrapText:true});
  style("C14",{name:"B Nazanin",size:16,bold:true},{horizontal:"center",vertical:"middle",wrapText:true});
- ws.pageSetup.orientation="landscape";ws.pageSetup.paperSize=9;ws.pageSetup.fitToPage=true;ws.pageSetup.fitToWidth=1;ws.pageSetup.fitToHeight=1;
  return wb;
 }
 function embeddedLogoDataUri(){
