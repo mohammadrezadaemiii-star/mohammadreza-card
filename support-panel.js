@@ -39,14 +39,14 @@ async function loadDrivers(){
  if(!error)drivers=data||[];
 }
 function syncPlate(){
- const a=digits($("plateLeft").value).slice(0,3), b=digits($("plateRight").value).slice(0,2);
- $("plate").value=(a||b)?[a,"ع",b].filter(Boolean).join(" "):"";
+ const a=digits($("plateLeft").value).slice(0,3), b=digits($("plateRight").value).slice(0,2), ir=digits($("plateIran").value).slice(0,2);
+ $("plate").value=(a||b||ir)?[a,"ع",b,"ایران",ir].filter(Boolean).join(" "):"";
 }
 function setPlate(value){
  const ds=digits(String(value||""));
- // The fixed plate layout uses three digits, immutable letter «ع», two digits, and immutable Iran code 22.
  const core=ds.length>=7?ds.slice(0,5):ds;
- $("plateLeft").value=core.slice(0,3); $("plateRight").value=core.slice(3,5); syncPlate();
+ const ir=ds.length>=7?ds.slice(5,7):"22";
+ $("plateLeft").value=core.slice(0,3); $("plateRight").value=core.slice(3,5); $("plateIran").value=ir; syncPlate();
 }
 function fillDriver(d){
  if(!d)return;
