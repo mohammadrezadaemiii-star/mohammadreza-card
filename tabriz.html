@@ -4,6 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>پنل کریر هوشمند تبریز | عدل ترابران توس</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <style>
 :root{--blue:#174f88;--navy:#12365b;--bg:#f3f6fa;--line:#d8e0e8;--text:#17212b;--muted:#64748b;--red:#b42318}
@@ -14,7 +15,7 @@
 @media print{
  body{background:#fff!important;margin:0!important}.wrap,.head,.noprint,#loginView,#appView{display:none!important}
  #printRoot{display:block!important;width:210mm;height:148mm;margin:0!important;padding:0!important}
- .print-paper{display:block!important;box-sizing:border-box;width:210mm;height:148mm;padding:0;margin:0;background:#fff;color:#000;font-family:Tahoma,Arial,sans-serif;position:relative;overflow:hidden;direction:rtl;border:0}.sheet-grid{position:relative;width:100%;height:100%;border-collapse:collapse;table-layout:fixed;direction:rtl}.sheet-grid td{padding:1mm .7mm;box-sizing:border-box;overflow:hidden;line-height:1.12}.sheet-image{position:absolute;object-fit:contain;pointer-events:none}
+ .print-paper{display:block!important;box-sizing:border-box;width:210mm;height:148mm;padding:0;margin:0;background:#fff;color:#000;font-family:Tahoma,Arial,sans-serif;position:relative;overflow:hidden;direction:rtl;border:0}.sheet-grid{position:relative;width:100%;height:100%;border-collapse:collapse;table-layout:fixed;direction:rtl}.sheet-grid td{padding:1mm .7mm;box-sizing:border-box;overflow:hidden;line-height:1.12}.sheet-image{position:absolute;object-fit:contain;pointer-events:none}.template-logo{display:block;width:100%;height:100%;min-height:18mm;max-width:100%;object-fit:contain;margin:auto}
  .excel-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:100%}.excel-cell{box-sizing:border-box;border:1px solid #222;padding:1mm .8mm;min-height:6mm;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;line-height:1.2;white-space:pre-line}.excel-top{grid-template-columns:1fr 2fr 1fr 1fr;min-height:6mm}.excel-blank{grid-row:span 2}.excel-title{grid-column:span 1;grid-row:span 2;font-weight:bold;font-size:8.5pt;white-space:pre-line}.excel-title-cont{display:none}.excel-label{font-size:7pt;justify-content:flex-start;text-align:right}.excel-meta{font-size:7.5pt;font-weight:bold}.excel-full{grid-column:1/-1;justify-content:flex-start;text-align:right}.excel-half{grid-column:span 4;justify-content:flex-start;text-align:right}.excel-legal{font-size:6pt;line-height:1.15;justify-content:flex-start;text-align:right;align-items:flex-start}.excel-terms-short{grid-column:span 2}.excel-terms-long{grid-column:span 3}.excel-sign{min-height:12mm;font-weight:bold}.excel-sign-short{grid-column:span 1}
  .ptable{margin-top:0;width:100%;border-collapse:collapse;table-layout:fixed;font-size:7.5pt}.ptable th,.ptable td{border:1px solid #222;text-align:center;padding:1mm;white-space:normal;height:7mm}
 }
@@ -100,10 +101,25 @@ async function readTemplate(){const db=await openTemplateDB();return new Promise
 function bufferToBase64(buffer){const bytes=new Uint8Array(buffer);let binary="";for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,Math.min(i+0x8000,bytes.length)));return btoa(binary)}
 function base64ToBuffer(text){const binary=atob(text),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes.buffer}
 function asArrayBuffer(v){if(v instanceof ArrayBuffer)return v;if(ArrayBuffer.isView(v))return v.buffer.slice(v.byteOffset,v.byteOffset+v.byteLength);return null}
+async function loadTemplateForPrint(bytes){
+ if(!window.JSZip)throw new Error("کتابخانه سازگاری فایل اکسل بارگذاری نشده؛ صفحه را تازه‌سازی کنید.");
+ const zip=await JSZip.loadAsync(bytes.slice(0));
+ let logoSrc="";
+ try{const image=zip.file("xl/media/image1.png");if(image)logoSrc="data:image/png;base64,"+await image.async("base64")}catch(e){console.warn("Could not read template logo",e)}
+ // Work around a known ExcelJS 4.4.0 drawing/anchors loader bug in a temporary copy.
+ const sheetFiles=Object.keys(zip.files).filter(n=>/^xl\/worksheets\/sheet\d+\.xml$/.test(n));
+ for(const path of sheetFiles){const file=zip.file(path);if(!file)continue;let xml=await file.async("string");xml=xml.replace(/<drawing\b[^>]*\/>/g,"");zip.file(path,xml)}
+ const relFiles=Object.keys(zip.files).filter(n=>/^xl\/worksheets\/_rels\/sheet\d+\.xml\.rels$/.test(n));
+ for(const path of relFiles){const file=zip.file(path);if(!file)continue;let xml=await file.async("string");xml=xml.replace(/<Relationship\b(?=[^>]*\bType="[^"]*\/drawing")[^>]*\/>/g,"");zip.file(path,xml)}
+ for(const path of Object.keys(zip.files)){if(/^xl\/drawings\//.test(path)&&!zip.files[path].dir)zip.remove(path)}
+ const cleanBytes=await zip.generateAsync({type:"arraybuffer"});
+ const workbook=new ExcelJS.Workbook();await workbook.xlsx.load(cleanBytes);
+ return {workbook,logoSrc};
+}
 async function loadStoredTemplate(){let stored=null;try{stored=asArrayBuffer(await readTemplate())}catch(e){console.warn("IndexedDB read unavailable; checking localStorage",e)}if(stored&&stored.byteLength)return stored;try{const b64=localStorage.getItem(TEMPLATE_LS_KEY);if(b64)return base64ToBuffer(b64)}catch(e){console.warn("localStorage read unavailable",e)}return null}
 async function persistTemplate(bytes){const copy=bytes.slice(0);let idbSaved=false,localSaved=false,lastError=null;try{await storeTemplate(copy);idbSaved=true}catch(e){lastError=e;console.warn("IndexedDB save failed; trying localStorage",e)}try{localStorage.setItem(TEMPLATE_LS_KEY,bufferToBase64(copy));localSaved=true}catch(e){lastError=e;console.warn("localStorage save failed",e)}if(!idbSaved&&!localSaved)throw new Error("ذخیره‌سازی مرورگر ناموفق بود. فضای مرورگر یا مجوز ذخیره‌سازی را بررسی کنید. "+(lastError&&lastError.message||""));const check=await loadStoredTemplate();if(!check||!check.byteLength)throw new Error("فایل انتخاب شد اما پس از ذخیره دوباره خوانده نشد؛ لطفاً دوباره انتخابش کنید.");return check}
 async function initTemplate(){try{templateBytes=await loadStoredTemplate();$("templateStatus").textContent=templateBytes?"قالب اصلی در این مرورگر ذخیره شده است؛ پس از بستن و بازکردن صفحه هم باقی می‌ماند.":"قالب اصلی را انتخاب کنید.";if(!window.ExcelJS)$("templateError").textContent="کتابخانه ساخت چاپ هنوز بارگذاری نشده؛ صفحه را یک بار تازه‌سازی کنید."}catch(e){$("templateStatus").textContent="قالب هنوز ذخیره نشده است.";$("templateError").textContent="خواندن فایل ذخیره‌شده ناموفق بود: "+(e.message||String(e))}}
-$("templateFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;$("templateError").textContent="";$("templateStatus").textContent="در حال بررسی و ذخیره قالب…";try{if(!/\.xlsx$/i.test(file.name))throw new Error("لطفاً فایل اصلی با پسوند xlsx را انتخاب کنید.");const bytes=await file.arrayBuffer();let parseIssue="";if(window.ExcelJS){try{const test=new ExcelJS.Workbook();await test.xlsx.load(bytes.slice(0));const sheet=test.getWorksheet("حواله تبریز")||test.worksheets[0];if(!sheet)throw new Error("هیچ شیتی در فایل پیدا نشد.");}catch(e){parseIssue=e.message||String(e)}}const saved=await persistTemplate(bytes);templateBytes=saved;$("templateStatus").textContent="قالب ذخیره شد: "+file.name+" (در همین مرورگر نگه داشته می‌شود).";if(parseIssue)$("templateError").textContent="فایل ذخیره شد، اما کتابخانه نتوانست اکسل را بخواند: "+parseIssue+"؛ برای چاپ باید فایل xlsx سالم انتخاب شود.";else if(!window.ExcelJS)$("templateError").textContent="قالب ذخیره شد، اما کتابخانه چاپ بارگذاری نشده است؛ صفحه را تازه‌سازی و دوباره امتحان کنید.";}catch(err){$("templateStatus").textContent="قالب ذخیره نشد.";$("templateError").textContent="خطا در ذخیره قالب: "+(err.message||String(err))}});
+$("templateFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;$("templateError").textContent="";$("templateStatus").textContent="در حال بررسی و ذخیره قالب…";try{if(!/\.xlsx$/i.test(file.name))throw new Error("لطفاً فایل اصلی با پسوند xlsx را انتخاب کنید.");const bytes=await file.arrayBuffer();let parseIssue="";if(window.ExcelJS){try{const loaded=await loadTemplateForPrint(bytes);const sheet=loaded.workbook.getWorksheet("حواله تبریز")||loaded.workbook.worksheets[0];if(!sheet)throw new Error("هیچ شیتی در فایل پیدا نشد.");}catch(e){parseIssue=e.message||String(e)}}const saved=await persistTemplate(bytes);templateBytes=saved;$("templateStatus").textContent="قالب ذخیره شد: "+file.name+" (در همین مرورگر نگه داشته می‌شود).";if(parseIssue)$("templateError").textContent="فایل ذخیره شد، اما کتابخانه نتوانست اکسل را بخواند: "+parseIssue+"؛ برای چاپ باید فایل xlsx سالم انتخاب شود.";else if(!window.ExcelJS)$("templateError").textContent="قالب ذخیره شد، اما کتابخانه چاپ بارگذاری نشده است؛ صفحه را تازه‌سازی و دوباره امتحان کنید.";}catch(err){$("templateStatus").textContent="قالب ذخیره نشد.";$("templateError").textContent="خطا در ذخیره قالب: "+(err.message||String(err))}});
 function xlColor(color){if(!color)return "";if(color.argb)return "#"+String(color.argb).slice(-6);if(color.rgb)return "#"+String(color.rgb).slice(-6);return ""}
 function cellText(cell){const v=cell.value;if(v==null)return "";if(typeof v==="object"){if(Array.isArray(v.richText))return v.richText.map(x=>x.text||"").join("");if("text" in v && v.text!=null)return String(v.text);if("result" in v && v.result!=null)return String(v.result);if("formula" in v)return "";if(v instanceof Date)return v.toLocaleDateString("fa-IR");return ""}return String(v)}
 function sideCss(side){if(!side||!side.style)return "";const map={thin:"0.5pt",hair:"0.35pt",dotted:"0.5pt dotted",dashed:"0.7pt dashed",medium:"1pt",thick:"1.5pt",double:"2pt double",mediumDashed:"1pt dashed",dashDot:"1pt dashed",mediumDashDot:"1pt dashed",dashDotDot:"1pt dotted",mediumDashDotDot:"1pt dotted",slantDashDot:"1pt dashed"};const raw=map[side.style]||"0.5pt solid";const bits=raw.split(" ");const width=bits[0],style=bits.length>1?bits[1]:"solid";return width+" "+style+" "+(xlColor(side.color)||"#222")}
@@ -124,7 +140,7 @@ function cellCss(cell){
  return css.join(";");
 }
 function mergedRanges(ws){const refs=["A11:B13","C14:E14","A10:B10","C9:E10","A14:B14","A5:E5","A8:E8","A9:B9","B1:C2","A1:A2","B4:C4","A3:E3","C11:E13"];return refs.map(ref=>{const p=ref.split(":");const parse=x=>{const m=x.match(/^([A-Z]+)(\d+)$/i);let col=0;for(const ch of m[1].toUpperCase())col=col*26+ch.charCodeAt(0)-64;return {row:+m[2],col}};return {ref,s:parse(p[0]),e:parse(p[1])}})}
-function renderWorksheet(ws,wb){
+function renderWorksheet(ws,logoSrc){
  const maxR=14,maxC=5,merges=mergedRanges(ws),starts=new Map(),covered=new Set();
  for(const m of merges){starts.set(m.s.row+":"+m.s.col,m);for(let rr=m.s.row;rr<=m.e.row;rr++)for(let cc=m.s.col;cc<=m.e.col;cc++)if(rr!==m.s.row||cc!==m.s.col)covered.add(rr+":"+cc)}
  const widths=Array.from({length:maxC},(_,i)=>Math.max(2,ws.getColumn(i+1).width||12)),wSum=widths.reduce((a,b)=>a+b,0);
@@ -135,32 +151,22 @@ function renderWorksheet(ws,wb){
   for(let cc=1;cc<=maxC;cc++){
    if(covered.has(rr+":"+cc))continue;
    const cell=ws.getCell(rr,cc),m=starts.get(rr+":"+cc),rs=m?m.e.row-m.s.row+1:1,cs=m?m.e.col-m.s.col+1:1;
-   let value=cellText(cell);
-   if(value==="")value="&#160;";
-   html+='<td'+(rs>1?' rowspan="'+rs+'"':"")+(cs>1?' colspan="'+cs+'"':"")+' style="'+cellCss(cell)+'">'+(value==="&#160;"?value:escapeHtml(value))+'</td>';
+   let value=cellText(cell),content;
+   if(rr===1&&cc===1&&logoSrc)content='<img class="template-logo" alt="" src="'+logoSrc+'">';
+   else content=value===""?"&#160;":escapeHtml(value);
+   html+='<td'+(rs>1?' rowspan="'+rs+'"':"")+(cs>1?' colspan="'+cs+'"':"")+' style="'+cellCss(cell)+'">'+content+'</td>';
   }
   html+='</tr>';
  }
  html+='</tbody></table>';
- // Render any pictures embedded in the source worksheet when ExcelJS exposes them.
- try{
-  const imgs=ws.getImages?ws.getImages():[];
-  const colX=n=>widths.slice(0,Math.max(0,Math.floor(n))).reduce((a,b)=>a+b,0)+(Math.max(0,n-Math.floor(n))*(widths[Math.min(widths.length-1,Math.floor(n))]||0));
-  const rowY=n=>heights.slice(0,Math.max(0,Math.floor(n))).reduce((a,b)=>a+b,0)+(Math.max(0,n-Math.floor(n))*(heights[Math.min(heights.length-1,Math.floor(n))]||0));
-  for(const img of imgs){const pic=wb.getImage(img.imageId);if(!pic)continue;let base=pic.base64;
-   if(!base&&pic.buffer){const bytes=pic.buffer instanceof ArrayBuffer?new Uint8Array(pic.buffer):new Uint8Array(pic.buffer.buffer||pic.buffer,pic.buffer.byteOffset||0,pic.buffer.byteLength||pic.buffer.length);let bin="";for(let i=0;i<bytes.length;i+=0x8000)bin+=String.fromCharCode(...bytes.subarray(i,i+0x8000));base=btoa(bin)}
-   if(base&&!base.startsWith("data:"))base="data:image/"+(pic.extension||"png")+";base64,"+base;
-   if(base&&img.range&&img.range.tl&&img.range.br){const tl=img.range.tl,br=img.range.br;const l=colX(tl.col||0)/wSum*100,t=rowY(tl.row||0)/hSum*100,ww=(colX(br.col||0)-colX(tl.col||0))/wSum*100,hh=(rowY(br.row||0)-rowY(tl.row||0))/hSum*100;html+='<img alt="" class="sheet-image" style="left:'+l+'%;top:'+t+'%;width:'+ww+'%;height:'+hh+'%" src="'+base+'">'}
-  }
- }catch(err){console.warn("Could not render source worksheet images",err)}
  return html+'</article>';
 }
 async function printWaybill(w){
  if(!templateBytes){$("templateError").textContent="ابتدا فایل اصلی اکسل حواله تبریز را در بخش «قالب اصلی اکسل حواله» انتخاب کنید."; $("templateCard").scrollIntoView({behavior:"smooth",block:"center"});return}
  try{
   $("templateError").textContent="";
-  const wb=new ExcelJS.Workbook();await wb.xlsx.load(templateBytes);
-  const ws=wb.getWorksheet("حواله تبریز")||wb.worksheets[0];
+  const loaded=await loadTemplateForPrint(templateBytes);
+  const wb=loaded.workbook,ws=wb.getWorksheet("حواله تبریز")||wb.worksheets[0];
   const no="06/"+String(w.waybill_no).padStart(4,"0"),date=fromGregorian(w.issue_date);
   ws.getCell("D1").value="شماره :";
   ws.getCell("E1").value=no;
@@ -173,7 +179,7 @@ async function printWaybill(w){
   ws.getCell("C7").value=w.license||"";
   ws.getCell("D7").value=faDigits(w.national||"");
   ws.getCell("E7").value=w.mobile||"";
-  $("printRoot").innerHTML=renderWorksheet(ws,wb);
+  $("printRoot").innerHTML=renderWorksheet(ws,loaded.logoSrc);
   // wait for the browser to lay out the generated sheet and any embedded pictures
   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
   window.print();
