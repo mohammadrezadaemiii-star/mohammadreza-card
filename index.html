@@ -7,34 +7,67 @@
 <title>ورود یکپارچه | عدل ترابران توس</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{color-scheme:dark;--bg:#0b1220;--panel:#111c2d;--line:#29384e;--gold:#d9b66d;--text:#f4f6fb;--muted:#aab6c8;--blue:#2865b0;--red:#f4a4a4}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:22px;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 0%,#1b3150 0,transparent 52%),linear-gradient(145deg,#080d16,#111b2b 55%,#080d16);font-family:Tahoma,Arial,sans-serif;color:var(--text)}
-.wrap{width:min(460px,100%)}.brand{text-align:center;margin-bottom:22px}.logo{width:68px;height:68px;margin:0 auto 14px;border:1px solid #806b42;border-radius:20px;display:grid;place-items:center;color:var(--gold);font-size:29px;background:#172235;box-shadow:0 12px 38px #0005}.brand h1{font-size:23px;margin:0 0 9px}.brand p{margin:0;color:var(--muted);font-size:13px;line-height:1.9}.card{border:1px solid var(--line);background:linear-gradient(160deg,#142136,#101827);border-radius:22px;padding:25px;box-shadow:0 28px 80px #0005}.card h2{font-size:18px;margin:0 0 7px}.sub{font-size:12px;color:var(--muted);line-height:1.9;margin:0 0 22px}label{display:block;font-size:12px;color:#d9e2ef;margin:14px 0 7px}input{width:100%;padding:14px 13px;border:1px solid #34445d;border-radius:12px;background:#0a1220;color:#fff;font:inherit;outline:none}input:focus{border-color:var(--gold);box-shadow:0 0 0 3px #d9b66d1c}.passrow{display:flex;gap:8px;align-items:center}.passrow input{flex:1;min-width:0}.eye{width:48px;flex:0 0 48px;border:1px solid #34445d;border-radius:12px;background:#18253a;color:#e4d3a6;padding:12px 0;font-size:17px}.submit{width:100%;border:0;border-radius:12px;background:linear-gradient(120deg,#e0c17b,#b58c43);color:#15130e;font:inherit;font-weight:bold;padding:14px;margin-top:21px;cursor:pointer}.submit:disabled{opacity:.65;cursor:wait}.msg{display:none;margin-top:15px;padding:12px;border-radius:10px;font-size:12px;line-height:1.9;background:#1a293e;color:#dce8fa;overflow-wrap:anywhere}.msg.show{display:block}.msg.error{background:#351f29;color:#ffd1d1;border:1px solid #6a343e}.foot{text-align:center;color:#8390a3;font-size:11px;line-height:1.9;margin-top:18px}.spinner{display:inline-block;width:13px;height:13px;border:2px solid #15130e66;border-top-color:#15130e;border-radius:50%;vertical-align:middle;animation:spin .7s linear infinite;margin-left:7px}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:420px){body{padding:16px}.card{padding:21px}.brand h1{font-size:21px}}
-</style>
-</head>
+:root{color-scheme:dark;--bg:#07111d;--panel:#0e1b2a;--line:#263b4d;--gold:#e6b65c;--text:#f5f7fa;--muted:#a8b8c7;--teal:#4bb8ad;--red:#f4a4a4}
+*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;min-height:100vh;padding:clamp(14px,3vw,42px);display:grid;place-items:center;background:radial-gradient(ellipse at 14% 8%,#173a4a 0,transparent 34%),radial-gradient(ellipse at 90% 95%,#322a1b 0,transparent 30%),linear-gradient(135deg,#06101a,#0a1724 55%,#101b28);font-family:Tahoma,Arial,sans-serif;color:var(--text);overflow-x:hidden}
+.shell{width:min(1080px,100%);min-height:620px;display:grid;grid-template-columns:1fr .86fr;direction:ltr;border:1px solid #2b4050;border-radius:28px;overflow:hidden;background:#0c1926eF;box-shadow:0 35px 100px #0008;position:relative}
+.visual{direction:rtl;position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:34px;overflow:hidden;background:linear-gradient(155deg,#102d3a 0%,#0b1d2a 50%,#101923 100%);border-left:1px solid #2b4050}
+.visual:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#07121df2 0%,transparent 62%),repeating-linear-gradient(135deg,transparent 0 35px,#ffffff04 36px 37px);pointer-events:none}
+.visual>*{position:relative;z-index:1}.brandline{display:flex;align-items:center;gap:13px}.brandmark{width:52px;height:52px;border:1px solid #c89c4b;border-radius:15px;background:linear-gradient(145deg,#1b3b47,#0c202d);display:grid;place-items:center;color:var(--gold);box-shadow:0 8px 25px #0004}.brandmark svg{width:31px;height:31px}.brandname{font-size:17px;font-weight:800;letter-spacing:-.3px}.branddesc{font-size:10px;color:#b6c5d1;margin-top:6px;letter-spacing:.3px}
+.hero{margin-top:35px}.eyebrow{display:inline-flex;align-items:center;gap:9px;color:#edc879;font-size:11px;font-weight:bold;letter-spacing:.5px}.eyebrow:before{content:"";width:24px;height:1px;background:var(--gold)}.hero h1{font-size:clamp(27px,3vw,40px);line-height:1.65;margin:15px 0 10px;max-width:460px;letter-spacing:-1px}.hero h1 span{color:var(--gold)}.hero p{font-size:13px;line-height:2.2;color:#b4c2ce;max-width:420px;margin:0}
+.truckscene{width:100%;max-width:480px;margin:12px auto 0;filter:drop-shadow(0 18px 18px #0004)}.truckscene svg{display:block;width:100%;height:auto}.visualbottom{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:20px;border-top:1px solid #ffffff16;color:#91a6b7;font-size:10px;line-height:1.9}.status{display:flex;align-items:center;gap:8px}.status i{display:block;width:7px;height:7px;border-radius:50%;background:#54c7a6;box-shadow:0 0 0 4px #54c7a61c}
+.loginarea{direction:rtl;display:flex;align-items:center;justify-content:center;padding:clamp(24px,4vw,52px);background:linear-gradient(145deg,#101f2e,#0b1724)}.logincontent{width:100%;max-width:370px}.mobilebrand{display:none}.miniicon{width:44px;height:44px;border:1px solid #4b493d;border-radius:14px;display:grid;place-items:center;color:var(--gold);background:#202b30;margin-bottom:24px}.miniicon svg{width:25px;height:25px}.logincontent h2{font-size:25px;line-height:1.6;margin:0 0 7px}.sub{font-size:12px;color:var(--muted);line-height:2;margin:0 0 28px}.fieldlabel{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#dbe4eb;margin:18px 0 9px}input{width:100%;padding:15px 14px;border:1px solid #304658;border-radius:12px;background:#08131f;color:#fff;font:inherit;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s}input::placeholder{color:#718597}input:focus{border-color:var(--gold);box-shadow:0 0 0 3px #e6b65c18}.passrow{display:flex;gap:8px;align-items:center}.passrow input{flex:1;min-width:0}.eye{width:48px;flex:0 0 48px;border:1px solid #304658;border-radius:12px;background:#142534;color:#e6c782;padding:12px 0;font-size:17px;cursor:pointer}.submit{width:100%;border:1px solid #f1cb7b;border-radius:12px;background:linear-gradient(110deg,#f0c875,#c9963f);color:#17202a;font:inherit;font-size:14px;font-weight:bold;padding:15px;margin-top:24px;cursor:pointer;box-shadow:0 9px 25px #c9963f21;transition:transform .2s,filter .2s}.submit:hover{filter:brightness(1.06);transform:translateY(-1px)}.submit:disabled{opacity:.65;cursor:wait;transform:none}.securehint{display:flex;align-items:center;gap:9px;color:#92a6b5;font-size:10px;line-height:1.8;margin-top:18px}.securehint svg{width:17px;height:17px;flex:none;color:#68b9a8}.msg{display:none;margin-top:15px;padding:12px;border-radius:10px;font-size:12px;line-height:1.9;background:#172b3b;color:#dce8fa;overflow-wrap:anywhere}.msg.show{display:block}.msg.error{background:#351f29;color:#ffd1d1;border:1px solid #6a343e}.foot{color:#718798;font-size:10px;line-height:2;margin-top:27px;padding-top:17px;border-top:1px solid #ffffff12}.spinner{display:inline-block;width:13px;height:13px;border:2px solid #17202a66;border-top-color:#17202a;border-radius:50%;vertical-align:middle;animation:spin .7s linear infinite;margin-left:7px}@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:760px){body{padding:12px;display:block}.shell{grid-template-columns:1fr;min-height:0;width:min(480px,100%);margin:0 auto;border-radius:22px}.visual{display:none}.loginarea{padding:28px 23px 23px}.logincontent{max-width:390px}.mobilebrand{display:flex;align-items:center;gap:11px;margin-bottom:29px}.mobilebrand .brandmark{width:45px;height:45px}.mobilebrand .brandname{font-size:15px}.mobilebrand .branddesc{font-size:9px}.miniicon{display:none}.logincontent h2{font-size:23px}.sub{margin-bottom:22px}.foot{margin-top:23px}}
+@media(min-width:761px) and (max-height:700px){.shell{min-height:570px}.visual{padding:25px}.hero{margin-top:15px}.hero h1{font-size:30px}.truckscene{max-width:390px}.loginarea{padding:30px}}
+</style></head>
 <body>
-<main class="wrap">
-  <header class="brand">
-    <div class="logo" aria-hidden="true">ع</div>
-    <h1>عدل ترابران توس</h1>
-    <p>سامانه یکپارچه ورود کارکنان<br>هر کاربر با حساب اختصاصی خود وارد واحد مربوطه می‌شود.</p>
-  </header>
-  <section class="card">
-    <h2>ورود به سامانه</h2>
-    <p class="sub">نام کاربری سامانه همان ایمیل حساب کاری شماست. دسترسی‌ها پس از احراز هویت بررسی می‌شوند.</p>
-    <form id="loginForm">
-      <label for="email">نام کاربری / ایمیل</label>
-      <input id="email" name="email" type="email" autocomplete="username" placeholder="ایمیل کاری" required>
-      <label for="password">رمز عبور</label>
-      <div class="passrow">
-        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="رمز عبور اختصاصی" required>
-        <button class="eye" id="togglePass" type="button" aria-label="نمایش رمز عبور">◉</button>
+<main class="shell">
+  <section class="visual" aria-label="معرفی سامانه حمل‌ونقل">
+    <div class="brandline">
+      <div class="brandmark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M20 3 33 8v10c0 8.2-5.3 14.2-13 19C12.3 32.2 7 26.2 7 18V8l13-5Z" stroke="currentColor" stroke-width="1.6"/><path d="M12 22h16M15 17h10M17 12h6M15 27h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M20 7v24" stroke="currentColor" stroke-opacity=".45"/></svg></div>
+      <div><div class="brandname">عدل ترابران توس</div><div class="branddesc">خدمات حمل‌ونقل تانکری و لجستیک</div></div>
+    </div>
+    <div class="hero">
+      <div class="eyebrow">سامانه یکپارچه عملیات</div>
+      <h1>از مبدأ تا مقصد،<br><span>با نظم و اطمینان.</span></h1>
+      <p>درگاه اختصاصی کارکنان برای مدیریت هوشمند حمل مواد نفتی، حواله‌ها، رانندگان و عملیات بین واحدهای شرکت.</p>
+      <div class="truckscene" aria-hidden="true">
+        <svg viewBox="0 0 520 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="tank" x1="120" y1="70" x2="360" y2="170" gradientUnits="userSpaceOnUse"><stop stop-color="#d9e0df"/><stop offset=".28" stop-color="#8fa3a5"/><stop offset=".53" stop-color="#e2e6df"/><stop offset=".78" stop-color="#647c83"/><stop offset="1" stop-color="#253d4a"/></linearGradient><linearGradient id="cab" x1="360" y1="100" x2="445" y2="175" gradientUnits="userSpaceOnUse"><stop stop-color="#e8bd62"/><stop offset="1" stop-color="#9d6c2c"/></linearGradient></defs>
+          <path d="M20 205H500" stroke="#52717d" stroke-opacity=".5"/><path d="M40 219H480" stroke="#52717d" stroke-opacity=".25" stroke-dasharray="8 10"/>
+          <g opacity=".6" stroke="#42616d" stroke-width="1.2"><path d="M50 56V188M50 56h42M72 76h20M72 96h20M72 116h20M72 136h20"/><path d="M440 35v153M440 35h32M455 53h17M455 72h17M455 91h17"/></g>
+          <g><path d="M72 122c0-29 20-52 45-52h201c25 0 45 23 45 52v51H72v-51Z" fill="url(#tank)" stroke="#dce3dc" stroke-opacity=".55" stroke-width="1.4"/><ellipse cx="117" cy="122" rx="18" ry="51" fill="#718a91" stroke="#d7e0dc" stroke-width="1.3"/><ellipse cx="117" cy="122" rx="8" ry="39" stroke="#cbd7d2" stroke-opacity=".65"/><path d="M143 80v91M175 74v99M207 73v100M239 73v100M271 73v100M303 80v91" stroke="#4d6873" stroke-opacity=".6" stroke-width="2"/><path d="M118 71h200" stroke="#f6f7ed" stroke-opacity=".7" stroke-width="2"/><path d="M92 177h244" stroke="#182d39" stroke-width="4"/><rect x="81" y="174" width="266" height="10" rx="2" fill="#344d59"/><path d="M94 184v13M133 184v13M298 184v13M331 184v13" stroke="#9fb1b1" stroke-width="4"/></g>
+          <g><path d="M350 130h43l30 28v27H338v-35c0-11 4-20 12-20Z" fill="url(#cab)" stroke="#f1cf83" stroke-width="1.4"/><path d="M389 137h-28v22h50l-22-22Z" fill="#193544" stroke="#6f8c94" stroke-width="1.2"/><path d="M359 163h58v9h-58z" fill="#73532d"/><rect x="340" y="177" width="87" height="7" rx="2" fill="#233c49"/><path d="M344 188h84" stroke="#d9b66d" stroke-width="2"/><rect x="420" y="166" width="8" height="10" rx="2" fill="#f5d88e"/></g>
+          <g fill="#101c27" stroke="#7f989f" stroke-width="2"><circle cx="143" cy="191" r="20"/><circle cx="143" cy="191" r="9" fill="#bdc7c2"/><circle cx="302" cy="191" r="20"/><circle cx="302" cy="191" r="9" fill="#bdc7c2"/><circle cx="390" cy="191" r="20"/><circle cx="390" cy="191" r="9" fill="#bdc7c2"/></g>
+          <path d="M56 211h408" stroke="#d9b66d" stroke-opacity=".65" stroke-width="1.5"/><circle cx="56" cy="211" r="3" fill="#e6b65c"/><circle cx="464" cy="211" r="3" fill="#e6b65c"/>
+        </svg>
       </div>
-      <button class="submit" id="submitBtn" type="submit">ورود امن</button>
-    </form>
-    <div class="msg" id="message" role="status" aria-live="polite"></div>
+    </div>
+    <div class="visualbottom"><span>عدل ترابران توس<br>سامانه مدیریت عملیات حمل</span><span class="status"><i></i> درگاه ورود کارکنان</span></div>
   </section>
-  <footer class="foot">ورود فقط برای کاربران تعریف‌شده و مجاز است.<br>برای ایجاد حساب یا تغییر سطح دسترسی با مدیر سامانه تماس بگیرید.</footer>
+  <section class="loginarea">
+    <div class="logincontent">
+      <div class="mobilebrand">
+        <div class="brandmark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M20 3 33 8v10c0 8.2-5.3 14.2-13 19C12.3 32.2 7 26.2 7 18V8l13-5Z" stroke="currentColor" stroke-width="1.6"/><path d="M12 22h16M15 17h10M17 12h6M15 27h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <div><div class="brandname">عدل ترابران توس</div><div class="branddesc">سامانه یکپارچه حمل‌ونقل تانکری</div></div>
+      </div>
+      <div class="miniicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <h2>ورود به پنل سازمانی</h2>
+      <p class="sub">با حساب کاری اختصاصی خود وارد شوید. سامانه پس از احراز هویت، شما را به پنل متناسب با سطح دسترسی‌تان هدایت می‌کند.</p>
+      <form id="loginForm">
+        <label class="fieldlabel" for="email">نام کاربری / ایمیل سازمانی</label>
+        <input id="email" name="email" type="email" autocomplete="username" placeholder="ایمیل حساب کاری خود را وارد کنید" required>
+        <label class="fieldlabel" for="password">رمز عبور</label>
+        <div class="passrow">
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="رمز عبور اختصاصی" required>
+          <button class="eye" id="togglePass" type="button" aria-label="نمایش رمز عبور">◉</button>
+        </div>
+        <button class="submit" id="submitBtn" type="submit">ورود امن به سامانه <span aria-hidden="true">←</span></button>
+      </form>
+      <div class="msg" id="message" role="status" aria-live="polite"></div>
+      <div class="securehint"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 19 6v5c0 4.7-3 8-7 10-4-2-7-5.3-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.5"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>دسترسی هر کاربر جداگانه بررسی می‌شود؛ پنل‌ها فقط برای حساب‌های مجاز باز می‌شوند.</span></div>
+      <footer class="foot">حساب یا سطح دسترسی شما فعال نیست؟<br>برای تعریف دسترسی یا بازیابی حساب با مدیر سامانه هماهنگ کنید.</footer>
+    </div>
+  </section>
 </main>
 <script>
 const SB_URL="https://jfixjlygjukrlokdznhh.supabase.co";
