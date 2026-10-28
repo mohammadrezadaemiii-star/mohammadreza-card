@@ -55,7 +55,7 @@
       <p class="sub">با حساب کاری اختصاصی خود وارد شوید. سامانه پس از احراز هویت، شما را به پنل متناسب با سطح دسترسی‌تان هدایت می‌کند.</p>
       <form id="loginForm">
         <label class="fieldlabel" for="email">نام کاربری / ایمیل سازمانی</label>
-        <input id="email" name="email" type="email" autocomplete="username" placeholder="ایمیل حساب کاری خود را وارد کنید" required>
+        <input id="email" name="email" type="text" autocomplete="username" placeholder="نام کاربری مثل hossein.aminian" required>
         <label class="fieldlabel" for="password">رمز عبور</label>
         <div class="passrow">
           <input id="password" name="password" type="password" autocomplete="current-password" placeholder="رمز عبور اختصاصی" required>
@@ -87,7 +87,7 @@ async function routeUser(user){
   showMessage("ورود موفق بود"+(profile.display_name?"، "+profile.display_name:"")+"؛ در حال انتقال به پنل اختصاصی…");
   location.replace(target.href);return true;
 }
-form.addEventListener("submit",async e=>{e.preventDefault();loading(true);msg.className="msg";try{const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;await routeUser(data.user)}catch(e){showMessage("ورود انجام نشد. ایمیل و رمز عبور را بررسی کنید. اگر مشکل ادامه داشت با مدیر سامانه تماس بگیرید.",true)}finally{loading(false)}});
+form.addEventListener("submit",async e=>{e.preventDefault();loading(true);msg.className="msg";try{let email=document.getElementById("email").value.trim().toLowerCase(),password=document.getElementById("password").value;if(email&&!email.includes("@"))email=email+"@staff.adl.local";const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;await routeUser(data.user)}catch(e){showMessage("ورود انجام نشد. ایمیل و رمز عبور را بررسی کنید. اگر مشکل ادامه داشت با مدیر سامانه تماس بگیرید.",true)}finally{loading(false)}});
 (async()=>{try{const {data}=await sb.auth.getSession();if(data.session?.user){loading(true);await routeUser(data.session.user);loading(false)}}catch(e){console.warn("session check failed",e)}})();
 </script>
 </body>
