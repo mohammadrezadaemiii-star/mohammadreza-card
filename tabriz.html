@@ -68,7 +68,7 @@
 <script>
 const SB_URL="https://jfixjlygjukrlokdznhh.supabase.co";
 const SB_KEY="sb_publishable_JpVcwEzZzpPcDwj9PhkZHQ_AoKpw9Kt";
-const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:"tabriz-waybill-auth-v1",persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let session=null,drivers=[],waybills=[],printItem=null,currentSubmissionId=null,supportRequests=[];
 const $=id=>document.getElementById(id);
 function digits(v){return String(v||"").replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d))}
