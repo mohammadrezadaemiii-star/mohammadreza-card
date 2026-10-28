@@ -22,7 +22,7 @@
 </head>
 <body>
 <div class="wrap">
-  <header class="head"><h1>پنل صدور حواله — کریر هوشمند تبریز</h1><p>شرکت حمل و نقل بزرگ‌مقیاس هوشمند عدل ترابران توس (عدالتیان) | مبدأ ثابت: پالایشگاه نفت تبریز</p></header>
+  <header class="head"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h1>پنل صدور حواله — کریر هوشمند تبریز</h1><p>شرکت حمل و نقل بزرگ‌مقیاس هوشمند عدل ترابران توس (عدالتیان) | مبدأ ثابت: پالایشگاه نفت تبریز</p></div><button type="button" class="secondary" onclick="logoutToPortal()">↪ خروج / درگاه اصلی</button></div></header>
   <section id="loginView" class="card login">
     <h2 style="margin-top:0">ورود نماینده تبریز</h2>
     <p class="muted">با حساب اختصاصی نماینده وارد شوید. این پنل از حساب مدیریتی جداست.</p>
@@ -198,15 +198,16 @@ async function printWaybill(w){
   window.print();
  }catch(err){$("formError").textContent="آماده‌سازی چاپ انجام نشد: "+(err.message||String(err));}
 }
-function composePlate(){const iran=norm($("plateIran").value).slice(0,2),three=norm($("plateThree").value).slice(0,3),letter=$("plateLetter").value.trim(),two=norm($("plateTwo").value).slice(0,2);$("plate").value=[iran,three,letter,two].filter(Boolean).join(" ");return $("plate").value}
+async function logoutToPortal(){try{await sb.auth.signOut()}catch(e){console.warn("sign out error",e)}location.replace("./index.html")}
+ function composePlate(){const iran=norm($("plateIran").value).slice(0,2),three=norm($("plateThree").value).slice(0,3),letter=$("plateLetter").value.trim(),two=norm($("plateTwo").value).slice(0,2);$("plate").value=[iran,three,letter,two].filter(Boolean).join(" ");return $("plate").value}
 function setPlateFields(value){const v=String(value||"").trim();$("plate").value=v;const parts=v.split(/[\s-]+/).filter(Boolean);if(parts.length>=4){$("plateIran").value=parts[0];$("plateThree").value=parts[1];$("plateLetter").value=parts[2];$("plateTwo").value=parts[3]}else if(v){$("plateIran").value="";$("plateThree").value="";$("plateLetter").value="";$("plateTwo").value=""}else{$("plateIran").value="";$("plateThree").value="";$("plateLetter").value="";$("plateTwo").value=""}}
 ["plateIran","plateThree","plateLetter","plateTwo"].forEach(id=>$(id).addEventListener("input",composePlate));
 $("newDriverForm").addEventListener("submit",async e=>{e.preventDefault();$("newDriverError").textContent="";const national=norm($("newNational").value),name=$("newName").value.trim();if(national.length!==10){$("newDriverError").textContent="کد ملی باید ۱۰ رقم باشد.";return}if(name.length<3){$("newDriverError").textContent="نام و نام خانوادگی را کامل وارد کنید.";return}try{const r=await sb.rpc("register_waybill_driver",{p_national:national,p_name:name,p_license:$("newLicense").value.trim()||null,p_mobile:$("newMobile").value.trim()||null,p_plate:$("newPlate").value.trim()||null,p_vehicle:$("newVehicle").value.trim()||null});if(r.error)throw r.error;const d=typeof r.data==="string"?JSON.parse(r.data):r.data;if(d.already_exists){$("newDriverError").textContent="این کد ملی از قبل ثبت شده است؛ اطلاعات راننده برای جلوگیری از رکورد تکراری اضافه نشد.";}else{$("newDriverError").textContent="راننده در بانک مشترک ثبت شد و از پنل‌های دیگر هم قابل جستجو است.";}await loadData();$("national").value=faDigits(national);$("driverName").value=d.name||name;$("license").value=d.license||$("newLicense").value;$("mobile").value=d.mobile||$("newMobile").value;setPlateFields(d.plate||$("newPlate").value); }catch(err){$("newDriverError").textContent="ثبت انجام نشد: "+(err.message||String(err))}});
 $("loginBtn").onclick=async()=>{const email=$("email").value.trim(),password=$("password").value;$("loginError").textContent="";const r=await sb.auth.signInWithPassword({email,password});if(r.error){$("loginError").textContent="ورود انجام نشد: "+r.error.message;return}session=r.data.session;if(!await requireTabrizAccess())return;try{await loadData();await loadSupportRequests();$("loginView").classList.add("hide");$("appView").classList.remove("hide")}catch(e){$("loginError").textContent="خطا در دریافت اطلاعات: "+e.message;await sb.auth.signOut()}}
-$("logoutBtn").onclick=async()=>{await sb.auth.signOut();session=null;$("appView").classList.add("hide");$("loginView").classList.remove("hide")}
+$("logoutBtn").onclick=logoutToPortal
 $("refreshBtn").onclick=async()=>{try{await loadData()}catch(e){alert("خطا در به‌روزرسانی: "+e.message)}};$("refreshRequestsBtn").onclick=loadSupportRequests
 $("resetBtn").onclick=()=>{$("waybillForm").reset();$("formError").textContent="";setToday()}
-sb.auth.getSession().then(async r=>{session=r.data.session;if(session&&await requireTabrizAccess()){try{await loadData();await loadSupportRequests();$("loginView").classList.add("hide");$("appView").classList.remove("hide")}catch(e){$("loginError").textContent=e.message}}else setToday()});
+sb.auth.getSession().then(async r=>{session=r.data.session;if(session&&await requireTabrizAccess()){try{await loadData();await loadSupportRequests();$("loginView").classList.add("hide");$("appView").classList.remove("hide")}catch(e){$("loginError").textContent=e.message}}else if(!session){location.replace("./index.html")}else{location.replace("./index.html")}});
 window.addEventListener("afterprint",()=>{$("printRoot").innerHTML=""});
 </script>
 </body></html>
