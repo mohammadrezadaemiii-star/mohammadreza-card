@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ثبت درخواست مأموریت تهران</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f5f8;color:#172033;font-family:Tahoma,Arial,sans-serif}header{background:#172b4d;color:white;padding:20px 16px}header h1{font-size:20px;margin:0 0 8px}header p{margin:0;color:#dbe5f5;font-size:13px}.wrap{max-width:850px;margin:20px auto;padding:0 12px}.card{background:#fff;border:1px solid #e0e6ef;border-radius:14px;padding:18px;box-shadow:0 5px 18px #15294b0b}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}label{display:block;font-size:13px;font-weight:bold;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid #ccd5e2;border-radius:8px;padding:11px;font:inherit;font-size:14px;background:white}textarea{min-height:90px;resize:vertical}.full{grid-column:1/-1}.actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}button{border:0;border-radius:9px;padding:12px 18px;font:inherit;cursor:pointer;background:#174ea6;color:white}button.secondary{background:#e8edf5;color:#172033}button:disabled{opacity:.55}.status{margin:12px 0;padding:10px;border-radius:8px;font-size:14px;display:none}.status.show{display:block}.status.error{background:#fff0ef;color:#a3261d}.status.ok{background:#eaf7ee;color:#176b35}.small{font-size:12px;color:#64748b;margin-top:12px}@media(max-width:600px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.card{padding:14px}}
+</style>
+</head>
+<body>
+<header><h1>پنل ثبت درخواست مأموریت — تهران</h1><p>ثبت مشخصات راننده و بار برای بررسی توسط واحد حواله</p></header>
+<main class="wrap"><section class="card">
+<div id="who" class="small">در حال بررسی دسترسی…</div>
+<div id="status" class="status" role="status"></div>
+<form id="requestForm" hidden>
+<div class="grid">
+<div><label for="issue_date">تاریخ</label><input id="issue_date" name="issue_date" type="date" required></div>
+<div><label for="national">کد ملی راننده</label><input id="national" name="national" inputmode="numeric" maxlength="10" required></div>
+<div><label for="name">نام و نام خانوادگی</label><input id="name" name="name" required></div>
+<div><label for="license">شماره گواهینامه</label><input id="license" name="license"></div>
+<div><label for="mobile">موبایل راننده</label><input id="mobile" name="mobile" inputmode="tel" required></div>
+<div><label for="plate">شماره پلاک</label><input id="plate" name="plate" placeholder="مثلاً ۲۲ الف ۵۳۶ - ایران ۴۲" required></div>
+<div><label for="vehicle">نوع وسیله نقلیه</label><input id="vehicle" name="vehicle" placeholder="مثلاً تانکر"></div>
+<div><label for="cargo">نوع بار</label><select id="cargo" name="cargo"><option value="">انتخاب کنید</option><option>اکستراکت</option><option>روغن پایه</option><option>بنزین پیرولیز</option><option>سایر</option></select></div>
+<div><label for="origin">مبدأ</label><input id="origin" name="origin" value="شرکت نفت ایرانول" required></div>
+<div><label for="dest">مقصد</label><input id="dest" name="dest" required></div>
+<div class="full"><label for="notes">توضیحات</label><textarea id="notes" name="notes" placeholder="توضیحات تکمیلی…"></textarea></div>
+</div>
+<div class="actions"><button id="submitBtn" type="submit">ثبت درخواست</button><button class="secondary" type="reset">پاک کردن فرم</button></div>
+<p class="small">درخواست پس از ثبت، برای بررسی واحد حواله ارسال می‌شود و این پنل امکان صدور حواله ندارد.</p>
+</form></section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://jfixjlygjukrlokdznhh.supabase.co';
+const SUPABASE_KEY='sb_publishable_JpVcwEzZzpPcDwj9PhkZHQ_AoKpw9Kt';
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const STAFF_NAME='پشتیبانی مأموریت تهران';
+const statusEl=document.getElementById('status');
+function message(text,type){statusEl.textContent=text;statusEl.className='status show '+type}
+document.getElementById('issue_date').value=new Date().toLocaleDateString('en-CA');
+async function init(){
+ const {data:{session},error}=await db.auth.getSession();
+ if(error||!session){document.getElementById('who').textContent='برای استفاده از این پنل ابتدا از صفحه ورود سامانه وارد شوید.';return}
+ const {data:role,error:roleError}=await db.from('app_user_roles').select('role,display_name,enabled,panel_path').eq('user_id',session.user.id).maybeSingle();
+ if(roleError||!role||role.role!=='mission_support'||!role.enabled){document.getElementById('who').textContent='برای این حساب دسترسی این پنل فعال نیست.';return}
+ const {data:staff,error:staffError}=await db.from('support_staff').select('staff_name,active').eq('user_id',session.user.id).maybeSingle();
+ if(staffError||!staff||!staff.active){document.getElementById('who').textContent='حساب پشتیبانی در فهرست کارکنان فعال نیست.';return}
+ document.getElementById('who').textContent='حساب فعال: '+(role.display_name||staff.staff_name);
+ document.getElementById('requestForm').hidden=false;
+}
+document.getElementById('requestForm').addEventListener('submit',async e=>{
+ e.preventDefault();const btn=document.getElementById('submitBtn');btn.disabled=true;statusEl.className='status';
+ const f=new FormData(e.currentTarget);const val=k=>String(f.get(k)||'').trim();
+ const payload={submitted_by:(await db.auth.getSession()).data.session.user.id,staff_name:STAFF_NAME,issue_date:val('issue_date')||null,national:val('national'),name:val('name'),license:val('license'),mobile:val('mobile'),plate:val('plate'),vehicle:val('vehicle'),cargo:val('cargo'),origin:val('origin'),dest:val('dest'),notes:val('notes'),status:'pending'};
+ const {error}=await db.from('support_submissions').insert(payload);
+ if(error)message('ثبت انجام نشد: '+error.message,'error');else{message('درخواست با موفقیت ثبت شد و برای بررسی ارسال گردید.','ok');e.currentTarget.reset();document.getElementById('issue_date').value=new Date().toLocaleDateString('en-CA');document.getElementById('origin').value='شرکت نفت ایرانول'}
+ btn.disabled=false;
+});
+init();
+</script>
+</body></html>
