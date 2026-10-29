@@ -210,4 +210,4 @@ $("resetBtn").onclick=()=>{$("waybillForm").reset();$("formError").textContent="
 sb.auth.getSession().then(async r=>{session=r.data.session;if(session&&await requireTabrizAccess()){try{await loadData();await loadSupportRequests();$("loginView").classList.add("hide");$("appView").classList.remove("hide")}catch(e){$("loginError").textContent=e.message}}else if(!session){location.replace("./index.html")}else{location.replace("./index.html")}});
 window.addEventListener("afterprint",()=>{$("printRoot").innerHTML=""});
 </script>
-</body></html>
+<script src="./support-widget.js"></script></body></html>
