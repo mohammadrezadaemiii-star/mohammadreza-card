@@ -1,0 +1,17 @@
+/* Adl Tarabaran Toos — shared visual language. Screen only; print layouts remain untouched. */
+@media screen {
+:root{--adl-navy:#0b1b2b;--adl-blue:#153b5b;--adl-gold:#d6ad5b;--adl-gold-soft:#f2d58f;--adl-ink:#172536;--adl-muted:#718096;--adl-border:#dce4ec}
+body{font-family:Tahoma,Arial,sans-serif}
+.head,.brand,.side .brand{background:linear-gradient(120deg,#0a1a2b 0%,#12395a 62%,#17496a 100%)!important;color:#f8fafc!important;border-color:#263f55!important;box-shadow:0 12px 30px #0b1b2b16}
+.head{border-radius:16px!important;position:relative;overflow:hidden}.head:before{content:"";position:absolute;left:14px;bottom:8px;width:46px;height:46px;background:url("./assets/brand-mark.svg") center/contain no-repeat;opacity:.72;pointer-events:none}.brand{position:relative;padding-left:58px!important}.brand:before{content:"";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:42px;height:42px;background:url("./assets/brand-mark.svg") center/contain no-repeat}
+.head:after{content:"";position:absolute;inset:auto -30px -70px auto;width:220px;height:220px;border:1px solid #e2bd6b30;border-radius:50%;pointer-events:none}
+.head h1,.brand b{color:#fff}
+.head p,.brand div{color:#d5e1eb}
+.card,.box,.panel,.stat,.tablebox{border-radius:14px}
+button,.btn{transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+button:hover,.btn:hover{filter:brightness(1.035)}
+button:active,.btn:active{transform:translateY(1px)}
+input:focus,select:focus,textarea:focus{outline:0;border-color:#c99b46!important;box-shadow:0 0 0 3px #d6ad5b22!important}
+.badge{border-radius:999px}
+@media(max-width:700px){.wrap{padding-left:12px;padding-right:12px}.head{border-radius:13px!important}}
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="t d">
+<title id="t">نشان عدل ترابران توس</title><desc id="d">نشان طلایی الهام‌گرفته از قطره سوخت و مسیر حمل‌ونقل</desc>
+<defs><linearGradient id="g" x1="18" y1="12" x2="110" y2="116" gradientUnits="userSpaceOnUse"><stop stop-color="#f5d78b"/><stop offset=".52" stop-color="#d5a84e"/><stop offset="1" stop-color="#9b6d2d"/></linearGradient></defs>
+<path d="M64 8C49 31 23 53 23 79a41 41 0 0 0 82 0C105 53 79 31 64 8Z" fill="none" stroke="url(#g)" stroke-width="7" stroke-linejoin="round"/>
+<path d="M64 30 43 66h15l-9 27 37-43H68l10-20Z" fill="url(#g)"/>
+<path d="M35 104h58" stroke="url(#g)" stroke-width="5" stroke-linecap="round"/>
+<path d="M45 112h38" stroke="url(#g)" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+</svg>
