@@ -102,5 +102,6 @@ async function routeUser(user){
 form.addEventListener("submit",async e=>{e.preventDefault();loading(true);msg.className="msg";try{let email=document.getElementById("email").value.trim().toLowerCase(),password=document.getElementById("password").value;if(email&&!email.includes("@"))email=email+"@staff.adl.local";const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;await routeUser(data.user)}catch(e){showMessage("ورود انجام نشد. ایمیل و رمز عبور را بررسی کنید. اگر مشکل ادامه داشت با مدیر سامانه تماس بگیرید.",true)}finally{loading(false)}});
 (async()=>{try{const {data}=await sb.auth.getSession();if(data.session?.user){loading(true);await routeUser(data.session.user);loading(false)}}catch(e){console.warn("session check failed",e)}})();
 </script>
+<script src="./support-widget.js"></script>
 </body>
 </html>
