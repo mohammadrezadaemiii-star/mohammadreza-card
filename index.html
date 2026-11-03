@@ -1,107 +1,42 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#101a2a">
-<title>ورود یکپارچه | عدل ترابران توس</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1d31">
+<title>عدل ترابران توس | سامانه جامع رانندگان و حمل</title>
 <style>
-:root{color-scheme:dark;--bg:#07111d;--panel:#0e1b2a;--line:#263b4d;--gold:#e6b65c;--text:#f5f7fa;--muted:#a8b8c7;--teal:#4bb8ad;--red:#f4a4a4}
-*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;min-height:100vh;padding:clamp(14px,3vw,42px);display:grid;place-items:center;background:radial-gradient(ellipse at 14% 8%,#173a4a 0,transparent 34%),radial-gradient(ellipse at 90% 95%,#322a1b 0,transparent 30%),linear-gradient(135deg,#06101a,#0a1724 55%,#101b28);font-family:Tahoma,Arial,sans-serif;color:var(--text);overflow-x:hidden}
-.shell{width:min(1080px,100%);min-height:620px;display:grid;grid-template-columns:1fr .86fr;direction:ltr;border:1px solid #2b4050;border-radius:28px;overflow:hidden;background:#0c1926eF;box-shadow:0 35px 100px #0008;position:relative}
-.visual{direction:rtl;position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:34px;overflow:hidden;background:linear-gradient(155deg,#102d3a 0%,#0b1d2a 50%,#101923 100%);border-left:1px solid #2b4050}
-.visual:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#07121df2 0%,transparent 62%),repeating-linear-gradient(135deg,transparent 0 35px,#ffffff04 36px 37px);pointer-events:none}
-.visual>*{position:relative;z-index:1}.brandline{display:flex;align-items:center;gap:13px}.brandmark{width:52px;height:52px;border:1px solid #c89c4b;border-radius:15px;background:linear-gradient(145deg,#1b3b47,#0c202d);display:grid;place-items:center;color:var(--gold);box-shadow:0 8px 25px #0004}.brandmark svg{width:31px;height:31px}.brandname{font-size:17px;font-weight:800;letter-spacing:-.3px}.branddesc{font-size:10px;color:#b6c5d1;margin-top:6px;letter-spacing:.3px}
-.hero{margin-top:35px}.eyebrow{display:inline-flex;align-items:center;gap:9px;color:#edc879;font-size:11px;font-weight:bold;letter-spacing:.5px}.eyebrow:before{content:"";width:24px;height:1px;background:var(--gold)}.hero h1{font-size:clamp(27px,3vw,40px);line-height:1.65;margin:15px 0 10px;max-width:460px;letter-spacing:-1px}.hero h1 span{color:var(--gold)}.hero p{font-size:13px;line-height:2.2;color:#b4c2ce;max-width:420px;margin:0}
-.truckscene{width:100%;max-width:480px;margin:12px auto 0;filter:drop-shadow(0 18px 18px #0004)}.truckscene svg{display:block;width:100%;height:auto}.visualbottom{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:20px;border-top:1px solid #ffffff16;color:#91a6b7;font-size:10px;line-height:1.9}.status{display:flex;align-items:center;gap:8px}.status i{display:block;width:7px;height:7px;border-radius:50%;background:#54c7a6;box-shadow:0 0 0 4px #54c7a61c}
-.loginarea{direction:rtl;display:flex;align-items:center;justify-content:center;padding:clamp(24px,4vw,52px);background:linear-gradient(145deg,#101f2e,#0b1724)}.logincontent{width:100%;max-width:370px}.mobilebrand{display:none}.miniicon{width:44px;height:44px;border:1px solid #4b493d;border-radius:14px;display:grid;place-items:center;color:var(--gold);background:#202b30;margin-bottom:24px}.miniicon svg{width:25px;height:25px}.logincontent h2{font-size:25px;line-height:1.6;margin:0 0 7px}.sub{font-size:12px;color:var(--muted);line-height:2;margin:0 0 28px}.fieldlabel{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#dbe4eb;margin:18px 0 9px}input{width:100%;padding:15px 14px;border:1px solid #304658;border-radius:12px;background:#08131f;color:#fff;font:inherit;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s}input::placeholder{color:#718597}input:focus{border-color:var(--gold);box-shadow:0 0 0 3px #e6b65c18}.passrow{display:flex;gap:8px;align-items:center}.passrow input{flex:1;min-width:0}.eye{width:48px;flex:0 0 48px;border:1px solid #304658;border-radius:12px;background:#142534;color:#e6c782;padding:12px 0;font-size:17px;cursor:pointer}.submit{width:100%;border:1px solid #f1cb7b;border-radius:12px;background:linear-gradient(110deg,#f0c875,#c9963f);color:#17202a;font:inherit;font-size:14px;font-weight:bold;padding:15px;margin-top:24px;cursor:pointer;box-shadow:0 9px 25px #c9963f21;transition:transform .2s,filter .2s}.submit:hover{filter:brightness(1.06);transform:translateY(-1px)}.submit:disabled{opacity:.65;cursor:wait;transform:none}.securehint{display:flex;align-items:center;gap:9px;color:#92a6b5;font-size:10px;line-height:1.8;margin-top:18px}.securehint svg{width:17px;height:17px;flex:none;color:#68b9a8}.msg{display:none;margin-top:15px;padding:12px;border-radius:10px;font-size:12px;line-height:1.9;background:#172b3b;color:#dce8fa;overflow-wrap:anywhere}.msg.show{display:block}.msg.error{background:#351f29;color:#ffd1d1;border:1px solid #6a343e}.foot{color:#718798;font-size:10px;line-height:2;margin-top:27px;padding-top:17px;border-top:1px solid #ffffff12}.spinner{display:inline-block;width:13px;height:13px;border:2px solid #17202a66;border-top-color:#17202a;border-radius:50%;vertical-align:middle;animation:spin .7s linear infinite;margin-left:7px}@keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:760px){body{padding:12px;display:block}.shell{grid-template-columns:1fr;min-height:0;width:min(480px,100%);margin:0 auto;border-radius:22px}.visual{display:none}.loginarea{padding:28px 23px 23px}.logincontent{max-width:390px}.mobilebrand{display:flex;align-items:center;gap:11px;margin-bottom:29px}.mobilebrand .brandmark{width:45px;height:45px}.mobilebrand .brandname{font-size:15px}.mobilebrand .branddesc{font-size:9px}.miniicon{display:none}.logincontent h2{font-size:23px}.sub{margin-bottom:22px}.foot{margin-top:23px}}
-@media(min-width:761px) and (max-height:700px){.shell{min-height:570px}.visual{padding:25px}.hero{margin-top:15px}.hero h1{font-size:30px}.truckscene{max-width:390px}.loginarea{padding:30px}}
-
-/* adl-premium-unified: visual-only theme layer */
-
-:root{--gold:#e1b965}
-body{background:radial-gradient(ellipse at 70% 0%,#18334a 0,transparent 45%),#071321!important;color:#f2f5f8!important}
-.login,.login-card,.card{background:linear-gradient(145deg,#12263a,#0c1b2b)!important;border:1px solid #2b4055!important;border-radius:20px!important;box-shadow:0 24px 70px #0006!important}
-h1,h2,h3{color:#f0cb7b}
-input,select{background:#081624!important;color:#f2f5f8!important;border:1px solid #35495d!important;border-radius:10px!important}
-button,.primary{background:linear-gradient(110deg,#f0cb7b,#b98539)!important;color:#172334!important;border-radius:11px!important;font-weight:800}
-
-</style></head>
+:root{--bg:#071321;--panel:#10243a;--panel2:#142d46;--line:#29445e;--blue:#1769d2;--gold:#e6bd69;--txt:#f5f7fa;--muted:#a9bacb;--green:#55c69a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 75% -10%,#1b4666 0,transparent 42%),var(--bg);color:var(--txt);font-family:Tahoma,Arial,sans-serif;min-height:100vh}
+header{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,4vw,56px);border-bottom:1px solid #ffffff16;background:#081827dd;position:sticky;top:0;z-index:5;backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:12px}.mark{width:43px;height:43px;border:1px solid #b78d4b;border-radius:14px;display:grid;place-items:center;color:var(--gold);font-size:23px;background:#132b40}.brand b{display:block;font-size:15px}.brand small{display:block;color:var(--muted);font-size:10px;margin-top:5px}
+.staff{background:linear-gradient(120deg,#2180ee,#1253a6);color:white;text-decoration:none;padding:12px 18px;border-radius:12px;font-size:12px;font-weight:bold;box-shadow:0 8px 25px #1769d244;display:flex;gap:8px;align-items:center}
+main{width:min(1160px,calc(100% - 32px));margin:34px auto 70px}.intro{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:24px}.eyebrow{font-size:11px;color:var(--gold);margin-bottom:10px}.intro h1{font-size:clamp(24px,4vw,36px);margin:0 0 10px;line-height:1.7}.intro p{font-size:12px;line-height:2;color:var(--muted);margin:0;max-width:620px}.status{font-size:10px;color:var(--green);white-space:nowrap;border:1px solid #55c69a44;padding:9px 12px;border-radius:30px}
+.hero{border:1px solid var(--line);border-radius:22px;padding:clamp(20px,4vw,36px);background:linear-gradient(110deg,#102b43,#102238 60%,#182c3b);display:grid;grid-template-columns:1.3fr .7fr;gap:24px;align-items:center;overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:300px;height:300px;border:1px solid #ffffff12;border-radius:50%;left:-90px;top:-160px;box-shadow:0 0 0 30px #ffffff05,0 0 0 65px #ffffff04}.hero h2{font-size:22px;line-height:1.8;margin:0 0 10px}.hero p{color:#b8c7d4;font-size:12px;line-height:2.1;margin:0;max-width:580px}.heroart{font-size:94px;text-align:center;filter:drop-shadow(0 12px 20px #0007)}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:30px 2px 14px}.sectionhead h3{font-size:15px;margin:0}.sectionhead span{font-size:10px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:linear-gradient(145deg,#122941,#0d1e30);border:1px solid var(--line);border-radius:17px;padding:20px;min-height:158px}.ico{width:42px;height:42px;display:grid;place-items:center;background:#1c3b58;border-radius:13px;font-size:21px;margin-bottom:15px}.card h4{font-size:13px;margin:0 0 8px}.card p{font-size:11px;color:var(--muted);line-height:1.9;margin:0}.tag{display:inline-block;font-size:9px;color:#c4d6e6;background:#ffffff0c;border:1px solid #ffffff14;padding:5px 8px;border-radius:20px;margin-top:12px}
+.notice{margin-top:22px;padding:15px 17px;border:1px solid #b78d4b55;background:#b78d4b10;border-radius:13px;color:#e5d2a9;font-size:11px;line-height:2}
+footer{text-align:center;color:#74899c;font-size:10px;padding:24px;border-top:1px solid #ffffff12}
+@media(max-width:760px){header{height:68px;padding:0 13px}.brand b{font-size:12px}.brand small{font-size:9px}.staff{padding:10px 12px;font-size:10px}.intro{display:block}.status{display:inline-block;margin-top:15px}.hero{grid-template-columns:1fr}.heroart{display:none}.cards{grid-template-columns:1fr}.card{min-height:0}}
+</style>
+</head>
 <body>
-<main class="shell">
-  <section class="visual" aria-label="معرفی سامانه حمل‌ونقل">
-    <div class="brandline">
-      <div class="brandmark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M20 3 33 8v10c0 8.2-5.3 14.2-13 19C12.3 32.2 7 26.2 7 18V8l13-5Z" stroke="currentColor" stroke-width="1.6"/><path d="M12 22h16M15 17h10M17 12h6M15 27h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M20 7v24" stroke="currentColor" stroke-opacity=".45"/></svg></div>
-      <div><div class="brandname">عدل ترابران توس</div><div class="branddesc">خدمات حمل‌ونقل تانکری و لجستیک</div></div>
-    </div>
-    <div class="hero">
-      <div class="eyebrow">سامانه یکپارچه عملیات</div>
-      <h1>از مبدأ تا مقصد،<br><span>با نظم و اطمینان.</span></h1>
-      <p>درگاه اختصاصی کارکنان برای مدیریت هوشمند حمل مواد نفتی، حواله‌ها، رانندگان و عملیات بین واحدهای شرکت.</p>
-      <div class="truckscene" aria-hidden="true">
-        <svg viewBox="0 0 520 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs><linearGradient id="tank" x1="120" y1="70" x2="360" y2="170" gradientUnits="userSpaceOnUse"><stop stop-color="#d9e0df"/><stop offset=".28" stop-color="#8fa3a5"/><stop offset=".53" stop-color="#e2e6df"/><stop offset=".78" stop-color="#647c83"/><stop offset="1" stop-color="#253d4a"/></linearGradient><linearGradient id="cab" x1="360" y1="100" x2="445" y2="175" gradientUnits="userSpaceOnUse"><stop stop-color="#e8bd62"/><stop offset="1" stop-color="#9d6c2c"/></linearGradient></defs>
-          <path d="M20 205H500" stroke="#52717d" stroke-opacity=".5"/><path d="M40 219H480" stroke="#52717d" stroke-opacity=".25" stroke-dasharray="8 10"/>
-          <g opacity=".6" stroke="#42616d" stroke-width="1.2"><path d="M50 56V188M50 56h42M72 76h20M72 96h20M72 116h20M72 136h20"/><path d="M440 35v153M440 35h32M455 53h17M455 72h17M455 91h17"/></g>
-          <g><path d="M72 122c0-29 20-52 45-52h201c25 0 45 23 45 52v51H72v-51Z" fill="url(#tank)" stroke="#dce3dc" stroke-opacity=".55" stroke-width="1.4"/><ellipse cx="117" cy="122" rx="18" ry="51" fill="#718a91" stroke="#d7e0dc" stroke-width="1.3"/><ellipse cx="117" cy="122" rx="8" ry="39" stroke="#cbd7d2" stroke-opacity=".65"/><path d="M143 80v91M175 74v99M207 73v100M239 73v100M271 73v100M303 80v91" stroke="#4d6873" stroke-opacity=".6" stroke-width="2"/><path d="M118 71h200" stroke="#f6f7ed" stroke-opacity=".7" stroke-width="2"/><path d="M92 177h244" stroke="#182d39" stroke-width="4"/><rect x="81" y="174" width="266" height="10" rx="2" fill="#344d59"/><path d="M94 184v13M133 184v13M298 184v13M331 184v13" stroke="#9fb1b1" stroke-width="4"/></g>
-          <g><path d="M350 130h43l30 28v27H338v-35c0-11 4-20 12-20Z" fill="url(#cab)" stroke="#f1cf83" stroke-width="1.4"/><path d="M389 137h-28v22h50l-22-22Z" fill="#193544" stroke="#6f8c94" stroke-width="1.2"/><path d="M359 163h58v9h-58z" fill="#73532d"/><rect x="340" y="177" width="87" height="7" rx="2" fill="#233c49"/><path d="M344 188h84" stroke="#d9b66d" stroke-width="2"/><rect x="420" y="166" width="8" height="10" rx="2" fill="#f5d88e"/></g>
-          <g fill="#101c27" stroke="#7f989f" stroke-width="2"><circle cx="143" cy="191" r="20"/><circle cx="143" cy="191" r="9" fill="#bdc7c2"/><circle cx="302" cy="191" r="20"/><circle cx="302" cy="191" r="9" fill="#bdc7c2"/><circle cx="390" cy="191" r="20"/><circle cx="390" cy="191" r="9" fill="#bdc7c2"/></g>
-          <path d="M56 211h408" stroke="#d9b66d" stroke-opacity=".65" stroke-width="1.5"/><circle cx="56" cy="211" r="3" fill="#e6b65c"/><circle cx="464" cy="211" r="3" fill="#e6b65c"/>
-        </svg>
-      </div>
-    </div>
-    <div class="visualbottom"><span>عدل ترابران توس<br>سامانه مدیریت عملیات حمل</span><span class="status"><i></i> درگاه ورود کارکنان</span></div>
-  </section>
-  <section class="loginarea">
-    <div class="logincontent">
-      <div class="mobilebrand">
-        <div class="brandmark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M20 3 33 8v10c0 8.2-5.3 14.2-13 19C12.3 32.2 7 26.2 7 18V8l13-5Z" stroke="currentColor" stroke-width="1.6"/><path d="M12 22h16M15 17h10M17 12h6M15 27h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
-        <div><div class="brandname">عدل ترابران توس</div><div class="branddesc">سامانه یکپارچه حمل‌ونقل تانکری</div></div>
-      </div>
-      <div class="miniicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-      <h2>ورود به پنل سازمانی</h2>
-      <p class="sub">با حساب کاری اختصاصی خود وارد شوید. سامانه پس از احراز هویت، شما را به پنل متناسب با سطح دسترسی‌تان هدایت می‌کند.</p>
-      <form id="loginForm">
-        <label class="fieldlabel" for="email">نام کاربری / ایمیل سازمانی</label>
-        <input id="email" name="email" type="text" autocomplete="username" placeholder="نام کاربری مثل hossein.aminian" required>
-        <label class="fieldlabel" for="password">رمز عبور</label>
-        <div class="passrow">
-          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="رمز عبور اختصاصی" required>
-          <button class="eye" id="togglePass" type="button" aria-label="نمایش رمز عبور">◉</button>
-        </div>
-        <button class="submit" id="submitBtn" type="submit">ورود امن به سامانه <span aria-hidden="true">←</span></button>
-      </form>
-      <div class="msg" id="message" role="status" aria-live="polite"></div>
-      <div class="securehint"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 19 6v5c0 4.7-3 8-7 10-4-2-7-5.3-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.5"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>دسترسی هر کاربر جداگانه بررسی می‌شود؛ پنل‌ها فقط برای حساب‌های مجاز باز می‌شوند.</span></div>
-      <footer class="foot">حساب یا سطح دسترسی شما فعال نیست؟<br>برای تعریف دسترسی یا بازیابی حساب با مدیر سامانه هماهنگ کنید.</footer>
-    </div>
-  </section>
+<header>
+ <div class="brand"><div class="mark">✦</div><div><b>عدل ترابران توس</b><small>سامانه جامع رانندگان و حمل‌ونقل تانکری</small></div></div>
+ <a class="staff" href="./staff.html" aria-label="ورودی کارکنان"><span>↖</span> ورودی کارکنان</a>
+</header>
+<main>
+ <section class="intro"><div><div class="eyebrow">سامانه یکپارچه عملیات حمل</div><h1>به درگاه عدل ترابران توس خوش آمدید</h1><p>درگاه اصلی خدمات رانندگان، اعلام بار و مدیریت عملیات حمل. برای ورود کارکنان شرکت از دکمه آبی بالای صفحه استفاده کنید.</p></div><div class="status">● درگاه اصلی سامانه</div></section>
+ <section class="hero"><div><h2>همه خدمات حمل، در یک مسیر یکپارچه</h2><p>محیط اصلی این سایت برای نسخه وب TankerBot در نظر گرفته شده است؛ شامل ثبت‌نام و تکمیل مشخصات رانندگان، جستجوی بار، مشاهده سوابق و خدمات عملیاتی. ورود کارکنان از مسیر مستقل فعلی شرکت انجام می‌شود.</p></div><div class="heroart" aria-hidden="true">🚛</div></section>
+ <div class="sectionhead"><h3>بخش‌های نرم‌افزار رانندگان</h3><span>محیط اصلی سامانه</span></div>
+ <section class="cards">
+  <article class="card"><div class="ico">📝</div><h4>ثبت‌نام و تکمیل مشخصات راننده</h4><p>ثبت اطلاعات هویتی، تماس، گواهینامه، مدارک، کشنده، پلاک، تانکر و اطلاعات بانکی.</p><span class="tag">بدون نام کاربری و رمز عبور</span></article>
+  <article class="card"><div class="ico">🔎</div><h4>جستجوی بار</h4><p>جستجو بر اساس مبدأ، نوع بار و بازه زمانی و مشاهده بارهای متناسب با مشخصات راننده.</p><span class="tag">ویژه رانندگان ثبت‌شده</span></article>
+  <article class="card"><div class="ico">👤</div><h4>مشخصات و ویرایش اطلاعات</h4><p>مشاهده مشخصات ثبت‌شده و درخواست اصلاح اطلاعات راننده یا وسیله نقلیه.</p><span class="tag">پروفایل راننده</span></article>
+  <article class="card"><div class="ico">📮</div><h4>تحویل و پیگیری اسناد</h4><p>بخش مرتبط با مدارک و اسناد حمل و وضعیت پیگیری آن‌ها.</p><span class="tag">عملیات اسناد</span></article>
+  <article class="card"><div class="ico">📦</div><h4>مدیریت بارها و اعلام بار</h4><p>امکانات اپراتوری برای ثبت، انتشار، جستجو و گزارش بارها.</p><span class="tag">سطح دسترسی مدیریتی</span></article>
+  <article class="card"><div class="ico">📊</div><h4>گزارش‌ها و مدیریت رانندگان</h4><p>مدیریت فهرست رانندگان، گزارش‌ها، ایمپورت بارنامه‌های بیتا و عملیات خودکار.</p><span class="tag">سطح دسترسی مدیریتی</span></article>
+ </section>
+ <div class="notice">ورودی کارکنان مستقل باقی مانده است. با انتخاب دکمه آبی بالای صفحه، صفحه ورود فعلی شرکت باز می‌شود و نام کاربری، رمز عبور، نقش‌ها و مسیر پنل کارکنان تغییر نمی‌کند.</div>
 </main>
-<script>
-const SB_URL="https://jfixjlygjukrlokdznhh.supabase.co";
-const SB_KEY="sb_publishable_JpVcwEzZzpPcDwj9PhkZHQ_AoKpw9Kt";
-const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const form=document.getElementById("loginForm"),btn=document.getElementById("submitBtn"),msg=document.getElementById("message");
-function showMessage(text,error=false){msg.textContent=text;msg.className="msg show"+(error?" error":"")}
-function loading(on){btn.disabled=on;btn.innerHTML=on?'<span class="spinner"></span>در حال بررسی دسترسی…':"ورود امن"}
-document.getElementById("togglePass").addEventListener("click",()=>{const p=document.getElementById("password");p.type=p.type==="password"?"text":"password"});
-async function routeUser(user){
-  const {data:profile,error}=await sb.from("app_user_roles").select("role,display_name,enabled,panel_path").eq("user_id",user.id).maybeSingle();
-  if(error){showMessage("دریافت سطح دسترسی انجام نشد. لطفاً اتصال یا تنظیمات سامانه را بررسی کنید و دوباره تلاش کنید. ("+error.message+")",true);return false}
-  if(!profile||!profile.enabled){await sb.auth.signOut();showMessage("برای این حساب دسترسی فعال تعریف نشده است. از مدیر سامانه بخواهید نقش و دسترسی شما را ثبت کند.",true);return false}
-  // مدیر سراسری همیشه وارد داشبورد جدید مدیریت می‌شود.
-  const destination=profile.role==="super_admin"?"admin.html":profile.panel_path;
-  if(!destination){showMessage("ورود موفق بود، اما نشانی پنل این نقش هنوز تنظیم نشده است. مدیر سامانه باید مسیر پنل را ثبت کند.",true);return false}
-  const target=new URL(destination,location.href);
-  if(target.origin!==location.origin){await sb.auth.signOut();showMessage("مسیر پنل تنظیم‌شده نامعتبر است؛ برای حفظ امنیت ورود لغو شد.",true);return false}
-  showMessage("ورود موفق بود"+(profile.display_name?"، "+profile.display_name:"")+"؛ در حال انتقال به پنل اختصاصی…");
-  location.replace(target.href);return true;
-}
-form.addEventListener("submit",async e=>{e.preventDefault();loading(true);msg.className="msg";try{let email=document.getElementById("email").value.trim().toLowerCase(),password=document.getElementById("password").value;if(email&&!email.includes("@"))email=email+"@staff.adl.local";const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;await routeUser(data.user)}catch(e){showMessage("ورود انجام نشد. ایمیل و رمز عبور را بررسی کنید. اگر مشکل ادامه داشت با مدیر سامانه تماس بگیرید.",true)}finally{loading(false)}});
-(async()=>{try{const {data}=await sb.auth.getSession();if(data.session?.user){loading(true);await routeUser(data.session.user);loading(false)}}catch(e){console.warn("session check failed",e)}})();
-</script>
-<script src="./support-widget.js"></script>
-</body>
-</html>
+<footer>عدل ترابران توس · سامانه جامع حمل‌ونقل تانکری</footer>
+</body></html>
