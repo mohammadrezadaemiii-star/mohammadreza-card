@@ -102,7 +102,7 @@ function showApp(){loginWrap.classList.add("hidden");app.classList.remove("hidde
 async function checkUser(user){if(!user||user.email?.toLowerCase()!==ADMIN_EMAIL){await sb.auth.signOut();showLogin("این صفحه فقط برای حساب مدیر اصلی فعال است.");return false}showApp();$("connection").textContent="متصل به هسته مرکزی";$("dbStatus").textContent="متصل";$("lastUpdated").textContent=new Date().toLocaleTimeString("fa-IR",{hour:"2-digit",minute:"2-digit"});loadStats();return true}
 async function countTable(table,target){const el=$(target);try{const {count,error}=await sb.from(table).select("*",{count:"exact",head:true});if(error)throw error;el.textContent=Number(count||0).toLocaleString("fa-IR");el.title="خوانده‌شده از "+table}catch(e){el.textContent="بدون دسترسی";el.title=e.message}}
 async function loadStats(){await Promise.all([countTable("waybill_drivers","driversCount"),countTable("waybills","waybillsCount"),countTable("tabriz_waybills","tabrizCount"),countTable("tehran_waybills","tehranCount"),countTable("support_submissions","supportCount")]);$("lastUpdated").textContent=new Date().toLocaleTimeString("fa-IR",{hour:"2-digit",minute:"2-digit"})}
-const BACKUP_TABLES=["waybill_drivers","waybills","tabriz_waybills","tehran_waybill_drivers","tehran_waybills","support_submissions","support_staff","support_tickets","support_ticket_messages","anonymous_messages","anonymous_visitors","app_user_roles","tabriz_access","tehran_access","tabriz_waybill_counter"];
+const BACKUP_TABLES=["waybill_drivers","waybills","tabriz_waybills","tehran_waybill_drivers","tehran_waybills","support_submissions","support_staff","support_tickets","support_ticket_messages","anonymous_messages","anonymous_visitors","app_user_roles","tabriz_access","tehran_access","tabriz_waybill_counter","user_reminders"];
 const BACKUP_EXCLUDED_COLUMNS=new Set(["ip_address","user_agent","device_token","latitude","longitude","location_accuracy","location_updated_at"]);
 async function readAllRows(table){
  const all=[];const pageSize=1000;
@@ -148,4 +148,4 @@ document.addEventListener("click",e=>{if(window.innerWidth<=760&&$("side").class
 sb.auth.onAuthStateChange((_event,session)=>{if(session?.user)checkUser(session.user);else showLogin("")});
 sb.auth.getSession().then(({data,error})=>{if(error||!data.session)showLogin("");else checkUser(data.session.user)});
 </script>
-</body></html>
+<script src="./support-widget.js"></script></body></html>
