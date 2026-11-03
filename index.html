@@ -81,8 +81,10 @@ async function routeUser(user){
   const {data:profile,error}=await sb.from("app_user_roles").select("role,display_name,enabled,panel_path").eq("user_id",user.id).maybeSingle();
   if(error){showMessage("دریافت سطح دسترسی انجام نشد. لطفاً اتصال یا تنظیمات سامانه را بررسی کنید و دوباره تلاش کنید. ("+error.message+")",true);return false}
   if(!profile||!profile.enabled){await sb.auth.signOut();showMessage("برای این حساب دسترسی فعال تعریف نشده است. از مدیر سامانه بخواهید نقش و دسترسی شما را ثبت کند.",true);return false}
-  if(!profile.panel_path){showMessage("ورود موفق بود، اما نشانی پنل این نقش هنوز تنظیم نشده است. مدیر سامانه باید مسیر پنل را ثبت کند.",true);return false}
-  const target=new URL(profile.panel_path,location.href);
+  // مدیر سراسری همیشه وارد داشبورد جدید مدیریت می‌شود.
+  const destination=profile.role==="super_admin"?"admin.html":profile.panel_path;
+  if(!destination){showMessage("ورود موفق بود، اما نشانی پنل این نقش هنوز تنظیم نشده است. مدیر سامانه باید مسیر پنل را ثبت کند.",true);return false}
+  const target=new URL(destination,location.href);
   if(target.origin!==location.origin){await sb.auth.signOut();showMessage("مسیر پنل تنظیم‌شده نامعتبر است؛ برای حفظ امنیت ورود لغو شد.",true);return false}
   showMessage("ورود موفق بود"+(profile.display_name?"، "+profile.display_name:"")+"؛ در حال انتقال به پنل اختصاصی…");
   location.replace(target.href);return true;
